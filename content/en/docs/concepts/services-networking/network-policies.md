@@ -28,7 +28,7 @@ By default, pods are non-isolated; they accept traffic from any source.
 
 Pods become isolated by having a NetworkPolicy that selects them. Once there is any NetworkPolicy in a namespace selecting a particular pod, that pod will reject any connections that are not allowed by any NetworkPolicy. (Other pods in the namespace that are not selected by any NetworkPolicy will continue to accept all traffic.)
 
-Network policies do not conflict, they are additive. If any policy or policies select a pod, the pod is restricted to what is allowed by the union of those policies' ingress/egress rules. Thus, order of evaluation does not affect the policy result.
+Network policies do not conflict; they are additive. If any policy or policies select a pod, the pod is restricted to what is allowed by the union of those policies' ingress/egress rules. Thus, order of evaluation does not affect the policy result.
 
 ## The NetworkPolicy resource {#networkpolicy-resource}
 
@@ -207,7 +207,7 @@ This ensures that even pods that aren't selected by any other NetworkPolicy will
 
 {{< feature-state for_k8s_version="v1.12" state="alpha" >}}
 
-To use this feature, you (or your cluster administrator) will need to enable the `SCTPSupport` [feature gate](/docs/reference/command-line-tools-reference/feature-gates/) for the API server with `--feature-gates=SCTPSupport=true,…`.  
+To use this feature, you (or your cluster administrator) will need to enable the `SCTPSupport` [feature gate](/docs/reference/command-line-tools-reference/feature-gates/) for the API server with `--feature-gates=SCTPSupport=true,…`.
 When the feature gate is enabled, you can set the `protocol` field of a NetworkPolicy to `SCTP`.
 
 {{< note >}}

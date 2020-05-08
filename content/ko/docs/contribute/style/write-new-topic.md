@@ -92,7 +92,7 @@ YAML 블록이다. 여기 예시가 있다.
 - 이 코드는 `kubectl get deploy mydeployment -o json | jq '.status'`와 같은
   명령어의 출력을 보여준다.
 - 이 코드는 시도해보기에 적절하지 않다. 예를 들어
-  특정 [FlexVolume](/docs/concepts/storage/volumes#flexvolume) 구현에 따라
+  특정 [FlexVolume](/ko/docs/concepts/storage/volumes#flexvolume) 구현에 따라
   파드를 만들기 위해 YAML 파일을
   포함할 수 있다.
 - 이 코드의 목적은 더 큰 파일의 일부를 강조하는 것이기 때문에
@@ -162,7 +162,6 @@ kubectl create -f https://k8s.io/examples/pods/storage/gce-volume.yaml
 {{% /capture %}}
 
 {{% capture whatsnext %}}
-* [페이지 템플릿 사용](/docs/home/contribute/page-templates/)에 대해 알아보기.
-* [변경 사항 준비](/docs/home/contribute/stage-documentation-changes/)에 대해 알아보기.
-* [풀 리퀘스트 작성](/docs/home/contribute/create-pull-request/)에 대해 알아보기.
+* [페이지 템플릿 사용](/docs/contribute/page-templates/))에 대해 알아보기.
+* [풀 리퀘스트 작성](/docs/contribute/new-content/open-a-pr/)에 대해 알아보기.
 {{% /capture %}}

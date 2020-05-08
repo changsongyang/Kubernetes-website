@@ -7,7 +7,7 @@ feature:
   title: Secret and configuration management
   description: >
     Deploy and update secrets and application configuration without rebuilding your image and without exposing secrets in your stack configuration.
-weight: 50
+weight: 30
 ---
 
 {{% capture overview %}}
@@ -68,6 +68,8 @@ echo -n '1f2d1e2e67df' > ./password.txt
 
 The `kubectl create secret` command packages these files into a Secret and creates
 the object on the API server.
+The name of a Secret object must be a valid
+[DNS subdomain name](/docs/concepts/overview/working-with-objects/names#dns-subdomain-names).
 
 ```shell
 kubectl create secret generic db-user-pass --from-file=./username.txt --from-file=./password.txt
@@ -79,13 +81,19 @@ The output is similar to:
 secret "db-user-pass" created
 ```
 
-{{< note >}}
-Special characters such as `$`, `\`, `*`, and `!` will be interpreted by your [shell](https://en.wikipedia.org/wiki/Shell_(computing)) and require escaping.
-In most shells, the easiest way to escape the password is to surround it with single quotes (`'`).
-For example, if your actual password is `S!B\*d$zDsb`, you should execute the command this way:
+Default key name is the filename. You may optionally set the key name using `[--from-file=[key=]source]`.
 
 ```shell
-kubectl create secret generic dev-db-secret --from-literal=username=devuser --from-literal=password='S!B\*d$zDsb'
+kubectl create secret generic db-user-pass --from-file=username=./username.txt --from-file=password=./password.txt
+```
+
+{{< note >}}
+Special characters such as `$`, `\`, `*`, `=`, and `!` will be interpreted by your [shell](https://en.wikipedia.org/wiki/Shell_(computing)) and require escaping.
+In most shells, the easiest way to escape the password is to surround it with single quotes (`'`).
+For example, if your actual password is `S!B\*d$zDsb=`, you should execute the command this way:
+
+```shell
+kubectl create secret generic dev-db-secret --from-literal=username=devuser --from-literal=password='S!B\*d$zDsb='
 ```
 
 You do not need to escape special characters in passwords from files (`--from-file`).
@@ -137,8 +145,10 @@ See [decoding a secret](#decoding-a-secret) to learn how to view the contents of
 #### Creating a Secret manually
 
 You can also create a Secret in a file first, in JSON or YAML format,
-and then create that object. The
-[Secret](/docs/reference/generated/kubernetes-api/{{< param "version" >}}/#secret-v1-core)
+and then create that object.
+The name of a Secret object must be a valid
+[DNS subdomain name](/docs/concepts/overview/working-with-objects/names#dns-subdomain-names).
+The [Secret](/docs/reference/generated/kubernetes-api/{{< param "version" >}}/#secret-v1-core)
 contains two maps:
 `data` and `stringData`. The `data` field is used to store arbitrary data, encoded using
 base64. The `stringData` field is provided for convenience, and allows you to provide
@@ -672,6 +682,37 @@ A container using a Secret as a
 Secret updates.
 {{< /note >}}
 
+{{< feature-state for_k8s_version="v1.18" state="alpha" >}}
+
+The Kubernetes alpha feature _Immutable Secrets and ConfigMaps_ provides an option to set
+individual Secrets and ConfigMaps as immutable. For clusters that extensively use Secrets
+(at least tens of thousands of unique Secret to Pod mounts), preventing changes to their
+data has the following advantages:
+
+- protects you from accidental (or unwanted) updates that could cause applications outages
+- improves performance of your cluster by significantly reducing load on kube-apiserver, by
+closing watches for secrets marked as immutable.
+
+To use this feature, enable the `ImmutableEmphemeralVolumes`
+[feature gate](/docs/reference/command-line-tools-reference/feature-gates/) and set
+your Secret or ConfigMap `immutable` field to `true`. For example:
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  ...
+data:
+  ...
+immutable: true
+```
+
+{{< note >}}
+Once a Secret or ConfigMap is marked as immutable, it is _not_ possible to revert this change
+nor to mutate the contents of the `data` field. You can only delete and recreate the Secret.
+Existing Pods maintain a mount point to the deleted Secret - it is recommended to recreate
+these pods.
+{{< /note >}}
+
 ### Using Secrets as environment variables
 
 To use a secret in an {{< glossary_tooltip text="environment variable" term_id="container-env-variables" >}}
@@ -819,6 +860,43 @@ start until all the Pod's volumes are mounted.
 
 ## Use cases
 
+### Use-Case: As container environment variables
+
+Create a secret
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mysecret
+type: Opaque
+data:
+  USER_NAME: YWRtaW4=
+  PASSWORD: MWYyZDFlMmU2N2Rm
+```
+
+Create the Secret:
+```shell
+kubectl apply -f mysecret.yaml
+```
+
+Use `envFrom` to define all of the Secret’s data as container environment variables. The key from the Secret becomes the environment variable name in the Pod.
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: secret-test-pod
+spec:
+  containers:
+    - name: test-container
+      image: k8s.gcr.io/busybox
+      command: [ "/bin/sh", "-c", "env" ]
+      envFrom:
+      - secretRef:
+          name: mysecret
+  restartPolicy: Never
+```
+
 ### Use-Case: Pod with ssh keys
 
 Create a secret containing some ssh keys:
@@ -902,12 +980,12 @@ secret "test-db-secret" created
 ```
 
 {{< note >}}
-Special characters such as `$`, `\`, `*`, and `!` will be interpreted by your [shell](https://en.wikipedia.org/wiki/Shell_(computing)) and require escaping.
+Special characters such as `$`, `\`, `*`, `=`, and `!` will be interpreted by your [shell](https://en.wikipedia.org/wiki/Shell_(computing)) and require escaping.
 In most shells, the easiest way to escape the password is to surround it with single quotes (`'`).
-For example, if your actual password is `S!B\*d$zDsb`, you should execute the command this way:
+For example, if your actual password is `S!B\*d$zDsb=`, you should execute the command this way:
 
 ```shell
-kubectl create secret generic dev-db-secret --from-literal=username=devuser --from-literal=password='S!B\*d$zDsb'
+kubectl create secret generic dev-db-secret --from-literal=username=devuser --from-literal=password='S!B\*d$zDsb='
 ```
 
  You do not need to escape special characters in passwords from files (`--from-file`).

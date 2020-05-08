@@ -123,7 +123,7 @@ my-nginx   10.244.2.5:80,10.244.3.4:80   1m
 이제 클러스터의 모든 노드에서 `<CLUSTER-IP>:<PORT>` 로 nginx 서비스를
 curl을 할 수 있을 것이다. 서비스 IP는 완전히 가상이므로 외부에서는 절대로 연결되지
 않음에 참고한다. 만약 이것이 어떻게 작동하는지 궁금하다면
-[서비스 프록시](/docs/concepts/services-networking/service/#virtual-ips-and-service-proxies)에 대해 더 읽어본다.
+[서비스 프록시](/ko/docs/concepts/services-networking/service/#가상-ip와-서비스-프록시)에 대해 더 읽어본다.
 
 ## 서비스에 접근하기
 
@@ -418,10 +418,8 @@ LoadBalancer Ingress:   a320587ffd19711e5a37606cf4a74574-1142138393.us-east-1.el
 
 {{% capture whatsnext %}}
 
-게다가 쿠버네티스는 여러 클러스터와 클라우드 공급자들을 포괄하는
-페더레이션 서비스를 지원하여 가용성을 높이고 내결함성을 향상시키며,
-보다 큰 서비스의 확장성을 제공한다. 자세한 내용은 
-[페더레이션 서비스 사용자 가이드](/docs/concepts/cluster-administration/federation-service-discovery/)
-를 본다.
+* [서비스를 사용해서 클러스터 내 애플리케이션에 접근하기](/docs/tasks/access-application-cluster/service-access-application-cluster/)를 더 자세히 알아본다.
+* [서비스를 사용해서 프론트 엔드부터 백 엔드까지 연결하기](/docs/tasks/access-application-cluster/connecting-frontend-backend/)를 더 자세히 알아본다.
+* [외부 로드 밸런서를 생성하기](/docs/tasks/access-application-cluster/create-external-load-balancer/)를 더 자세히 알아본다.
 
 {{% /capture %}}
