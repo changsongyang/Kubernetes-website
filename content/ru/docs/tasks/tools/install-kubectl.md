@@ -2,7 +2,7 @@
 reviewers:
 - mikedanese
 title: Установка и настройка kubectl
-content_template: templates/task
+content_type: task
 weight: 10
 card:
   name: tasks
@@ -10,15 +10,16 @@ card:
   title: Установка kubectl
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 Инструмент командной строки Kubernetes [kubectl](/docs/user-guide/kubectl/) позволяет запускать команды для кластеров Kubernetes. Вы можете использовать kubectl для развертывания приложений, проверки и управления ресурсов кластера, а также для просмотра логов. Полный список операций kubectl смотрите в [Overview of kubectl](/docs/reference/kubectl/overview/).
-{{% /capture %}}
 
-{{% capture prerequisites %}}
+
+## {{% heading "prerequisites" %}}
+
 Используемая вами мажорная версия kubectl не должна отличаться от той, которая используется в кластере. Например, версия v1.2 может работать с версиями v1.1, v1.2 и v1.3. Использование последней версии kubectl поможет избежать непредвиденных проблем.
-{{% /capture %}}
 
-{{% capture steps %}}
+
+<!-- steps -->
 
 ## Установка kubectl в Linux
 
@@ -64,7 +65,7 @@ echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee -a /etc/
 sudo apt-get update
 sudo apt-get install -y kubectl
 {{< /tab >}}
-{{< tab name="CentOS, RHEL или Fedora" codelang="bash" >}}cat <<EOF > /etc/yum.repos.d/kubernetes.repo
+{{< tab name="CentOS, RHEL или Fedora" codelang="bash" >}}sudo cat <<EOF > /etc/yum.repos.d/kubernetes.repo
 [kubernetes]
 name=Kubernetes
 baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
@@ -73,7 +74,7 @@ gpgcheck=1
 repo_gpgcheck=1
 gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
 EOF
-yum install -y kubectl
+sudo yum install -y kubectl
 {{< /tab >}}
 {{< /tabs >}}
 
@@ -460,7 +461,7 @@ source <(kubectl completion zsh)
 
 ```shell
 echo 'alias k=kubectl' >>~/.zshrc
-echo 'complete -F __start_kubectl k' >>~/.zshrc
+echo 'compdef __start_kubectl k' >>~/.zshrc
 ```
 
 После перезагрузки командной оболочки должны появляться дополнения ввода kubectl.
@@ -474,12 +475,13 @@ compinit
 {{% /tab %}}
 {{< /tabs >}}
 
-{{% /capture %}}
 
-{{% capture whatsnext %}}
+
+## {{% heading "whatsnext" %}}
+
 * [Установка Minikube](/ru/docs/tasks/tools/install-minikube/)
 * Смотрите [руководства по установке](/docs/setup/), чтобы узнать больше про создание кластеров.
 * [Learn how to launch and expose your application.](/docs/tasks/access-application-cluster/service-access-application-cluster/)
 * Если у вас нет доступа к кластеру, который не создавали, посмотрите страницу [Совместный доступ к кластеру](/docs/tasks/access-application-cluster/configure-access-multiple-clusters/).
 * Read the [kubectl reference docs](/docs/reference/kubectl/kubectl/)
-{{% /capture %}}
+

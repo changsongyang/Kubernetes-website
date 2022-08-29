@@ -1,27 +1,26 @@
 ---
 title: Parallel Processing using Expansions
-content_template: templates/task
+content_type: task
 min-kubernetes-server-version: v1.8
-weight: 20
+weight: 50
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 
 This task demonstrates running multiple {{< glossary_tooltip text="Jobs" term_id="job" >}}
 based on a common template. You can use this approach to process batches of work in
 parallel.
 
 For this example there are only three items: _apple_, _banana_, and _cherry_.
-The sample Jobs process each item simply by printing a string then pausing.
+The sample Jobs process each item by printing a string then pausing.
 
 See [using Jobs in real workloads](#using-jobs-in-real-workloads) to learn about how
 this pattern fits more realistic use cases.
-{{% /capture %}}
 
-{{% capture prerequisites %}}
+## {{% heading "prerequisites" %}}
 
 You should be familiar with the basic,
-non-parallel, use of [Job](/docs/concepts/jobs/run-to-completion-finite-workloads/).
+non-parallel, use of [Job](/docs/concepts/workloads/controllers/job/).
 
 {{< include "task-tutorial-prereqs.md" >}}
 
@@ -32,13 +31,12 @@ To follow the advanced templating example, you need a working installation of
 library for Python.
 
 Once you have Python set up, you can install Jinja2 by running:
+
 ```shell
 pip install --user jinja2
 ```
-{{% /capture %}}
 
-
-{{% capture steps %}}
+<!-- steps -->
 
 ## Create Jobs based on a template
 
@@ -180,13 +178,13 @@ First, copy and paste the following template of a Job object, into a file called
 
 
 ```liquid
-{%- set params = [{ "name": "apple", "url": "http://dbpedia.org/resource/Apple", },
+{% set params = [{ "name": "apple", "url": "http://dbpedia.org/resource/Apple", },
                   { "name": "banana", "url": "http://dbpedia.org/resource/Banana", },
                   { "name": "cherry", "url": "http://dbpedia.org/resource/Cherry" }]
 %}
-{%- for p in params %}
-{%- set name = p["name"] %}
-{%- set url = p["url"] %}
+{% for p in params %}
+{% set name = p["name"] %}
+{% set url = p["url"] %}
 ---
 apiVersion: batch/v1
 kind: Job
@@ -203,10 +201,10 @@ spec:
     spec:
       containers:
       - name: c
-        image: busybox
+        image: busybox:1.28
         command: ["sh", "-c", "echo Processing URL {{ url }} && sleep 5"]
       restartPolicy: Never
-{%- endfor %}
+{% endfor %}
 ```
 
 The above template defines two parameters for each Job object using a list of
@@ -252,8 +250,8 @@ Kubernetes accepts and runs the Jobs you created.
 kubectl delete job -l jobgroup=jobexample
 ```
 
-{{% /capture %}}
-{{% capture discussion %}}
+
+<!-- discussion -->
 
 ## Using Jobs in real workloads
 
@@ -304,10 +302,10 @@ If you plan to create a large number of Job objects, you may find that:
   on Jobs: the API server permanently rejects some of your requests
   when you create a great deal of work in one batch.
 
-There are other [job patterns](/docs/concepts/jobs/run-to-completion-finite-workloads/#job-patterns)
+There are other [job patterns](/docs/concepts/workloads/controllers/job/#job-patterns)
 that you can use to process large amounts of work without creating very many Job
 objects.
 
 You could also consider writing your own [controller](/docs/concepts/architecture/controller/)
 to manage Job objects automatically.
-{{% /capture %}}
+

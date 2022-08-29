@@ -2,19 +2,18 @@
 reviewers:
 - derekwaynecarr
 title: Manage HugePages
-content_template: templates/task
+content_type: task
+description: Configure and manage huge pages as a schedulable resource in a cluster.
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 {{< feature-state state="stable" >}}
 
 Kubernetes supports the allocation and consumption of pre-allocated huge pages
-by applications in a Pod as a **GA** feature. This page describes how users
-can consume huge pages and the current limitations.
+by applications in a Pod. This page describes how users can consume huge pages.
 
-{{% /capture %}}
+## {{% heading "prerequisites" %}}
 
-{{% capture prerequisites %}}
 
 1. Kubernetes nodes must pre-allocate huge pages in order for the node to report
    its huge page capacity. A node can pre-allocate huge pages for multiple
@@ -23,9 +22,9 @@ can consume huge pages and the current limitations.
 The nodes will automatically discover and report all huge page resources as
 schedulable resources.
 
-{{% /capture %}}
 
-{{% capture steps %}}
+
+<!-- steps -->
 
 ## API
 
@@ -105,25 +104,13 @@ spec:
 
 - Huge page requests must equal the limits. This is the default if limits are
   specified, but requests are not.
-- Huge pages are isolated at a container scope, so each container has own limit on their cgroup sandbox as requested in a container spec.
+- Huge pages are isolated at a container scope, so each container has own
+  limit on their cgroup sandbox as requested in a container spec.
 - EmptyDir volumes backed by huge pages may not consume more huge page memory
   than the pod request.
 - Applications that consume huge pages via `shmget()` with `SHM_HUGETLB` must
   run with a supplemental group that matches `proc/sys/vm/hugetlb_shm_group`.
 - Huge page usage in a namespace is controllable via ResourceQuota similar
-to other compute resources like `cpu` or `memory` using the `hugepages-<size>`
-token.
-- Support of multiple sizes huge pages is feature gated. It can be
-  enabled with the `HugePageStorageMediumSize` [feature
-gate](/docs/reference/command-line-tools-reference/feature-gates/) on the {{<
-glossary_tooltip text="kubelet" term_id="kubelet" >}} and {{<
-glossary_tooltip text="kube-apiserver"
-term_id="kube-apiserver" >}} (`--feature-gates=HugePageStorageMediumSize=true`).
-
-## Future
-
-- NUMA locality guarantees as a feature of quality of service.
-- LimitRange support.
-
-{{% /capture %}}
+  to other compute resources like `cpu` or `memory` using the `hugepages-<size>`
+  token.
 

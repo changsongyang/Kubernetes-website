@@ -1,19 +1,20 @@
 ---
 title: Writing a new topic
-content_template: templates/task
+content_type: task
 weight: 20
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 This page shows how to create a new topic for the Kubernetes docs.
-{{% /capture %}}
 
-{{% capture prerequisites %}}
+
+## {{% heading "prerequisites" %}}
+
 Create a fork of the Kubernetes documentation repository as described in
-[Open a PR](/docs/new-content/open-a-pr/).
-{{% /capture %}}
+[Open a PR](/docs/contribute/new-content/open-a-pr/).
 
-{{% capture steps %}}
+
+<!-- steps -->
 
 ## Choosing a page type
 
@@ -27,22 +28,29 @@ Task | A task page shows how to do a single thing. The idea is to give readers a
 Tutorial | A tutorial page shows how to accomplish a goal that ties together several Kubernetes features. A tutorial might provide several sequences of steps that readers can actually do as they read the page. Or it might provide explanations of related pieces of code. For example, a tutorial could provide a walkthrough of a code sample. A tutorial can include brief explanations of the Kubernetes features that are being tied together, but should link to related concept topics for deep explanations of individual features.
 {{< /table >}}
 
-Use a template for each new page. Each page type has a
-[template](/docs/contribute/style/page-templates/)
-that you can use as you write your topic. Using templates helps ensure
-consistency among topics of a given type.
+### Creating a new page
+
+Use a [content type](/docs/contribute/style/page-content-types/) for each new page
+that you write. The docs site provides templates or
+[Hugo archetypes](https://gohugo.io/content-management/archetypes/) to create
+new content pages. To create a new type of page, run `hugo new` with the path to the file
+you want to create. For example:
+
+```
+hugo new docs/concepts/my-first-concept.md
+```
 
 ## Choosing a title and filename
 
 Choose a title that has the keywords you want search engines to find.
 Create a filename that uses the words in your title separated by hyphens.
 For example, the topic with title
-[Using an HTTP Proxy to Access the Kubernetes API](/docs/tasks/access-kubernetes-api/http-proxy-access-api/)
+[Using an HTTP Proxy to Access the Kubernetes API](/docs/tasks/extend-kubernetes/http-proxy-access-api/)
 has filename `http-proxy-access-api.md`. You don't need to put
 "kubernetes" in the filename, because "kubernetes" is already in the
 URL for the topic, for example:
 
-       /docs/tasks/access-kubernetes-api/http-proxy-access-api/
+       /docs/tasks/extend-kubernetes/http-proxy-access-api/
 
 ## Adding the topic title to the front matter
 
@@ -97,8 +105,8 @@ following cases (not an exhaustive list):
   [FlexVolume](/docs/concepts/storage/volumes#flexvolume) implementation.
 - The code is an incomplete example because its purpose is to highlight a
   portion of a larger file. For example, when describing ways to
-  customize the [PodSecurityPolicy](/docs/tasks/administer-cluster/sysctl-cluster/#podsecuritypolicy)
-  for some reasons, you can provide a short snippet directly in your topic file.
+  customize a [RoleBinding](/docs/reference/access-authn-authz/rbac/#role-binding-examples),
+  you can provide a short snippet directly in your topic file.
 - The code is not meant for users to try out due to other reasons. For example,
   when describing how a new attribute should be added to a resource using the
   `kubectl edit` command, you can provide a short example that includes only
@@ -152,16 +160,17 @@ submitted to ensure all examples pass the tests.
 {{< /note >}}
 
 For an example of a topic that uses this technique, see
-[Running a Single-Instance Stateful Application](/docs/tutorials/stateful-application/run-stateful-application/).
+[Running a Single-Instance Stateful Application](/docs/tasks/run-application/run-single-instance-stateful-application/).
 
 ## Adding images to a topic
 
 Put image files in the `/images` directory. The preferred
 image format is SVG.
 
-{{% /capture %}}
 
-{{% capture whatsnext %}}
-* Learn about [using page templates](/docs/contribute/page-templates/).
+
+## {{% heading "whatsnext" %}}
+
+* Learn about [using page content types](/docs/contribute/style/page-content-types/).
 * Learn about [creating a pull request](/docs/contribute/new-content/open-a-pr/).
-{{% /capture %}}
+

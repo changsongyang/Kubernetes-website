@@ -2,14 +2,18 @@
 title: "Example: Deploying Cassandra with a StatefulSet"
 reviewers:
 - ahmetb
-content_template: templates/tutorial
+content_type: tutorial
 weight: 30
 ---
 
-{{% capture overview %}}
-This tutorial shows you how to run [Apache Cassandra](http://cassandra.apache.org/) on Kubernetes. Cassandra, a database, needs persistent storage to provide data durability (application _state_). In this example, a custom Cassandra seed provider lets the database discover new Cassandra instances as they join the Cassandra cluster.
+<!-- overview -->
+This tutorial shows you how to run [Apache Cassandra](https://cassandra.apache.org/) on Kubernetes.
+Cassandra, a database, needs persistent storage to provide data durability (application _state_).
+In this example, a custom Cassandra seed provider lets the database discover new Cassandra instances as they join the Cassandra cluster.
 
-*StatefulSets* make it easier to deploy stateful applications into your Kubernetes cluster. For more information on the features used in this tutorial, see [StatefulSet](/docs/concepts/workloads/controllers/statefulset/).
+*StatefulSets* make it easier to deploy stateful applications into your Kubernetes cluster.
+For more information on the features used in this tutorial, see
+[StatefulSet](/docs/concepts/workloads/controllers/statefulset/).
 
 {{< note >}}
 Cassandra and Kubernetes both use the term _node_ to mean a member of a cluster. In this
@@ -23,37 +27,44 @@ nodes in the ring.
 This tutorial deploys a custom Cassandra seed provider that lets the database discover
 new Cassandra Pods as they appear inside your Kubernetes cluster.
 {{< /note >}}
-{{% /capture %}}
 
-{{% capture objectives %}}
+
+## {{% heading "objectives" %}}
+
 * Create and validate a Cassandra headless {{< glossary_tooltip text="Service" term_id="service" >}}.
 * Use a {{< glossary_tooltip term_id="StatefulSet" >}} to create a Cassandra ring.
 * Validate the StatefulSet.
 * Modify the StatefulSet.
 * Delete the StatefulSet and its {{< glossary_tooltip text="Pods" term_id="pod" >}}.
-{{% /capture %}}
 
-{{% capture prerequisites %}}
+
+## {{% heading "prerequisites" %}}
+
 {{< include "task-tutorial-prereqs.md" >}}
 
-To complete this tutorial, you should already have a basic familiarity with {{< glossary_tooltip text="Pods" term_id="pod" >}}, {{< glossary_tooltip text="Services" term_id="service" >}}, and {{< glossary_tooltip text="StatefulSets" term_id="StatefulSet" >}}.
+To complete this tutorial, you should already have a basic familiarity with
+{{< glossary_tooltip text="Pods" term_id="pod" >}},
+{{< glossary_tooltip text="Services" term_id="service" >}}, and
+{{< glossary_tooltip text="StatefulSets" term_id="StatefulSet" >}}.
 
 ### Additional Minikube setup instructions
 
 {{< caution >}}
-[Minikube](/docs/getting-started-guides/minikube/) defaults to 1024MiB of memory and 1 CPU. Running Minikube with the default resource configuration results in insufficient resource errors during this tutorial. To avoid these errors, start Minikube with the following settings:
+[Minikube](https://minikube.sigs.k8s.io/docs/) defaults to 2048MB of memory and 2 CPU.
+Running Minikube with the default resource configuration results in insufficient resource
+errors during this tutorial. To avoid these errors, start Minikube with the following settings:
 
 ```shell
 minikube start --memory 5120 --cpus=4
 ```
 {{< /caution >}}
 
-{{% /capture %}}
 
-{{% capture lessoncontent %}}
+<!-- lessoncontent -->
 ## Creating a headless Service for Cassandra {#creating-a-cassandra-headless-service}
 
-In Kubernetes, a {{< glossary_tooltip text="Service" term_id="service" >}} describes a set of {{< glossary_tooltip text="Pods" term_id="pod" >}} that perform the same task.
+In Kubernetes, a {{< glossary_tooltip text="Service" term_id="service" >}} describes a set of
+{{< glossary_tooltip text="Pods" term_id="pod" >}} that perform the same task.
 
 The following Service is used for DNS lookups between Cassandra Pods and clients within your cluster:
 
@@ -81,14 +92,17 @@ NAME        TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)    AGE
 cassandra   ClusterIP   None         <none>        9042/TCP   45s
 ```
 
-If you don't see a Service named `cassandra`, that means creation failed. Read [Debug Services](/docs/tasks/debug-application-cluster/debug-service/) for help troubleshooting common issues.
+If you don't see a Service named `cassandra`, that means creation failed. Read
+[Debug Services](/docs/tasks/debug/debug-application/debug-service/)
+for help troubleshooting common issues.
 
 ## Using a StatefulSet to create a Cassandra ring
 
 The StatefulSet manifest, included below, creates a Cassandra ring that consists of three Pods.
 
 {{< note >}}
-This example uses the default provisioner for Minikube. Please update the following StatefulSet for the cloud you are working with.
+This example uses the default provisioner for Minikube.
+Please update the following StatefulSet for the cloud you are working with.
 {{< /note >}}
 
 {{< codenew file="application/cassandra/cassandra-statefulset.yaml" >}}
@@ -180,7 +194,8 @@ Use `kubectl edit` to modify the size of a Cassandra StatefulSet.
     kubectl edit statefulset cassandra
     ```
 
-    This command opens an editor in your terminal. The line you need to change is the `replicas` field. The following sample is an excerpt of the StatefulSet file:
+    This command opens an editor in your terminal. The line you need to change is the `replicas` field.
+    The following sample is an excerpt of the StatefulSet file:
 
     ```yaml
     # Please edit the object below. Lines beginning with a '#' will be ignored,
@@ -219,13 +234,16 @@ Use `kubectl edit` to modify the size of a Cassandra StatefulSet.
     cassandra   4         4         36m
     ```
 
-{{% /capture %}}
 
-{{% capture cleanup %}}
-Deleting or scaling a StatefulSet down does not delete the volumes associated with the StatefulSet. This setting is for your safety because your data is more valuable than automatically purging all related StatefulSet resources.
+
+## {{% heading "cleanup" %}}
+
+Deleting or scaling a StatefulSet down does not delete the volumes associated with the StatefulSet.
+This setting is for your safety because your data is more valuable than automatically purging all related StatefulSet resources.
 
 {{< warning >}}
-Depending on the storage class and reclaim policy, deleting the *PersistentVolumeClaims* may cause the associated volumes to also be deleted. Never assume you’ll be able to access data if its volume claims are deleted.
+Depending on the storage class and reclaim policy, deleting the *PersistentVolumeClaims* may cause the associated volumes
+to also be deleted. Never assume you'll be able to access data if its volume claims are deleted.
 {{< /warning >}}
 
 1. Run the following commands (chained together into a single command) to delete everything in the Cassandra StatefulSet:
@@ -248,7 +266,7 @@ Depending on the storage class and reclaim policy, deleting the *PersistentVolum
 
 The Pods in this tutorial use the [`gcr.io/google-samples/cassandra:v13`](https://github.com/kubernetes/examples/blob/master/cassandra/image/Dockerfile)
 image from Google's [container registry](https://cloud.google.com/container-registry/docs/).
-The Docker image above is based on [debian-base](https://github.com/kubernetes/kubernetes/tree/master/build/debian-base)
+The Docker image above is based on [debian-base](https://github.com/kubernetes/release/tree/master/images/build/debian-base)
 and includes OpenJDK 8.
 
 This image includes a standard Cassandra installation from the Apache Debian repo.
@@ -261,12 +279,13 @@ By using environment variables you can change values that are inserted into `cas
 | `CASSANDRA_RPC_ADDRESS`  | `0.0.0.0`        |
 
 
-{{% /capture %}}
-{{% capture whatsnext %}}
+
+## {{% heading "whatsnext" %}}
+
 
 * Learn how to [Scale a StatefulSet](/docs/tasks/run-application/scale-stateful-set/).
 * Learn more about the [*KubernetesSeedProvider*](https://github.com/kubernetes/examples/blob/master/cassandra/java/src/main/java/io/k8s/cassandra/KubernetesSeedProvider.java)
 * See more custom [Seed Provider Configurations](https://git.k8s.io/examples/cassandra/java/README.md)
 
-{{% /capture %}}
+
 

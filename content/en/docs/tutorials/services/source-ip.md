@@ -1,19 +1,20 @@
 ---
 title: Using Source IP
-content_template: templates/tutorial
+content_type: tutorial
 min-kubernetes-server-version: v1.5
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 
 Applications running in a Kubernetes cluster find and communicate with each
 other, and the outside world, through the Service abstraction. This document
 explains what happens to the source IP of packets sent to different types
 of Services, and how you can toggle this behavior according to your needs.
 
-{{% /capture %}}
 
-{{% capture prerequisites %}}
+
+## {{% heading "prerequisites" %}}
+
 
 ### Terminology
 
@@ -47,25 +48,26 @@ The examples use a small nginx webserver that echoes back the source
 IP of requests it receives through an HTTP header. You can create it as follows:
 
 ```shell
-kubectl create deployment source-ip-app --image=k8s.gcr.io/echoserver:1.4
+kubectl create deployment source-ip-app --image=registry.k8s.io/echoserver:1.4
 ```
 The output is:
 ```
 deployment.apps/source-ip-app created
 ```
 
-{{% /capture %}}
 
-{{% capture objectives %}}
+
+## {{% heading "objectives" %}}
+
 
 * Expose a simple application through various types of Services
 * Understand how each Service type handles source IP NAT
 * Understand the tradeoffs involved in preserving source IP
 
-{{% /capture %}}
 
 
-{{% capture lessoncontent %}}
+
+<!-- lessoncontent -->
 
 ## Source IP for Services with `Type=ClusterIP`
 
@@ -117,7 +119,7 @@ clusterip    ClusterIP   10.0.170.92   <none>        80/TCP    51s
 And hitting the `ClusterIP` from a pod in the same cluster:
 
 ```shell
-kubectl run busybox -it --image=busybox --restart=Never --rm
+kubectl run busybox -it --image=busybox:1.28 --restart=Never --rm
 ```
 The output is similar to this:
 ```
@@ -148,7 +150,7 @@ ip addr
 
 …then use `wget` to query the local webserver
 ```shell
-# Replace 10.0.170.92 with the Pod's IPv4 address
+# Replace "10.0.170.92" with the IPv4 address of the Service named "clusterip"
 wget -qO - 10.0.170.92
 ```
 ```
@@ -162,7 +164,7 @@ The `client_address` is always the client pod's IP address, whether the client p
 ## Source IP for Services with `Type=NodePort`
 
 Packets sent to Services with
-[`Type=NodePort`](/docs/concepts/services-networking/service/#nodeport)
+[`Type=NodePort`](/docs/concepts/services-networking/service/#type-nodeport)
 are source NAT'd by default. You can test this by creating a `NodePort` Service:
 
 ```shell
@@ -175,7 +177,7 @@ service/nodeport exposed
 
 ```shell
 NODEPORT=$(kubectl get -o jsonpath="{.spec.ports[0].nodePort}" services nodeport)
-NODES=$(kubectl get nodes -o jsonpath='{ $.items[*].status.addresses[?(@.type=="ExternalIP")].address }')
+NODES=$(kubectl get nodes -o jsonpath='{ $.items[*].status.addresses[?(@.type=="InternalIP")].address }')
 ```
 
 If you're running on a cloud provider, you may need to open up a firewall-rule
@@ -204,17 +206,7 @@ Note that these are not the correct client IPs, they're cluster internal IPs. Th
 
 Visually:
 
-```
-          client
-             \ ^
-              \ \
-               v \
-   node 1 <--- node 2
-    | ^   SNAT
-    | |   --->
-    v |
- endpoint
-```
+{{< figure src="/docs/images/tutor-service-nodePort-fig01.svg" alt="source IP nodeport figure 01" class="diagram-large" caption="Figure. Source IP Type=NodePort using SNAT" link="https://mermaid.live/edit#pako:eNqNkV9rwyAUxb-K3LysYEqS_WFYKAzat9GHdW9zDxKvi9RoMIZtlH732ZjSbE970cu5v3s86hFqJxEYfHjRNeT5ZcUtIbXRaMNN2hZ5vrYRqt52cSXV-4iMSuwkZiYtyX739EqWaahMQ-V1qPxDVLNOvkYrO6fj2dupWMR2iiT6foOKdEZoS5Q2hmVSStoH7w7IMqXUVOefWoaG3XVftHbGeZYVRbH6ZXJ47CeL2-qhxvt_ucTe1SUlpuMN6CX12XeGpLdJiaMMFFr0rdAyvvfxjHEIDbbIgcVSohKDCRy4PUV06KQIuJU6OA9MCdMjBTEEt_-2NbDgB7xAGy3i97VJPP0ABRmcqg" >}}
 
 
 To avoid this, Kubernetes has a feature to
@@ -259,19 +251,8 @@ This is what happens:
 
 Visually:
 
-```
-        client
-       ^ /   \
-      / /     \
-     / v       X
-   node 1     node 2
-    ^ |
-    | |
-    | v
- endpoint
-```
 
-
+{{< figure src="/docs/images/tutor-service-nodePort-fig02.svg" alt="source IP nodeport figure 02" class="diagram-large" caption="Figure. Source IP Type=NodePort preserves client source IP address" link="" >}}
 
 ## Source IP for Services with `Type=LoadBalancer`
 
@@ -322,17 +303,7 @@ deliberately failing health checks.
 
 Visually:
 
-```
-                      client
-                        |
-                      lb VIP
-                     / ^
-                    v /
-health check --->   node 1   node 2 <--- health check
-        200  <---   ^ |             ---> 500
-                    | V
-                 endpoint
-```
+![Source IP with externalTrafficPolicy](/images/docs/sourceip-externaltrafficpolicy.svg)
 
 You can test this by setting the annotation:
 
@@ -355,7 +326,7 @@ The `service.spec.healthCheckNodePort` field points to a port on every node
 serving the health check at `/healthz`. You can test this:
 
 ```shell
-kubectl get pod -o wide -l run=source-ip-app
+kubectl get pod -o wide -l app=source-ip-app
 ```
 The output is similar to this:
 ```
@@ -418,19 +389,20 @@ protocol between the loadbalancer and backend to communicate the true client IP
 such as the HTTP [Forwarded](https://tools.ietf.org/html/rfc7239#section-5.2)
 or [X-FORWARDED-FOR](https://en.wikipedia.org/wiki/X-Forwarded-For)
 headers, or the
-[proxy protocol](http://www.haproxy.org/download/1.5/doc/proxy-protocol.txt).
+[proxy protocol](https://www.haproxy.org/download/1.8/doc/proxy-protocol.txt).
 Load balancers in the second category can leverage the feature described above
 by creating an HTTP health check pointing at the port stored in
 the `service.spec.healthCheckNodePort` field on the Service.
 
-{{% /capture %}}
 
-{{% capture cleanup %}}
+
+## {{% heading "cleanup" %}}
+
 
 Delete the Services:
 
 ```shell
-kubectl delete svc -l run=source-ip-app
+kubectl delete svc -l app=source-ip-app
 ```
 
 Delete the Deployment, ReplicaSet and Pod:
@@ -439,10 +411,9 @@ Delete the Deployment, ReplicaSet and Pod:
 kubectl delete deployment source-ip-app
 ```
 
-{{% /capture %}}
 
-{{% capture whatsnext %}}
+
+## {{% heading "whatsnext" %}}
+
 * Learn more about [connecting applications via services](/docs/concepts/services-networking/connect-applications-service/)
-* Read how to [Create an External Load Balancer](https://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/)
-{{% /capture %}}
-
+* Read how to [Create an External Load Balancer](/docs/tasks/access-application-cluster/create-external-load-balancer/)

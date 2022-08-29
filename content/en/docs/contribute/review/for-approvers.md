@@ -2,13 +2,15 @@
 title: Reviewing for approvers and reviewers
 linktitle: For approvers and reviewers
 slug: for-approvers
-content_template: templates/concept
+content_type: concept
 weight: 20
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 
-SIG Docs [Reviewers](/docs/contribute/participating/#reviewers) and [Approvers](/docs/contribute/participating/#approvers) do a few extra things when reviewing a change.
+SIG Docs [Reviewers](/docs/contribute/participate/#reviewers) and
+[Approvers](/docs/contribute/participate/#approvers) do a few extra things
+when reviewing a change.
 
 Every week a specific docs approver volunteers to triage
 and review pull requests. This
@@ -19,10 +21,7 @@ requests (PRs) that are not already under active review.
 In addition to the rotation, a bot assigns reviewers and approvers
 for the PR based on the owners for the affected files.
 
-{{% /capture %}}
-
-
-{{% capture body %}}
+<!-- body -->
 
 ## Reviewing a PR
 
@@ -73,15 +72,14 @@ true:
 [Prow](https://github.com/kubernetes/test-infra/blob/master/prow/README.md) is
 the Kubernetes-based CI/CD system that runs jobs against pull requests (PRs). Prow
 enables chatbot-style commands to handle GitHub actions across the Kubernetes
-organization, like [adding and removing
-labels](#add-and-remove-labels), closing issues, and assigning an approver. Enter Prow commands as GitHub comments using the `/<command-name>` format.
+organization, like [adding and removing labels](#adding-and-removing-issue-labels), closing issues, and assigning an approver. Enter Prow commands as GitHub comments using the `/<command-name>` format.
 
 The most common prow commands reviewers and approvers use are:
 
 {{< table caption="Prow commands for reviewing" >}}
 Prow Command | Role Restrictions | Description
 :------------|:------------------|:-----------
-`/lgtm` | Anyone, but triggers automation if a Reviewer or Approver uses it | Signals that you've finished reviewing a PR and are satisfied with the changes.
+`/lgtm` | Organization members | Signals that you've finished reviewing a PR and are satisfied with the changes.
 `/approve` | Approvers | Approves a PR for merging.
 `/assign` | Reviewers or Approvers | Assigns a person to review or approve a PR
 `/close` | Reviewers or Approvers | Closes an issue or PR.
@@ -123,7 +121,7 @@ finds issues that might need triage.
   `priority/important-longterm` | Do this within 6 months.
   `priority/backlog` | Deferrable indefinitely. Do when resources are available.
   `priority/awaiting-more-evidence` | Placeholder for a potentially good issue so it doesn't get lost.
-  `help` or `good first issue` | Suitable for someone with very little Kubernetes or SIG Docs experience. See [Help Wanted and Good First Issue Labels](https://github.com/kubernetes/community/blob/master/contributors/guide/help-wanted.md) for more information.
+  `help` or `good first issue` | Suitable for someone with very little Kubernetes or SIG Docs experience. See [Help Wanted and Good First Issue Labels](https://kubernetes.dev/docs/guide/help-wanted/) for more information.
 
   {{< /table >}}
 
@@ -143,7 +141,7 @@ To add a label, leave a comment in one of the following formats:
 To remove a label, leave a comment in one of the following formats:
 
 - `/remove-<label-to-remove>` (for example, `/remove-help`)
-- `/remove-<label-category> <label-to-remove>` (for example, `/remove-triage needs-information`)`
+- `/remove-<label-category> <label-to-remove>` (for example, `/remove-triage needs-information`)
 
 In both cases, the label must already exist. If you try to add a label that does not exist, the command is
 silently ignored.
@@ -183,7 +181,7 @@ If the dead link issue is in the API or `kubectl` documentation, assign them `/p
 
 ### Blog issues
 
-We expect [Kubernetes Blog](https://kubernetes.io/blog/) entries to become
+We expect [Kubernetes Blog](/blog/) entries to become
 outdated over time. Therefore, we only maintain blog entries less than a year old.
 If an issue is related to a blog entry that is more than one year old,
 close the issue without fixing.
@@ -192,7 +190,7 @@ close the issue without fixing.
 
 Some docs issues are actually issues with the underlying code, or requests for
 assistance when something, for example a tutorial, doesn't work.
-For issues unrelated to docs, close the issue with the `triage/support` label and a comment
+For issues unrelated to docs, close the issue with the `kind/support` label and a comment
 directing the requester to support venues (Slack, Stack Overflow) and, if
 relevant, the repository to file an issue for bugs with features (`kubernetes/kubernetes`
 is a great place to start).
@@ -203,9 +201,9 @@ Sample response to a request for support:
 This issue sounds more like a request for support and less
 like an issue specifically for docs. I encourage you to bring
 your question to the `#kubernetes-users` channel in
-[Kubernetes slack](http://slack.k8s.io/). You can also search
+[Kubernetes slack](https://slack.k8s.io/). You can also search
 resources like
-[Stack Overflow](http://stackoverflow.com/questions/tagged/kubernetes)
+[Stack Overflow](https://stackoverflow.com/questions/tagged/kubernetes)
 for answers to similar questions.
 
 You can also open issues for Kubernetes functionality in
@@ -225,4 +223,3 @@ If this is a documentation issue, please re-open this issue.
 ```
 
 
-{{% /capture %}}

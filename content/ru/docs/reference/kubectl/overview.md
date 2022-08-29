@@ -2,21 +2,21 @@
 reviewers:
 - hw-qiaolei
 title: Обзор kubectl
-content_template: templates/concept
+content_type: concept
 weight: 20
 card:
   name: reference
   weight: 20
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 Kubectl — это инструмент командной строки для управления кластерами Kubernetes. `kubectl` ищет файл config в директории $HOME/.kube. Вы можете указать другие файлы [kubeconfig](/docs/concepts/configuration/organize-cluster-access-kubeconfig/), установив переменную окружения KUBECONFIG или флаг [`--kubeconfig`](/docs/concepts/configuration/organize-cluster-access-kubeconfig/).
 
 На этой странице рассматривается синтаксис kubectl, описаны командные операции и приведены распространённые примеры. Подробную информацию о каждой команде, включая все поддерживаемые в ней флаги и подкоманды, смотрите в справочной документации [kubectl](/docs/reference/generated/kubectl/kubectl-commands/). Инструкции по установке находятся на странице [Установка и настройка kubectl](/ru/docs/tasks/kubectl/install/).
 
-{{% /capture %}}
 
-{{% capture body %}}
+
+<!-- body -->
 
 ## Синтаксис
 
@@ -52,7 +52,7 @@ kubectl [command] [TYPE] [NAME] [flags]
 
    * Выбор ресурсов по одному или нескольким файлов:  `-f file1 -f file2 -f file<#>`
 
-      * [Используйте YAML вместо JSON](/docs/concepts/configuration/overview/#general-configuration-tips), так так YAML удобнее для пользователей, особенно в конфигурационных файлов.<br/>
+      * [Используйте YAML вместо JSON](/docs/concepts/configuration/overview/#general-configuration-tips), так как YAML удобнее для пользователей, особенно в конфигурационных файлах.<br/>
      Пример: `kubectl get pod -f ./pod.yaml`
 
 * `flags`: определяет дополнительные флаги. Например, вы можете использовать флаги `-s` или `--server`, чтобы указать адрес и порт API-сервера Kubernetes.<br/>
@@ -74,7 +74,7 @@ kubectl [command] [TYPE] [NAME] [flags]
 `apply`            | `kubectl apply -f FILENAME [flags]`| Внести изменения в конфигурацию ресурса из файла или потока stdin.
 `attach`        | `kubectl attach POD -c CONTAINER [-i] [-t] [flags]` | Подключиться к запущенному контейнеру либо для просмотра потока вывода, либо для работы с контейнером (stdin).
 `autoscale`    | <code>kubectl autoscale (-f FILENAME &#124; TYPE NAME &#124; TYPE/NAME) [--min=MINPODS] --max=MAXPODS [--cpu-percent=CPU] [flags]</code> | Автоматически промасштабировать набор подов, управляемых контроллером репликации.
-`cluster-info`    | `kubectl cluster-info [flags]` | Показать информацию о главном узле и сервисов в кластере.
+`cluster-info`    | `kubectl cluster-info [flags]` | Показать информацию о главном узле и сервисах в кластере.
 `config`        | `kubectl config SUBCOMMAND [flags]` | Изменить файлы kubeconfig. Подробные сведения смотрите в отдельных подкомандах.
 `create`        | `kubectl create -f FILENAME [flags]` | Создать один или несколько ресурсов из файла или stdin.
 `delete`        | <code>kubectl delete (-f FILENAME &#124; TYPE [NAME &#124; /NAME &#124; -l label &#124; --all]) [flags]</code> | Удалить ресурсы из файла, потока stdin, либо с помощью селекторов меток, имен, селекторов ресурсов или ресурсов.
@@ -162,7 +162,7 @@ kubectl [command] [TYPE] [NAME] [flags]
 
 ### Форматирование вывода
 
-Стандартный формат вывода всех команд `kubectl` представлен в человекочитаемом текстовом формате. Чтобы вывести подробности в определенном формате можно добавить флаги `-o` или `--output` к команде `kubectl`.
+Стандартный формат вывода всех команд `kubectl` представлен в понятном для человека текстовом формате. Чтобы вывести подробности в определенном формате можно добавить флаги `-o` или `--output` к команде `kubectl`.
 
 #### Синтаксис
 
@@ -229,7 +229,7 @@ submit-queue   610995
 
 `kubectl` может получать информацию об объектах с сервера.
 Это означает, что для любого указанного ресурса сервер вернет столбцы и строки по этому ресурсу, которые отобразит клиент.
-Благодаря тому, что сервер инкапсулирует реализацию вывода, гарантируется единообразный и человекочитаемый вывод на всех клиентах, использующих один и тот же кластер.
+Благодаря тому, что сервер инкапсулирует реализацию вывода, гарантируется единообразный и понятный для человека вывод на всех клиентах, использующих один и тот же кластер.
 
 Эта функциональность включена по умолчанию, начиная с `kubectl` 1.11 и выше. Чтобы отключить ее, добавьте флаг `--server-print=false` в команду `kubectl get`.
 
@@ -340,7 +340,7 @@ kubectl delete pods,services -l name=<label-name>
 kubectl delete pods --all
 ```
 
-`kubectl exec` - Выполнить команду в контейнера пода.
+`kubectl exec` - Выполнить команду в контейнере пода.
 
 ```shell
 # Получить вывод от запущенной команды 'date' в поде <pod-name>. По умолчанию отображается вывод из первого контейнера.
@@ -454,10 +454,11 @@ Current user: plugins-user
 
 Чтобы узнать больше о плагинах, изучите [пример CLI-плагина](https://github.com/kubernetes/sample-cli-plugin).
 
-{{% /capture %}}
 
-{{% capture whatsnext %}}
+
+## {{% heading "whatsnext" %}}
+
 
 Начните использовать команды [kubectl](/ru/docs/reference/generated/kubectl/kubectl-commands/).
 
-{{% /capture %}}
+

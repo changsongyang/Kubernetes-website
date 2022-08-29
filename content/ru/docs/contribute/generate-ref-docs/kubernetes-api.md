@@ -1,10 +1,10 @@
 ---
 title: Генерация справочной документации для API Kubernetes
-content_template: templates/task
+content_type: task
 weight: 50
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 
 На этой странице рассказывается про обновление справочной документации по API Kubernetes.
 
@@ -14,15 +14,16 @@ weight: 50
 
 Продолжайте чтение данной странице, если вы хотите перегенерировать справочную документацию из спецификации [OpenAPI](https://github.com/OAI/OpenAPI-Specification).
 
-{{% /capture %}}
 
-{{% capture prerequisites %}}
+
+## {{% heading "prerequisites" %}}
+
 
 {{< include "prerequisites-ref-docs.md" >}}
 
-{{% /capture %}}
 
-{{% capture steps %}}
+
+<!-- steps -->
 
 ## Настройка локальных репозиториев
 
@@ -74,16 +75,16 @@ git clone https://github.com/kubernetes/kubernetes $GOPATH/src/k8s.io/kubernetes
 ### Настройка переменных для сборки
 
 * `K8S_ROOT` со значением `<k8s-base>`.
-* `WEB_ROOT` со значением  `<web-base>`.
+* `K8S_WEBROOT` со значением  `<web-base>`.
 * `K8S_RELEASE` со значением нужной версии документации.
-  Например, если вы хотите собрать документацию для Kubernetes версии 1.17, определите переменную окружения `K8S_RELEASE` со значением 1.17.
+  Например, если вы хотите собрать документацию для Kubernetes версии 1.17.0, определите переменную окружения `K8S_RELEASE` со значением 1.17.0.
 
 Примеры:
 
 ```shell
-export WEB_ROOT=$(GOPATH)/src/github.com/<your-username>/website
-export K8S_ROOT=$(GOPATH)/src/k8s.io/kubernetes
-export K8S_RELEASE=1.17
+export K8S_WEBROOT=${GOPATH}/src/github.com/<your-username>/website
+export K8S_ROOT=${GOPATH}/src/k8s.io/kubernetes
+export K8S_RELEASE=1.17.0
 ```
 
 ### Создание версионированной директории и получение Open API spec
@@ -112,8 +113,8 @@ make copyapi
 Убедитесь в том, что перечисленные ниже два файлы были сгенерированы:
 
 ```shell
-[ -e "<rdocs-base>/gen-apidocs/generators/build/index.html" ] && echo "index.html built" || echo "no index.html"
-[ -e "<rdocs-base>/gen-apidocs/generators/build/navData.js" ] && echo "navData.js built" || echo "no navData.js"
+[ -e "<rdocs-base>/gen-apidocs/build/index.html" ] && echo "index.html built" || echo "no index.html"
+[ -e "<rdocs-base>/gen-apidocs/build/navData.js" ] && echo "navData.js built" || echo "no navData.js"
 ```
 
 Перейдите в корень директории `<web-base>` и посмотрите, какие файлы были изменены:
@@ -177,12 +178,13 @@ make docker-serve
 Отправьте свои изменения в виде [пулреквеста](/ru/docs/contribute/start/) в репозиторий [kubernetes/kubernetes](https://github.com/kubernetes/kubernetes).
 Отслеживайте изменения в пулреквесте и по мере необходимости отвечайте на комментарии рецензента. Не забывайте проверять пулреквест до тех пор, пока он не будет принят.
 
-{{% /capture %}}
 
-{{% capture whatsnext %}}
+
+## {{% heading "whatsnext" %}}
+
 
 * [Руководство по быстрому старту генерации справочной документации](/ru/docs/contribute/generate-ref-docs/quickstart/)
 * [Генерация справочной документации для компонентов и инструментов Kubernetes](/ru/docs/contribute/generate-ref-docs/kubernetes-components/)
 * [Генерация справочной документации для команд kubectl](/ru/docs/contribute/generate-ref-docs/kubectl/)
 
-{{% /capture %}}
+

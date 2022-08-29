@@ -3,19 +3,20 @@ reviewers:
 - derekwaynecarr
 - janetkuo
 title: Share a Cluster with Namespaces
-content_template: templates/task
+content_type: task
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 This page shows how to view, work in, and delete {{< glossary_tooltip text="namespaces" term_id="namespace" >}}. The page also shows how to use Kubernetes namespaces to subdivide your cluster.
-{{% /capture %}}
 
-{{% capture prerequisites %}}
+
+## {{% heading "prerequisites" %}}
+
 * Have an [existing Kubernetes cluster](/docs/setup/).
-* Have a basic understanding of Kubernetes _[Pods](/docs/concepts/workloads/pods/pod/)_, _[Services](/docs/concepts/services-networking/service/)_, and _[Deployments](/docs/concepts/workloads/controllers/deployment/)_.
-{{% /capture %}}
+* You have a basic understanding of Kubernetes {{< glossary_tooltip text="Pods" term_id="pod" >}}, {{< glossary_tooltip term_id="service" text="Services" >}}, and {{< glossary_tooltip text="Deployments" term_id="deployment" >}}.
 
-{{% capture steps %}}
+
+<!-- steps -->
 
 ## Viewing namespaces
 
@@ -70,16 +71,21 @@ to define *Hard* resource usage limits that a *Namespace* may consume.
 A limit range defines min/max constraints on the amount of resources a single entity can consume in
 a *Namespace*.
 
-See [Admission control: Limit Range](https://git.k8s.io/community/contributors/design-proposals/resource-management/admission_control_limit_range.md)
+See [Admission control: Limit Range](https://git.k8s.io/design-proposals-archive/resource-management/admission_control_limit_range.md)
 
 A namespace can be in one of two phases:
 
    * `Active` the namespace is in use
    * `Terminating` the namespace is being deleted, and can not be used for new objects
 
-See the [design doc](https://git.k8s.io/community/contributors/design-proposals/architecture/namespaces.md#phases) for more details.
+For more details, see [Namespace](/docs/reference/kubernetes-api/cluster-resources/namespace-v1/)
+in the API reference.
 
 ## Creating a new namespace
+
+{{< note >}}
+    Avoid creating namespace with prefix `kube-`, since it is reserved for Kubernetes system namespaces.
+{{< /note >}}
 
 1. Create a new YAML file called `my-namespace.yaml` with the contents:
 
@@ -106,7 +112,7 @@ The name of your namespace must be a valid
 
 There's an optional field `finalizers`, which allows observables to purge resources whenever the namespace is deleted. Keep in mind that if you specify a nonexistent finalizer, the namespace will be created but will get stuck in the `Terminating` state if the user tries to delete it.
 
-More information on `finalizers` can be found in the namespace [design doc](https://git.k8s.io/community/contributors/design-proposals/architecture/namespaces.md#finalizers).
+More information on `finalizers` can be found in the namespace [design doc](https://git.k8s.io/design-proposals-archive/architecture/namespaces.md#finalizers).
 
 ## Deleting a namespace
 
@@ -189,11 +195,9 @@ This delete is asynchronous, so for a time you will see the namespace in the `Te
     To demonstrate this, let's spin up a simple Deployment and Pods in the `development` namespace.
 
     ```shell
-    kubectl run snowflake --image=k8s.gcr.io/serve_hostname --replicas=2 -n=development
+    kubectl create deployment snowflake --image=registry.k8s.io/serve_hostname  -n=development --replicas=2
     ```
-    We have just created a deployment whose replica size is 2 that is running the pod called `snowflake` with a basic container that just serves the hostname.
-    Note that `kubectl run` creates deployments only on Kubernetes cluster >= v1.2. If you are running older versions, it creates replication controllers instead.
-    If you want to obtain the old behavior, use `--generator=run/v1` to create replication controllers. See [`kubectl run`](/docs/reference/generated/kubectl/kubectl-commands/#run) for more details.
+    We have created a deployment whose replica size is 2 that is running the pod called `snowflake` with a basic container that serves the hostname.
 
     ```shell
     kubectl get deployment -n=development
@@ -203,7 +207,7 @@ This delete is asynchronous, so for a time you will see the namespace in the `Te
     snowflake    2/2     2            2           2m
     ```
     ```shell
-    kubectl get pods -l run=snowflake -n=development
+    kubectl get pods -l app=snowflake -n=development
     ```
     ```
     NAME                         READY     STATUS    RESTARTS   AGE
@@ -225,7 +229,8 @@ This delete is asynchronous, so for a time you will see the namespace in the `Te
     Production likes to run cattle, so let's create some cattle pods.
 
     ```shell
-    kubectl run cattle --image=k8s.gcr.io/serve_hostname --replicas=5 -n=production
+    kubectl create deployment cattle --image=registry.k8s.io/serve_hostname -n=production
+    kubectl scale deployment cattle --replicas=5 -n=production
 
     kubectl get deployment -n=production
     ```
@@ -235,7 +240,7 @@ This delete is asynchronous, so for a time you will see the namespace in the `Te
     ```
 
     ```shell
-    kubectl get pods -l run=cattle -n=production
+    kubectl get pods -l app=cattle -n=production
     ```
     ```
     NAME                      READY     STATUS    RESTARTS   AGE
@@ -251,9 +256,9 @@ At this point, it should be clear that the resources users create in one namespa
 As the policy support in Kubernetes evolves, we will extend this scenario to show how you can provide different
 authorization rules for each namespace.
 
-{{% /capture %}}
 
-{{% capture discussion %}}
+
+<!-- discussion -->
 
 ## Understanding the motivation for using namespaces
 
@@ -298,17 +303,18 @@ Use cases include:
 
 When you create a [Service](/docs/concepts/services-networking/service/), it creates a corresponding [DNS entry](/docs/concepts/services-networking/dns-pod-service/).
 This entry is of the form `<service-name>.<namespace-name>.svc.cluster.local`, which means
-that if a container just uses `<service-name>` it will resolve to the service which
+that if a container uses `<service-name>` it will resolve to the service which
 is local to a namespace.  This is useful for using the same configuration across
 multiple namespaces such as Development, Staging and Production.  If you want to reach
 across namespaces, you need to use the fully qualified domain name (FQDN).
 
-{{% /capture %}}
 
-{{% capture whatsnext %}}
+
+## {{% heading "whatsnext" %}}
+
 * Learn more about [setting the namespace preference](/docs/concepts/overview/working-with-objects/namespaces/#setting-the-namespace-preference).
 * Learn more about [setting the namespace for a request](/docs/concepts/overview/working-with-objects/namespaces/#setting-the-namespace-for-a-request)
-* See [namespaces design](https://github.com/kubernetes/community/blob/{{< param "githubbranch" >}}/contributors/design-proposals/architecture/namespaces.md).
-{{% /capture %}}
+* See [namespaces design](https://git.k8s.io/design-proposals-archive/architecture/namespaces.md).
+
 
 

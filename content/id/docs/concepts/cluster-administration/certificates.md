@@ -1,18 +1,18 @@
 ---
 title: Sertifikat
-content_template: templates/concept
+content_type: concept
 weight: 20
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 
 Saat menggunakan autentikasi sertifikat klien, kamu dapat membuat sertifikat
 secara manual melalui `easyrsa`, `openssl` atau `cfssl`.
 
-{{% /capture %}}
 
 
-{{% capture body %}}
+
+<!-- body -->
 
 ### easyrsa
 
@@ -30,7 +30,7 @@ secara manual melalui `easyrsa`, `openssl` atau `cfssl`.
 1. Hasilkan sertifikat dan kunci _server_.
     Argumen `--subject-alt-name` digunakan untuk mengatur alamat IP dan nama DNS yang dapat diakses
     oleh _server_ API. `MASTER_CLUSTER_IP` biasanya merupakan IP pertama dari CIDR _service cluster_
-    yang diset dengan argumen` --service-cluster-ip-range` untuk _server_ API dan
+    yang diset dengan argumen `--service-cluster-ip-range` untuk _server_ API dan
     komponen manajer pengontrol. Argumen `--days` digunakan untuk mengatur jumlah hari
     masa berlaku sertifikat.
     Sampel di bawah ini juga mengasumsikan bahwa kamu menggunakan `cluster.local` sebagai nama
@@ -245,6 +245,6 @@ done.
 
 Kamu dapat menggunakan API `Certificate.k8s.io` untuk menyediakan
 sertifikat x509 yang digunakan untuk autentikasi seperti yang didokumentasikan
-[di sini](/docs/tasks/tls/managing-tls-in-a-cluster).
+[di sini](/id/docs/tasks/tls/managing-tls-in-a-cluster).
 
-{{% /capture %}}
+

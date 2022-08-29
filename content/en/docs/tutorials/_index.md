@@ -1,11 +1,12 @@
 ---
 title: Tutorials
 main_menu: true
+no_list: true
 weight: 60
-content_template: templates/concept
+content_type: concept
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 
 This section of the Kubernetes documentation contains tutorials.
 A tutorial shows how to accomplish a goal that is larger than a single
@@ -14,9 +15,7 @@ each of which has a sequence of steps.
 Before walking through each tutorial, you may want to bookmark the
 [Standardized Glossary](/docs/reference/glossary/) page for later references.
 
-{{% /capture %}}
-
-{{% capture body %}}
+<!-- body -->
 
 ## Basics
 
@@ -27,6 +26,8 @@ Before walking through each tutorial, you may want to bookmark the
 * [Hello Minikube](/docs/tutorials/hello-minikube/)
 
 ## Configuration
+
+* [Example: Configuring a Java Microservice](/docs/tutorials/configuration/configure-java-microservice/)
 
 * [Configuring Redis Using a ConfigMap](/docs/tutorials/configuration/configure-redis-using-configmap/)
 
@@ -46,30 +47,18 @@ Before walking through each tutorial, you may want to bookmark the
 
 * [Running ZooKeeper, A CP Distributed System](/docs/tutorials/stateful-application/zookeeper/)
 
-## CI/CD Pipeline
-
-* [Set Up a CI/CD Pipeline with Kubernetes Part 1: Overview](https://www.linux.com/blog/learn/chapter/Intro-to-Kubernetes/2017/5/set-cicd-pipeline-kubernetes-part-1-overview)
-
-* [Set Up a CI/CD Pipeline with a Jenkins Pod in Kubernetes (Part 2)](https://www.linux.com/blog/learn/chapter/Intro-to-Kubernetes/2017/6/set-cicd-pipeline-jenkins-pod-kubernetes-part-2)
-
-* [Run and Scale a Distributed Crossword Puzzle App with CI/CD on Kubernetes (Part 3)](https://www.linux.com/blog/learn/chapter/intro-to-kubernetes/2017/6/run-and-scale-distributed-crossword-puzzle-app-cicd-kubernetes-part-3)
-
-* [Set Up CI/CD for a Distributed Crossword Puzzle App on Kubernetes (Part 4)](https://www.linux.com/blog/learn/chapter/intro-to-kubernetes/2017/6/set-cicd-distributed-crossword-puzzle-app-kubernetes-part-4)
-
-## Clusters
-
-* [AppArmor](/docs/tutorials/clusters/apparmor/)
-
 ## Services
 
 * [Using Source IP](/docs/tutorials/services/source-ip/)
 
-{{% /capture %}}
+## Security
 
-{{% capture whatsnext %}}
+* [Apply Pod Security Standards at Cluster level](/docs/tutorials/security/cluster-level-pss/)
+* [Apply Pod Security Standards at Namespace level](/docs/tutorials/security/ns-level-pss/)
+* [AppArmor](/docs/tutorials/security/apparmor/)
+* [seccomp](/docs/tutorials/security/seccomp/)
+## {{% heading "whatsnext" %}}
 
 If you would like to write a tutorial, see
-[Using Page Templates](/docs/home/contribute/page-templates/)
-for information about the tutorial page type and the tutorial template.
-
-{{% /capture %}}
+[Content Page Types](/docs/contribute/style/page-content-types/)
+for information about the tutorial page type.

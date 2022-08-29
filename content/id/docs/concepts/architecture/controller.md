@@ -1,10 +1,10 @@
 ---
 title: Controller
-content_template: templates/concept
+content_type: concept
 weight: 30
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 
 Dalam bidang robotika dan otomatisasi, _control loop_ atau kontrol tertutup adalah
 lingkaran tertutup yang mengatur keadaan suatu sistem.
@@ -24,16 +24,16 @@ klaster saat ini mendekati keadaan yang diinginkan.
 
 {{< glossary_definition term_id="controller" length="short">}}
 
-{{% /capture %}}
 
 
-{{% capture body %}}
+
+<!-- body -->
 
 ## Pola _controller_ 
 
 Sebuah _controller_ melacak sekurang-kurangnya satu jenis sumber daya dari 
 Kubernetes.
-[objek-objek](/docs/concepts/overview/working-with-objects/kubernetes-objects/) ini
+[objek-objek](/id/docs/concepts/overview/working-with-objects/kubernetes-objects/) ini
 memiliki *spec field* yang merepresentasikan keadaan yang diinginkan. Satu atau 
 lebih _controller_ untuk *resource* tersebut bertanggung jawab untuk membuat 
 keadaan sekarang mendekati keadaan yang diinginkan.
@@ -60,7 +60,7 @@ Job adalah sumber daya dalam Kubernetes yang menjalankan a
 {{< glossary_tooltip term_id="pod" >}}, atau mungkin beberapa Pod sekaligus, 
 untuk melakukan sebuah pekerjaan dan kemudian berhenti.
 
-(Setelah [dijadwalkan](../../../../en/docs/concepts/scheduling/), objek Pod 
+(Setelah [dijadwalkan](../../../../en/docs/concepts/scheduling-eviction/), objek Pod 
 akan menjadi bagian dari keadaan yang diinginkan oleh kubelet).
 
 Ketika _controller job_ melihat tugas baru, maka _controller_ itu memastikan bahwa, 
@@ -102,9 +102,8 @@ yang diinginkannya melalui server API, dan kemudian berkomunikasi langsung
 dengan sistem eksternal untuk membawa keadaan saat ini mendekat keadaan yang 
 diinginkan.
 
-(Sebenarnya ada sebuah _controller_ yang melakukan penskalaan node secara 
-horizontal dalam klaster kamu. Silahkan lihat
-[_autoscaling_ klaster](/docs/tasks/administer-cluster/cluster-management/#cluster-autoscaling)).
+(Sebenarnya ada sebuah [_controller_](https://github.com/kubernetes/autoscaler/) yang melakukan penskalaan node secara 
+horizontal dalam klaster kamu.
 
 ## Status sekarang berbanding status yang diinginkan {#sekarang-banding-diinginkan}
 
@@ -168,11 +167,12 @@ satu kumpulan dari beberapa Pod, atau bisa juga sebagai bagian eksternal dari
 Kubernetes. Manakah yang paling sesuai akan tergantung pada apa yang _controller_
 khusus itu lakukan.
 
-{{% /capture %}}
 
-{{% capture whatsnext %}}
+
+## {{% heading "whatsnext" %}}
+
 * Silahkan baca tentang [_control plane_ Kubernetes](/docs/concepts/#kubernetes-control-plane)
 * Temukan beberapa dasar tentang [objek-objek Kubernetes](/docs/concepts/#kubernetes-objects)
-* Pelajari lebih lanjut tentang [Kubernetes API](/docs/concepts/overview/kubernetes-api/)
-* Apabila kamu ingin membuat _controller_ sendiri, silakan lihat [pola perluasan](/docs/concepts/extend-kubernetes/extend-cluster/#extension-patterns) dalam memperluas Kubernetes.
-{{% /capture %}}
+* Pelajari lebih lanjut tentang [Kubernetes API](/id/docs/concepts/overview/kubernetes-api/)
+* Apabila kamu ingin membuat _controller_ sendiri, silakan lihat [pola perluasan](/id/docs/concepts/extend-kubernetes/extend-cluster/#extension-patterns) dalam memperluas Kubernetes.
+

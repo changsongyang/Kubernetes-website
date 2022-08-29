@@ -1,10 +1,10 @@
 ---
 title: StatefulSets
-content_template: templates/concept
+content_type: concept
 weight: 40
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 
 Un StatefulSet es el objeto de la API workload que se usa para gestionar aplicaciones con estado.
 
@@ -13,9 +13,9 @@ Los StatefulSets son estables (GA) en la versión 1.9.
 {{< /note >}}
 
 {{< glossary_definition term_id="statefulset" length="all" >}}
-{{% /capture %}}
 
-{{% capture body %}}
+
+<!-- body -->
 
 ## Usar StatefulSets
 
@@ -36,7 +36,7 @@ proporcione un conjunto de réplicas sin estado, como un
 
 ## Limitaciones
 
-* El almacenamiento de un determinado Pod debe provisionarse por un [Provisionador de PersistentVolume](https://github.com/kubernetes/examples/tree/{{< param "githubbranch" >}}/staging/persistent-volume-provisioning/README.md) basado en la `storage class` requerida, o pre-provisionarse por un administrador.
+* El almacenamiento de un determinado Pod debe provisionarse por un [Provisionador de PersistentVolume](https://github.com/kubernetes/examples/tree/master/staging/persistent-volume-provisioning/README.md) basado en la `storage class` requerida, o pre-provisionarse por un administrador.
 * Eliminar y/o reducir un StatefulSet *no* eliminará los volúmenes asociados con el StatefulSet. Este comportamiento es intencional y sirve para garantizar la seguridad de los datos, que da más valor que la purga automática de los recursos relacionados del StatefulSet.
 * Los StatefulSets actualmente necesitan un [Servicio Headless](/docs/concepts/services-networking/service/#headless-services) como responsable de la identidad de red de los Pods. Es tu responsabilidad crear este Service.
 * Los StatefulSets no proporcionan ninguna garantía de la terminación de los pods cuando se elimina un StatefulSet. Para conseguir un término de los pods ordenado y controlado en el StatefulSet, es posible reducir el StatefulSet a 0 réplicas justo antes de eliminarlo.
@@ -146,7 +146,7 @@ Cluster Domain | Service (ns/nombre) | StatefulSet (ns/nombre)  | StatefulSet Do
 
 {{< note >}}
 El valor de Cluster Domain se pondrá a `cluster.local` a menos que
-[se configure de otra forma](/docs/concepts/services-networking/dns-pod-service/#how-it-works).
+[se configure de otra forma](/docs/concepts/services-networking/dns-pod-service/).
 {{< /note >}}
 
 ### Almacenamiento estable
@@ -257,11 +257,12 @@ Antes de revertir la plantilla, debes también eliminar cualquier Pod que el Sta
 intentando ejecutar con la configuración incorrecta.
 El StatefulSet comenzará entonces a recrear los Pods usando la plantilla revertida.
 
-{{% /capture %}}
-{{% capture whatsnext %}}
+
+## {{% heading "whatsnext" %}}
+
 
 * Sigue el ejemplo de cómo [desplegar un aplicación con estado](/docs/tutorials/stateful-application/basic-stateful-set/).
 * Sigue el ejemplo de cómo [desplegar Cassandra con StatefulSets](/docs/tutorials/stateful-application/cassandra/).
 
-{{% /capture %}}
+
 

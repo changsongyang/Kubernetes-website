@@ -1,6 +1,6 @@
 ---
 title: Menginstal dan Menyiapkan kubectl
-content_template: templates/task
+content_type: task
 weight: 10
 card:
   name: tasks
@@ -8,15 +8,16 @@ card:
   title: Menginstal kubectl
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 [Kubectl](/docs/user-guide/kubectl/) adalah alat baris perintah (_command line tool_) Kubernetes yang digunakan untuk menjalankan berbagai perintah untuk klaster Kubernetes. Kamu dapat menggunakan `kubectl` untuk men-_deploy_ aplikasi, mengatur sumber daya klaster, dan melihat log. Daftar operasi `kubectl` dapat dilihat di [Ikhtisar kubectl](/docs/reference/kubectl/overview/).
-{{% /capture %}}
 
-{{% capture prerequisites %}}
+
+## {{% heading "prerequisites" %}}
+
 Kamu harus menggunakan kubectl dengan perbedaan maksimal satu versi minor dengan klaster kamu. Misalnya, klien v1.2 masih dapat digunakan dengan master v1.1, v1.2, dan 1.3. Menggunakan versi terbaru `kubectl` dapat menghindari permasalahan yang tidak terduga.
-{{% /capture %}}
 
-{{% capture steps %}}
+
+<!-- steps -->
 
 ## Menginstal kubectl pada Linux
 
@@ -283,7 +284,7 @@ Kamu dapat menginstal `kubectl` sebagai bagian dari Google Cloud SDK.
 
 ## Memeriksa konfigurasi kubectl
 
-Agar `kubectl` dapat mengakses klaster Kubernetes, dibutuhkan sebuah [berkas kubeconfig](/docs/tasks/access-application-cluster/configure-access-multiple-clusters/), yang akan otomatis dibuat ketika kamu membuat klaster baru menggunakan [kube-up.sh](https://github.com/kubernetes/kubernetes/blob/master/cluster/kube-up.sh) atau setelah berhasil men-_deploy_ klaster Minikube. Secara bawaan, konfigurasi `kubectl` disimpan di `~/.kube/config`.
+Agar `kubectl` dapat mengakses klaster Kubernetes, dibutuhkan sebuah [berkas kubeconfig](/id/docs/tasks/access-application-cluster/configure-access-multiple-clusters/), yang akan otomatis dibuat ketika kamu membuat klaster baru menggunakan [kube-up.sh](https://github.com/kubernetes/kubernetes/blob/master/cluster/kube-up.sh) atau setelah berhasil men-_deploy_ klaster Minikube. Secara bawaan, konfigurasi `kubectl` disimpan di `~/.kube/config`.
 
 Kamu dapat memeriksa apakah konfigurasi `kubectl` sudah benar dengan mengambil keadaan klaster:
 
@@ -471,7 +472,7 @@ Jika kamu menggunakan alias untuk `kubectl`, kamu masih dapat menggunakan fitur 
 
 ```shell
 echo 'alias k=kubectl' >>~/.zshrc
-echo 'complete -F __start_kubectl k' >>~/.zshrc
+echo 'compdef __start_kubectl k' >>~/.zshrc
 ```
 
 Setelah memuat ulang terminal, penyelesaian otomatis dari `kubectl` seharusnya sudah dapat bekerja.
@@ -485,12 +486,13 @@ compinit
 {{% /tab %}}
 {{< /tabs >}}
 
-{{% /capture %}}
 
-{{% capture whatsnext %}}
-* [Menginstal Minikube.](/docs/tasks/tools/install-minikube/)
+
+## {{% heading "whatsnext" %}}
+
+* [Menginstal Minikube.](/id/docs/tasks/tools/install-minikube/)
 * Lihat [panduan persiapan](/docs/setup/) untuk mencari tahu tentang pembuatan klaster. 
 * [Pelajari cara untuk menjalankan dan mengekspos aplikasimu.](/docs/tasks/access-application-cluster/service-access-application-cluster/)
-* Jika kamu membutuhkan akses ke klaster yang tidak kamu buat, lihat [dokumen Berbagi Akses Klaster](/docs/tasks/access-application-cluster/configure-access-multiple-clusters/).
+* Jika kamu membutuhkan akses ke klaster yang tidak kamu buat, lihat [dokumen Berbagi Akses Klaster](/id/docs/tasks/access-application-cluster/configure-access-multiple-clusters/).
 * Baca [dokumen referensi kubectl](/docs/reference/kubectl/kubectl/)
-{{% /capture %}}
+

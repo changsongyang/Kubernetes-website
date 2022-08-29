@@ -2,7 +2,7 @@
 title: 장치 플러그인(Device Plugin)
 id: device-plugin
 date: 2019-02-02
-full_link: /docs/concepts/extend-kubernetes/compute-storage-net/device-plugins/
+full_link: /ko/docs/concepts/extend-kubernetes/compute-storage-net/device-plugins/
 short_description: >
   파드가 공급자별 초기화 또는 설정이 필요한 장치에 접근할 수 있도록 하는 소프트웨어 확장
 aka:
@@ -24,6 +24,6 @@ tags:
 장치 플러그인을 {{< glossary_tooltip term_id="daemonset" >}}으로 배포하거나,
 각 대상 노드에 직접 장치 플러그인 소프트웨어를 설치할 수 있다.
 
-[장치 플러그인](/docs/concepts/extend-kubernetes/compute-storage-net/device-plugins/)
+[장치 플러그인](/ko/docs/concepts/extend-kubernetes/compute-storage-net/device-plugins/)
 의 더 자세한 정보를
 본다

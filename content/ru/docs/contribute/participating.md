@@ -1,12 +1,12 @@
 ---
 title: Участие в SIG Docs
-content_template: templates/concept
+content_type: concept
 card:
   name: contribute
   weight: 40
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 
 SIG Docs — это одна из [специальных групп](https://github.com/kubernetes/community/blob/master/sig-list.md) в проекте Kubernetes, которая занимается написанием, обновлением и поддержкой документации Kubernetes в целом. Перейдите на страницу про [SIG Docs в GitHub-репозитории](https://github.com/kubernetes/community/tree/master/sig-docs), чтобы узнать подробную информацию об этой группе.
 
@@ -14,9 +14,9 @@ SIG Docs активно принимает правки и дополнения 
 
 Вы также можете стать [членом](#члены), [рецензентом](#рецензенты) или [утверждающим](#утверждающие). Эти роли расширяют ваши возможности, но и предлагают выполнение определенных обязанностей по рассмотрению и принятию изменений. Изучите содержимого файла [community-membership](https://github.com/kubernetes/community/blob/master/community-membership.md) в директории сообщества репозитория, чтобы узнать про членство в сообществе Kubernetes. В остальной части этой страницы кратко рассматривается функционирование ролей в группе SIG Docs, которая в совокупности отвечает за поддержание одного из самой публичной части Kubernetes — сайта и документации Kubernetes.
 
-{{% /capture %}}
 
-{{% capture body %}}
+
+<!-- body -->
 
 ## Роли и обязанности
 
@@ -100,7 +100,7 @@ SIG Docs активно принимает правки и дополнения 
 
 Если вы соответствуете [требованием](https://github.com/kubernetes/community/blob/master/community-membership.md#reviewer), то можете стать рецензентом SIG Docs. Рецензенты в других SIG-группах должны подать новую заявку для получения статуса рецензента в SIG Docs.
 
-Для отправки заявки откройте пулреквест с добавлением самого себя в секцию `reviewers` [корневого файла OWNERS](https://github.com/kubernetes/website/blob/master/OWNERS) в репозитории `kubernetes/website`. Запросите проверку вашего пулреквеста одному или нескольким текущим утверждающим в группе SIG Docs.
+Для отправки заявки откройте пулреквест с добавлением самого себя в секцию `reviewers` [корневого файла OWNERS](https://github.com/kubernetes/website/blob/main/OWNERS) в репозитории `kubernetes/website`. Запросите проверку вашего пулреквеста одному или нескольким текущим утверждающим в группе SIG Docs.
 
 Если ваш пулреквест одобрен, вы становитесь рецензентом SIG Docs. Теперь бот [K8s-ci-robot](https://github.com/kubernetes/test-infra/tree/master/prow#bots-home) будет назначать и предлагать вас в качестве рецензента для проверки новых пулреквестов.
 
@@ -126,7 +126,7 @@ SIG Docs активно принимает правки и дополнения 
 
 Если вы соответствуете [требованием](https://github.com/kubernetes/community/blob/master/community-membership.md#approver), вы можете стать утверждающим SIG Docs. Утверждающие в других SIG-группах должны подать новую заявку для получения статуса утверждающего в SIG Docs.
 
-Для отправки заявки откройте пулреквест с добавлением самого себя в секцию `approvers` [корневого файла OWNERS](https://github.com/kubernetes/website/blob/master/OWNERS) в репозитории `kubernetes/website`. Запросите проверку вашего пулреквеста одному или нескольким текущим утверждающим в группе SIG Docs.
+Для отправки заявки откройте пулреквест с добавлением самого себя в секцию `approvers` [корневого файла OWNERS](https://github.com/kubernetes/website/blob/main/OWNERS) в репозитории `kubernetes/website`. Запросите проверку вашего пулреквеста одному или нескольким текущим утверждающим в группе SIG Docs.
 
 Если ваш пулреквест одобрен, вы становитесь утверждающим SIG Docs. Теперь бот [K8s-ci-robot](https://github.com/kubernetes/test-infra/tree/master/prow#bots-home) будет назначать и предлагать вас в качестве рецензента для проверки новых пулреквестов.
 
@@ -179,7 +179,7 @@ SIG Docs активно принимает правки и дополнения 
 - blunderbuss
 - approve
 
-Все эти плагины используют файлы [OWNERS](https://github.com/kubernetes/website/blob/master/OWNERS) и [OWNERS_ALIASES](https://github.com/kubernetes/website/blob/master/OWNERS_ALIASES) в корневой директории GitHub-репозитория `kubernetes/website`, чтобы контролировать работу prow по всему репозиторию.
+Все эти плагины используют файлы [OWNERS](https://github.com/kubernetes/website/blob/main/OWNERS) и [OWNERS_ALIASES](https://github.com/kubernetes/website/blob/main/OWNERS_ALIASES) в корневой директории GitHub-репозитория `kubernetes/website`, чтобы контролировать работу prow по всему репозиторию.
 
 Файл OWNERS содержит список людей, которые являются рецензентами и утверждающими в SIG Docs. Файлы OWNERS также может быть в поддиректориях и могут переопределять тех, кто может выступать в качестве рецензента или утверждающего в изменениях файлов этой директории и её поддиректорий. Для получения дополнительной информации о файлах OWNERS в целом, перейдите в [OWNERS](https://github.com/kubernetes/community/blob/master/contributors/guide/owners.md).
 
@@ -196,13 +196,12 @@ SIG Docs активно принимает правки и дополнения 
 - Любой участник Kubernetes может добавить метку `lgtm`, добавив комментарий, включающий в себя `/lgtm`.
 - Только утверждающие SIG Docs могут слить пулреквест путём добавления комментария с `/approve`. Некоторые утверждающие также играют дополнительные роли, например, [дежурного по PR](#pr-wrangler) или [председателя SIG Docs](#председатель-sig-docs).
 
-{{% /capture %}}
 
-{{% capture whatsnext %}}
+
+## {{% heading "whatsnext" %}}
+
 
 Для получения дополнительной информации про участие в документации Kubernetes, посмотрите следующие страницы:
 
 - [Участие для начинающих](/ru/docs/contribute/start/)
 - [Правила оформления документации](/ru/docs/contribute/style/)
-
-{{% /capture %}}

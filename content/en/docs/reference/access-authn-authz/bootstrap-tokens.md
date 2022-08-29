@@ -2,23 +2,23 @@
 reviewers:
 - jbeda
 title: Authenticating with Bootstrap Tokens
-content_template: templates/concept
+content_type: concept
 weight: 20
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 
 {{< feature-state for_k8s_version="v1.18" state="stable" >}}
 
 Bootstrap tokens are a simple bearer token that is meant to be used when
 creating new clusters or joining new nodes to an existing cluster.  It was built
-to support [kubeadm](/docs/reference/setup-tools/kubeadm/kubeadm/), but can be used in other contexts
+to support [kubeadm](/docs/reference/setup-tools/kubeadm/), but can be used in other contexts
 for users that wish to start clusters without `kubeadm`. It is also built to
-work, via RBAC policy, with the [Kubelet TLS
-Bootstrapping](/docs/reference/command-line-tools-reference/kubelet-tls-bootstrapping/) system.
-{{% /capture %}}
+work, via RBAC policy, with the
+[Kubelet TLS Bootstrapping](/docs/reference/access-authn-authz/kubelet-tls-bootstrapping/) system.
 
-{{% capture body %}}
+
+<!-- body -->
 ## Bootstrap Tokens Overview
 
 Bootstrap Tokens are defined with a specific type
@@ -70,7 +70,7 @@ controller on the controller manager.
 
 Each valid token is backed by a secret in the `kube-system` namespace.  You can
 find the full design doc
-[here](https://github.com/kubernetes/community/blob/{{< param "githubbranch" >}}/contributors/design-proposals/cluster-lifecycle/bootstrap-discovery.md).
+[here](https://git.k8s.io/design-proposals-archive/cluster-lifecycle/bootstrap-discovery.md).
 
 Here is what the secret looks like.
 
@@ -167,7 +167,7 @@ data:
     users: []
 ```
 
-The `kubeconfig` member of the ConfigMap is a config file with just the cluster
+The `kubeconfig` member of the ConfigMap is a config file with only the cluster
 information filled out.  The key thing being communicated here is the
 `certificate-authority-data`.  This may be expanded in the future.
 
@@ -188,4 +188,4 @@ client relying on the signature to bootstrap TLS trust.
 
 Consult the [kubeadm implementation details](/docs/reference/setup-tools/kubeadm/implementation-details/)
 section for more information.
-{{% /capture %}}
+

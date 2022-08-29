@@ -1,13 +1,13 @@
 ---
 title: kubectl для пользователей Docker
-content_template: templates/concept
+content_type: concept
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 Вы можете использовать инструмент командной строки kubectl в Kubernetes для работы с API-сервером. Если вы знакомы с инструментом командной строки Docker, то использование kubectl не составит проблем. Однако команды docker и kubectl отличаются. В следующих разделах показана подкоманда docker и приведена эквивалентная команда в kubectl.
-{{% /capture %}}
 
-{{% capture body %}}
+
+<!-- body -->
 
 ## docker run
 
@@ -34,10 +34,18 @@ kubectl:
 
 ```shell
 # запустить под, в котором работает nginx
-kubectl run --image=nginx nginx-app --port=80 --env="DOMAIN=cluster"
+kubectl create deployment --image=nginx nginx-app
 ```
 ```
 deployment "nginx-app" created
+```
+
+```shell
+# add env to nginx-app
+kubectl set env deployment/nginx-app  DOMAIN=cluster
+```
+```
+deployment.apps/nginx-app env updated
 ```
 
 {{< note >}}
@@ -62,7 +70,7 @@ kubectl run [-i] [--tty] --attach <name> --image=<image>
 ```
 
 В отличие от `docker run ...`, если вы укажете `--attach`, то присоедините `stdin`, `stdout` and `stderr`. Нельзя проконтролировать, какие потоки прикрепляются (`docker -a ...`).
-Чтобы отсоединиться от контейнера воспользуетесь комбинацией клавиш Ctrl+P, а затем Ctrl+Q.
+Чтобы отсоединиться от контейнера, воспользуетесь комбинацией клавиш Ctrl+P, а затем Ctrl+Q.
 
 Так как команда kubectl run запускает развёртывание для контейнера, то оно начнет перезапускаться, если завершить прикрепленный процесс по нажатию Ctrl+C, в отличие от команды `docker run -it`.
 Для удаления объекта Deployment вместе с подами, необходимо выполнить команду `kubectl delete deployment <name>`.
@@ -260,7 +268,7 @@ nginx-app    1/1     1            1           2m
 ```
 
 ```shell
-kubectl get po -l run=nginx-app
+kubectl get po -l app=nginx-app
 ```
 ```
 NAME                         READY     STATUS    RESTARTS   AGE
@@ -274,7 +282,7 @@ deployment "nginx-app" deleted
 ```
 
 ```shell
-kubectl get po -l run=nginx-app
+kubectl get po -l app=nginx-app
 # Return nothing
 ```
 
@@ -359,4 +367,4 @@ Grafana is running at https://203.0.113.141/api/v1/namespaces/kube-system/servic
 Heapster is running at https://203.0.113.141/api/v1/namespaces/kube-system/services/monitoring-heapster/proxy
 InfluxDB is running at https://203.0.113.141/api/v1/namespaces/kube-system/services/monitoring-influxdb/proxy
 ```
-{{% /capture %}}
+

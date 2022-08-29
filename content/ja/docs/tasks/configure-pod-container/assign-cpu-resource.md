@@ -1,21 +1,22 @@
 ---
 title: コンテナおよびPodへのCPUリソースの割り当て
-content_template: templates/task
+content_type: task
 weight: 20
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 
 このページでは、CPUの *request* と *limit* をコンテナに割り当てる方法について示します。コンテナは設定された制限を超えてCPUを使用することはできません。システムにCPUの空き時間がある場合、コンテナには要求されたCPUを割り当てられます。
 
-{{% /capture %}}
 
 
-{{% capture prerequisites %}}
+
+## {{% heading "prerequisites" %}}
+
 
 {{< include "task-tutorial-prereqs.md" >}} {{< version-check >}}
 
-クラスターの各ノードには、少なくとも1つ以上のCPUが必要になります。
+タスク例を実行するには、クラスターに少なくとも利用可能な1 CPUが必要です。
 
 このページのいくつかの手順では、クラスターにて[metrics-server](https://github.com/kubernetes-incubator/metrics-server)サービスを実行する必要があります。すでにmetrics-serverが動作している場合、これらの手順をスキップできます。
 
@@ -38,10 +39,10 @@ NAME
 v1beta1.metrics.k8s.io
 ```
 
-{{% /capture %}}
 
 
-{{% capture steps %}}
+
+<!-- steps -->
 
 ## namespaceの作成
 
@@ -105,7 +106,7 @@ cpu-demo                    974m         <something>
 `-cpu "2"`を設定することで、コンテナが2 CPU利用しようとすることを思い出してください。しかしながら、コンテナは約1 CPUしか使用することができません。コンテナが制限よりも多くのCPUリソースを利用しようとしているため、コンテナのCPUの利用が抑制されています。
 
 {{< note >}}
-CPUの使用量が1.0未満である理由の可能性して、ノードに利用可能なCPUリソースが十分にないことが挙げられます。この練習における必要条件として、各ノードに少なくとも1 CPUが必要であることを思い出してください。1 CPUのノード上でコンテナを実行させる場合、指定したコンテナのCPU制限にかかわらず、コンテナは1 CPU以上使用することはできません。
+CPUの使用量が1.0未満である理由の可能性して、ノードに利用可能なCPUリソースが十分にないことが挙げられます。この練習における必要条件として、クラスターに少なくとも利用可能な1 CPUが必要であることを思い出してください。1 CPUのノード上でコンテナを実行させる場合、指定したコンテナのCPU制限にかかわらず、コンテナは1 CPU以上使用することはできません。
 {{< /note >}}
 
 ## CPUの単位
@@ -151,9 +152,6 @@ kubectl get pod cpu-demo-2 --namespace=cpu-example
 
 この出力では、Podのステータスが待機中であることを示しています。つまり、Podがどのノードに対しても実行するようスケジュールされておらず、いつまでも待機状態のままであることを表しています:
 
-```shell
-kubectl get pod cpu-demo-2 --namespace=cpu-example
-```
 ```
 NAME         READY     STATUS    RESTARTS   AGE
 cpu-demo-2   0/1       Pending   0          7m
@@ -195,7 +193,7 @@ kubectl delete pod cpu-demo-2 --namespace=cpu-example
 
 クラスターで動作するコンテナにCPU要求と制限を設定することで、クラスターのノードで利用可能なCPUリソースを効率的に使用することができます。PodのCPU要求を低く保つことで、Podがスケジュールされやすくなります。CPU要求よりも大きい制限を与えることで、次の2つを実現できます:
 
-* Podは利用可能なCPUリソースを、突発的な活動（バースト）に使用することができます。
+* Podは利用可能なCPUリソースを、突発的な活動(バースト)に使用することができます。
 * バースト中のPodのCPUリソース量は、適切な量に制限されます。
 
 
@@ -207,31 +205,32 @@ namespaceを削除してください:
 kubectl delete namespace cpu-example
 ```
 
-{{% /capture %}}
 
-{{% capture whatsnext %}}
+
+## {{% heading "whatsnext" %}}
+
 
 
 ### アプリケーション開発者向け
 
-* [コンテナとPodにメモリーリソースを割り当てる](/docs/tasks/configure-pod-container/assign-memory-resource/)
+* [コンテナおよびPodへのメモリーリソースの割り当て](/ja/docs/tasks/configure-pod-container/assign-memory-resource/)
 
 * [PodのQuality of Serviceを設定する](/docs/tasks/configure-pod-container/quality-service-pod/)
 
 ### クラスター管理者向け
 
-* [Namespaceにメモリー要求および制限のデフォルト値を設定する](/docs/tasks/administer-cluster/memory-default-namespace/)
+* [Namespaceにメモリー要求および制限のデフォルト値を設定する](/docs/tasks/administer-cluster/manage-resources/memory-default-namespace/)
 
-* [NamespaceにCPU要求および制限のデフォルト値を設定する](/docs/tasks/administer-cluster/cpu-default-namespace/)
+* [NamespaceにCPU要求および制限のデフォルト値を設定する](/docs/tasks/administer-cluster/manage-resources/cpu-default-namespace/)
 
-* [Namespaceに最小および最大メモリー量の制約を設定する](/docs/tasks/administer-cluster/memory-constraint-namespace/)
+* [Namespaceに最小および最大メモリー量の制約を設定する](/docs/tasks/administer-cluster/manage-resources/memory-constraint-namespace/)
 
-* [Namespaceに最小および最大のCPU使用量の制約を設定する](/docs/tasks/administer-cluster/cpu-constraint-namespace/)
+* [Namespaceに最小および最大のCPU使用量の制約を設定する](/docs/tasks/administer-cluster/manage-resources/cpu-constraint-namespace/)
 
-* [NamespaceにメモリーおよびCPUのクォータを設定する](/docs/tasks/administer-cluster/quota-memory-cpu-namespace/)
+* [NamespaceにメモリーおよびCPUのクォータを設定する](/docs/tasks/administer-cluster/manage-resources/quota-memory-cpu-namespace/)
 
-* [NamespaceにPodのクォータを設定する](/docs/tasks/administer-cluster/quota-pod-namespace/)
+* [NamespaceにPodのクォータを設定する](/docs/tasks/administer-cluster/manage-resources/quota-pod-namespace/)
 
 * [APIオブジェクトのクォータを設定する](/docs/tasks/administer-cluster/quota-api-object/)
 
-{{% /capture %}}
+

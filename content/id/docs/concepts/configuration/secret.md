@@ -1,6 +1,6 @@
 ---
 title: Secret
-content_template: templates/concept
+content_type: concept
 feature:
   title: Secret dan manajemen konfigurasi
   description: >
@@ -9,16 +9,16 @@ weight: 50
 ---
 
 
-{{% capture overview %}}
+<!-- overview -->
 
 Objek `secret` pada Kubernetes mengizinkan kamu menyimpan dan mengatur informasi yang sifatnya sensitif, seperti
 _password_, token OAuth, dan ssh _keys_. Menyimpan informasi yang sifatnya sensitif ini ke dalam `secret`
 cenderung lebih aman dan fleksible jika dibandingkan dengan menyimpan informasi tersebut secara apa adanya pada definisi {{< glossary_tooltip term_id="pod" >}} atau di dalam {{< glossary_tooltip text="container image" term_id="image" >}}.
 Silahkan lihat [Dokumen desain Secret](https://git.k8s.io/community/contributors/design-proposals/auth/secrets.md) untuk informasi yang sifatnya mendetail.
 
-{{% /capture %}}
 
-{{% capture body %}}
+
+<!-- body -->
 
 ## Ikhtisar Secret
 
@@ -49,7 +49,7 @@ Mekanisme otomatisasi pembuatan secret dan penggunaan kredensial API dapat di no
 atau di-_override_ jika kamu menginginkannya. Meskipun begitu, jika apa yang kamu butuhkan
 hanyalah mengakses apiserver secara aman, maka mekanisme _default_ inilah yang disarankan.
 
-Baca lebih lanjut dokumentasi [_Service Account_](/docs/tasks/configure-pod-container/configure-service-account/)
+Baca lebih lanjut dokumentasi [_Service Account_](/id/docs/tasks/configure-pod-container/configure-service-account/)
 untuk informasi lebih lanjut mengenai bagaimana cara kerja _Service Account_.
 
 ### Membuat Objek Secret Kamu Sendiri
@@ -61,7 +61,7 @@ dan _password_ yang harus digunakan oleh Pod-Pod tersebut berada pada mesin loka
 dalam bentuk _file-file_ `./username.txt` dan `./password.txt`.
 
 ```shell
-# Buatlah file yang selanjutnya akan digunakan pada contoh-contoh selanjutnya
+# Buatlah berkas yang selanjutnya akan digunakan pada contoh-contoh selanjutnya
 echo -n 'admin' > ./username.txt
 echo -n '1f2d1e2e67df' > ./password.txt
 ```
@@ -271,7 +271,7 @@ dispesifikasikan di dalam sebuah _file_ `kustomization.yaml` di dalam sebuah dir
 
 Sebagai contoh, untuk menghasilan sebuah Secret dari _file-file_ `./username.txt` dan `./password.txt`
 ```shell
-# Membuat sebuah file kustomization.yaml dengan SecretGenerator
+# Membuat sebuah berkas kustomization.yaml dengan SecretGenerator
 cat <<EOF >./kustomization.yaml
 secretGenerator:
 - name: db-user-pass
@@ -310,7 +310,7 @@ username.txt:    5 bytes
 Sebagai contoh, untuk membuat sebuah Secret dari literal `username=admin` dan `password=secret`,
 kamu dapat menspesifikasikan _generator_ Secret pada _file_ `kustomization.yaml` sebagai
 ```shell
-# Membuat sebuah file kustomization.yaml dengan menggunakan SecretGenerator
+# Membuat sebuah berkas kustomization.yaml dengan menggunakan SecretGenerator
 $ cat <<EOF >./kustomization.yaml
 secretGenerator:
 - name: db-user-pass
@@ -569,7 +569,7 @@ _delay_ propagasi _cache_, dimana _delay_ propagasi _cache_ bergantung pada jeni
 
 {{< note >}}
 Sebuah container menggunakan Secret sebagai
-[subPath](/docs/concepts/storage/volumes#using-subpath) dari _volume_ 
+[subPath](/id/docs/concepts/storage/volumes#using-subpath) dari _volume_ 
 yang di-_mount_ tidak akan menerima perubahan Secret.
 {{< /note >}}
 
@@ -636,7 +636,7 @@ pada Kubelet, sehingga Kubelet dapat mengunduh _image_ dan menempatkannya pada P
 
 **Memberikan spesifikasi manual dari sebuah imagePullSecret**
 
-Penggunaan imagePullSecrets dideskripsikan di dalam [dokumentasi _image_](/docs/concepts/containers/images/#specifying-imagepullsecrets-on-a-pod)
+Penggunaan imagePullSecrets dideskripsikan di dalam [dokumentasi _image_](/id/docs/concepts/containers/images/#specifying-imagepullsecrets-on-a-pod)
 
 ### Mekanisme yang Dapat Diterapkan agar imagePullSecrets dapat Secara Otomatis Digunakan
 
@@ -644,7 +644,7 @@ Kamu dapat secara manual membuat sebuah imagePullSecret, serta merujuk imagePull
 yang sudah kamu buat dari sebuah serviceAccount. Semua Pod yang dibuat dengan menggunakan 
 serviceAccount tadi atau serviceAccount _default_ akan menerima _field_ imagePullSecret dari 
 serviceAccount yang digunakan.
-Bacalah [Cara menambahkan ImagePullSecrets pada sebuah _service account_](/docs/tasks/configure-pod-container/configure-service-account/#add-imagepullsecrets-to-a-service-account) 
+Bacalah [Cara menambahkan ImagePullSecrets pada sebuah _service account_](/id/docs/tasks/configure-pod-container/configure-service-account/#add-imagepullsecrets-to-a-service-account) 
 untuk informasi lebih detail soal proses yang dijalankan.
 
 ### Mekanisme _Mounting_ Otomatis dari Secret yang Sudah Dibuat
@@ -985,7 +985,7 @@ hanya boleh dimiliki oleh komponen pada sistem level yang paling _previleged_.
 
 Aplikasi yang membutuhkan akses ke API secret harus melakukan _request_ `get` pada 
 secret yang dibutuhkan. Hal ini memungkinkan administrator untuk membatasi 
-akses pada semua secret dengan tetap memberikan [akses pada instans secret tertentu](/docs/reference/access-authn-authz/rbac/#referring-to-resources) 
+akses pada semua secret dengan tetap memberikan [akses pada instans secret tertentu](/id/docs/reference/access-authn-authz/rbac/#referring-to-resources) 
 yang dibutuhkan aplikasi.
 
 Untuk meningkatkan performa dengan menggunakan iterasi `get`, klien dapat mendesain 
@@ -1055,6 +1055,7 @@ dalam keadaan tidak terenkripsi.
    dengan cara meniru kubelet. Meskipun begitu, terdapat fitur yang direncanakan pada rilis selanjutnya yang memungkinkan pengiriman secret hanya dapat 
    mengirimkan secret pada node yang membutuhkan secret tersebut untuk membatasi adanya eksploitasi akses _root_ pada node ini.
 
-{{% capture whatsnext %}}
+## {{% heading "whatsnext" %}}
 
-{{% /capture %}}
+
+

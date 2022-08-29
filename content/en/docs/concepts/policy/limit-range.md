@@ -2,20 +2,17 @@
 reviewers:
 - nelvadas
 title: Limit Ranges
-content_template: templates/concept
+content_type: concept
 weight: 10
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 
-By default, containers run with unbounded [compute resources](/docs/user-guide/compute-resources) on a Kubernetes cluster.
+By default, containers run with unbounded [compute resources](/docs/concepts/configuration/manage-resources-containers/) on a Kubernetes cluster.
 With resource quotas, cluster administrators can restrict resource consumption and creation on a {{< glossary_tooltip text="namespace" term_id="namespace" >}} basis.
 Within a namespace, a Pod or Container can consume as much CPU and memory as defined by the namespace's resource quota. There is a concern that one Pod or Container could monopolize all available resources. A LimitRange is a policy to constrain resource allocations (to Pods or Containers) in a namespace.
 
-{{% /capture %}}
-
-
-{{% capture body %}}
+<!-- body -->
 
 A _LimitRange_ provides constraints that can:
 
@@ -26,9 +23,7 @@ A _LimitRange_ provides constraints that can:
 
 ## Enabling LimitRange
 
-LimitRange support is enabled by default for many Kubernetes distributions. It is
-enabled when the apiserver `--enable-admission-plugins=` flag has `LimitRanger` admission controller as
-one of its arguments.
+LimitRange support has been enabled by default since Kubernetes 1.10.
 
 A LimitRange is enforced in a particular namespace when there is a
 LimitRange object in that namespace.
@@ -56,11 +51,9 @@ there may be contention for resources. In this case, the Containers or Pods will
 
 Neither contention nor changes to a LimitRange will affect already created resources.
 
-{{% /capture %}}
+## {{% heading "whatsnext" %}}
 
-{{% capture whatsnext %}}
-
-Refer to the [LimitRanger design document](https://git.k8s.io/community/contributors/design-proposals/resource-management/admission_control_limit_range.md) for more information.
+Refer to the [LimitRanger design document](https://git.k8s.io/design-proposals-archive/resource-management/admission_control_limit_range.md) for more information.
 
 For examples on using limits, see:
 
@@ -69,7 +62,5 @@ For examples on using limits, see:
 - [how to configure default CPU Requests and Limits per namespace](/docs/tasks/administer-cluster/manage-resources/cpu-default-namespace/).
 - [how to configure default Memory Requests and Limits per namespace](/docs/tasks/administer-cluster/manage-resources/memory-default-namespace/).
 - [how to configure minimum and maximum Storage consumption per namespace](/docs/tasks/administer-cluster/limit-storage-consumption/#limitrange-to-limit-requests-for-storage).
-- a [detailed example on configuring quota per namespace](/docs/tasks/administer-cluster/quota-memory-cpu-namespace/).
+- a [detailed example on configuring quota per namespace](/docs/tasks/administer-cluster/manage-resources/quota-memory-cpu-namespace/).
 
-
-{{% /capture %}}

@@ -2,21 +2,22 @@
 title: Kubernetes — co to jest?
 description: >
  Kubernetes to przenośna, rozszerzalna platforma oprogramowania *open-source* służąca do zarządzania zadaniami i serwisami uruchamianymi w kontenerach. Umożliwia ich deklaratywną konfigurację i automatyzację. Kubernetes posiada duży i dynamicznie rozwijający się ekosystem. Szeroko dostępne są serwisy, wsparcie i dodatkowe narzędzia.
-content_template: templates/concept
+content_type: concept
 weight: 10
 card:
   name: concepts
   weight: 10
+sitemap:
+  priority: 0.9
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 Na tej stronie znajdziesz ogólne informacje o Kubernetesie.
-{{% /capture %}}
 
-{{% capture body %}}
+<!-- body -->
 Kubernetes to przenośna, rozszerzalna platforma oprogramowania *open-source* służąca do zarządzania zadaniami i serwisami uruchamianymi w kontenerach, która umożliwia deklaratywną konfigurację i automatyzację. Ekosystem Kubernetesa jest duży i dynamicznie się rozwija. Serwisy Kubernetesa, wsparcie i narzędzia są szeroko dostępne.
 
-Nazwa Kubernetes pochodzi z greki i oznacza sternika albo pilota. Google otworzyło projekt Kubernetes publicznie w 2014. Kubernetes korzysta z [piętnastoletniego doświadczenia Google w uruchamianiu wielkoskalowych serwisów](/blog/2015/04/borg-predecessor-to-kubernetes/) i łączy je z najlepszymi pomysłami i praktykami wypracowanymi przez społeczność.
+Nazwa Kubernetes pochodzi z greki i oznacza sternika albo pilota. Skrót K8s powstał poprzez zastąpienie ośmiu liter pomiędzy "K" i "s" .Google otworzyło projekt Kubernetes publicznie w 2014. Kubernetes korzysta z [piętnastoletniego doświadczenia Google w uruchamianiu wielkoskalowych serwisów](/blog/2015/04/borg-predecessor-to-kubernetes/) i łączy je z najlepszymi pomysłami i praktykami wypracowanymi przez społeczność.
 
 ## Trochę historii
 
@@ -35,12 +36,12 @@ Wirtualizacja pozwala lepiej wykorzystywać zasoby fizycznego serwera i lepiej s
 Każda maszyna wirtualna jest pełną maszyną zawierającą własny system operacyjny pracujący na zwirtualizowanej warstwie sprzętowej.
 
 **Era wdrożeń w kontenerach:**
-Kontenery działają w sposób zbliżony do maszyn wirtualnych, ale mają mniejszy stopnień wzajemnej izolacji, współdzieląc ten sam system operacyjny. Kontenery określane są mianem "lekkich". Podobnie, jak maszyna wirtualna, kontener posiada własny system plików, procesor, pamięć, przestrzeń procesów itd. Ponieważ kontenery nie są związane z leżącymi poniżej warstwami infrastruktury, mogą być łatwiej przenoszone pomiędzy chmurami i różnymi dystrybucjami systemu operacyjnego.
+Kontenery działają w sposób zbliżony do maszyn wirtualnych, ale mają mniejszy stopnień wzajemnej izolacji, współdzieląc ten sam system operacyjny. Kontenery określane są mianem "lekkich". Podobnie, jak maszyna wirtualna, kontener posiada własny system plików, udział w zasobach procesora, pamięć, przestrzeń procesów itd. Ponieważ kontenery nie są związane z leżącymi poniżej warstwami infrastruktury, mogą być łatwiej przenoszone pomiędzy chmurami i różnymi dystrybucjami systemu operacyjnego.
 
 Kontenery zyskały popularność ze względu na swoje zalety, takie jak:
 
 * Szybkość i elastyczność w tworzeniu i instalacji aplikacji: obraz kontenera buduje się łatwiej niż obraz VM.
-* Ułatwienie ciągłego rozwoju, integracji oraz wdrażania aplikacji (*Continuous development, integration, and deployment*): obrazy kontenerów mogą być budowane w sposób wiarygodny i częsty. Wycofanie zmian jest łatwe i szybkie (ponieważ obrazy są niezmienne).
+* Ułatwienie ciągłego rozwoju, integracji oraz wdrażania aplikacji (*Continuous development, integration, and deployment*): obrazy kontenerów mogą być budowane w sposób wiarygodny i częsty. Wycofywanie zmian jest skuteczne i szybkie (ponieważ obrazy są niezmienne).
 * Rozdzielenie zadań *Dev* i *Ops*: obrazy kontenerów powstają w fazie *build/release*, oddzielając w ten sposób aplikacje od infrastruktury.
 * Obserwowalność obejmuje nie tylko informacje i metryki z poziomu systemu operacyjnego, ale także poprawność działania samej aplikacji i inne sygnały.
 * Spójność środowiska na etapach rozwoju oprogramowania, testowania i działania w trybie produkcyjnym: działa w ten sam sposób na laptopie i w chmurze.
@@ -58,22 +59,22 @@ I tu właśnie Kubernetes przychodzi z pomocą! Kubernetes dostarcza środowisko
 
 Kubernetes zapewnia:
 
-* **Detekcję nowych serwisów i balansowanie ruchu**  
+* **Detekcję nowych serwisów i balansowanie ruchu**
 Kubernetes może udostępnić kontener używając nazwy DNS lub swojego własnego adresu IP. Jeśli ruch przychodzący do kontenera jest duży, Kubernetes może balansować obciążenie i przekierować ruch sieciowy, aby zapewnić stabilność całej instalacji.
-* **Zarządzanie obsługą składowania danych**  
+* **Zarządzanie obsługą składowania danych**
 Kubernetes umożliwia automatyczne montowanie systemów składowania danych dowolnego typu — lokalnych, od dostawców chmurowych i innych.
-* **Automatyczne wdrożenia i wycofywanie zmian**  
+* **Automatyczne wdrożenia i wycofywanie zmian**
 Możesz opisać oczekiwany stan instalacji za pomocą Kubernetesa, który zajmie się doprowadzeniem w sposób kontrolowany stanu faktycznego do stanu oczekiwanego. Przykładowo, przy pomocy Kubernetesa możesz zautomatyzować proces tworzenia nowych kontenerów na potrzeby swojego wdrożenia, usuwania istniejących i przejęcia zasobów przez nowe kontenery.
 * **Automatyczne zarządzanie dostępnymi zasobami**
 Twoim zadaniem jest dostarczenie klastra maszyn, które Kubernetes może wykorzystać do uruchamiania zadań w kontenerach. Określasz zapotrzebowanie na moc procesora i pamięć RAM dla każdego z kontenerów. Kubernetes rozmieszcza kontenery na maszynach w taki sposób, aby jak najlepiej wykorzystać dostarczone zasoby.
-* **Samoczynne naprawianie**  
+* **Samoczynne naprawianie**
 Kubernetes restartuje kontenery, które przestały działać, wymienia je na nowe, wymusza wyłączenie kontenerów, które nie odpowiadają na określone zapytania o stan i nie rozgłasza powiadomień o ich dostępności tak długo, dopóki nie są gotowe do działania.
-* **Zarządzanie informacjami poufnymi i konfiguracją**  
+* **Zarządzanie informacjami poufnymi i konfiguracją**
 Kubernetes pozwala składować i zarządzać informacjami poufnymi, takimi jak hasła, tokeny OAuth i klucze SSH. Informacje poufne i zawierające konfigurację aplikacji mogą być dostarczane i zmieniane bez konieczności ponownego budowania obrazu kontenerów i bez ujawniania poufnych danych w ogólnej konfiguracji oprogramowania.
 
 ## Czym Kubernetes nie jest
 
-Kubernetes nie jest tradycyjnym, zawierającym wszystko systemem PaaS *(Platform as a Service)*. Ponieważ Kubernetes działa w warstwie kontenerów, a nie sprzętu, posiada różne funkcjonalności ogólnego zastosowania, wspólne dla innych rozwiązań PaaS, takie jak: instalacje *(deployments)*, skalowanie, balansowanie ruchu, logowanie i monitoring. Co ważne, Kubernetes nie jest monolitem i te domyślnie dostępne rozwiązania są opcjonalne i działają jako wtyczki. Kubernetes dostarcza elementy, z których może być zbudowana platforma deweloperska, ale pozostawia użytkownikowi wybór i elastyczność tam, gdzie jest to ważne.
+Kubernetes nie jest tradycyjnym, zawierającym wszystko systemem PaaS *(Platform as a Service)*. Ponieważ Kubernetes działa w warstwie kontenerów, a nie sprzętu, posiada różne funkcjonalności ogólnego zastosowania, wspólne dla innych rozwiązań PaaS, takie jak: instalacje *(deployments)*, skalowanie i balansowanie ruchu, umożliwiając użytkownikom integrację rozwiązań służących do logowania, monitoringu i ostrzegania. Co ważne, Kubernetes nie jest monolitem i domyślnie dostępne rozwiązania są opcjonalne i działają jako wtyczki. Kubernetes dostarcza elementy, z których może być zbudowana platforma deweloperska, ale pozostawia użytkownikowi wybór i elastyczność tam, gdzie jest to ważne.
 
 Kubernetes:
 
@@ -85,9 +86,7 @@ Kubernetes:
 * Nie zapewnia, ani nie wykorzystuje żadnego ogólnego systemu do zarządzania konfiguracją, utrzymaniem i samo-naprawianiem maszyn.
 * Co więcej, nie jest zwykłym systemem planowania *(orchestration)*. W rzeczywistości, eliminuje konieczność orkiestracji. Zgodnie z definicją techniczną, orkiestracja to wykonywanie określonego ciągu zadań: najpierw A, potem B i następnie C. Dla kontrastu, Kubernetes składa się z wielu niezależnych, możliwych do złożenia procesów sterujących, których zadaniem jest doprowadzenie stanu faktycznego do stanu oczekiwanego. Nie ma znaczenia, w jaki sposób przechodzi się od A do C. Nie ma konieczności scentralizowanego zarządzania. Dzięki temu otrzymujemy system, który jest potężniejszy, bardziej odporny i niezawodny i dający więcej możliwości rozbudowy.
 
-{{% /capture %}}
+## {{% heading "whatsnext" %}}
 
-{{% capture whatsnext %}}
-*   Dowiedz się o [komponentach Kubernetesa](/pl/docs/concepts/overview/components/)
-*   Jesteś gotowy [zacząć pracę](/pl/docs/setup/)?
-{{% /capture %}}
+* Dowiedz się o [komponentach Kubernetesa](/pl/docs/concepts/overview/components/)
+* Jesteś gotowy [zacząć pracę](/pl/docs/setup/)?

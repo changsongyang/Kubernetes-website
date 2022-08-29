@@ -2,27 +2,25 @@
 reviewers:
 - ahg-g
 title: Scheduling Framework
-content_template: templates/concept
-weight: 60
+content_type: concept
+weight: 90
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 
-{{< feature-state for_k8s_version="v1.15" state="alpha" >}}
+{{< feature-state for_k8s_version="v1.19" state="stable" >}}
 
-The scheduling framework is a pluggable architecture for Kubernetes Scheduler
-that makes scheduler customizations easy. It adds a new set of "plugin" APIs to
-the existing scheduler. Plugins are compiled into the scheduler. The APIs
-allow most scheduling features to be implemented as plugins, while keeping the
-scheduling "core" simple and maintainable. Refer to the [design proposal of the
+The scheduling framework is a pluggable architecture for the Kubernetes scheduler.
+It adds a new set of "plugin" APIs to the existing scheduler. Plugins are compiled into the scheduler. The APIs allow most scheduling features to be implemented as plugins, while keeping the
+scheduling "core" lightweight and maintainable. Refer to the [design proposal of the
 scheduling framework][kep] for more technical information on the design of the
 framework.
 
-[kep]: https://github.com/kubernetes/enhancements/blob/master/keps/sig-scheduling/20180409-scheduling-framework.md
+[kep]: https://github.com/kubernetes/enhancements/blob/master/keps/sig-scheduling/624-scheduling-framework/README.md
 
-{{% /capture %}}
 
-{{% capture body %}}
+
+<!-- body -->
 
 # Framework workflow
 
@@ -54,7 +52,7 @@ equivalent to "Predicate" and "Scoring" is equivalent to "Priority function".
 One plugin may register at multiple extension points to perform more complex or
 stateful tasks.
 
-{{< figure src="/images/docs/scheduling-framework-extensions.png" title="scheduling framework extension points" >}}
+{{< figure src="/images/docs/scheduling-framework-extensions.png" title="scheduling framework extension points" class="diagram-large">}}
 
 ### QueueSort {#queue-sort}
 
@@ -74,6 +72,14 @@ These plugins are used to filter out nodes that cannot run the Pod. For each
 node, the scheduler will call filter plugins in their configured order. If any
 filter plugin marks the node as infeasible, the remaining plugins will not be
 called for that node. Nodes may be evaluated concurrently.
+
+### PostFilter {#post-filter}
+
+These plugins are called after Filter phase, but only when no feasible nodes
+were found for the pod. Plugins are called in their configured order. If
+any postFilter plugin marks the node as `Schedulable`, the remaining plugins
+will not be called. A typical PostFilter implementation is preemption, which
+tries to make the pod schedulable by preempting other Pods.
 
 ### PreScore {#pre-score}
 
@@ -129,17 +135,31 @@ Plugins wishing to perform "pre-reserve" work should use the
 NormalizeScore extension point.
 {{< /note >}}
 
-### Reserve
+### Reserve {#reserve}
 
-This is an informational extension point. Plugins which maintain runtime state
-(aka "stateful plugins") should use this extension point to be notified by the
-scheduler when resources on a node are being reserved for a given Pod. This
-happens before the scheduler actually binds the Pod to the Node, and it exists
-to prevent race conditions while the scheduler waits for the bind to succeed.
+A plugin that implements the Reserve extension has two methods, namely `Reserve`
+and `Unreserve`, that back two informational scheduling phases called Reserve
+and Unreserve, respectively. Plugins which maintain runtime state (aka "stateful
+plugins") should use these phases to be notified by the scheduler when resources
+on a node are being reserved and unreserved for a given Pod.
 
-This is the last step in a scheduling cycle. Once a Pod is in the reserved
-state, it will either trigger [Unreserve](#unreserve) plugins (on failure) or
-[PostBind](#post-bind) plugins (on success) at the end of the binding cycle.
+The Reserve phase happens before the scheduler actually binds a Pod to its
+designated node. It exists to prevent race conditions while the scheduler waits
+for the bind to succeed. The `Reserve` method of each Reserve plugin may succeed
+or fail; if one `Reserve` method call fails, subsequent plugins are not executed
+and the Reserve phase is considered to have failed. If the `Reserve` method of
+all plugins succeed, the Reserve phase is considered to be successful and the
+rest of the scheduling cycle and the binding cycle are executed.
+
+The Unreserve phase is triggered if the Reserve phase or a later phase fails.
+When this happens, the `Unreserve` method of **all** Reserve plugins will be
+executed in the reverse order of `Reserve` method calls. This phase exists to
+clean up the state associated with the reserved Pod.
+
+{{< caution >}}
+The implementation of the `Unreserve` method in Reserve plugins must be
+idempotent and may not fail.
+{{< /caution >}}
 
 ### Permit
 
@@ -152,18 +172,18 @@ the three things:
 
 1.  **deny** \
     If any Permit plugin denies a Pod, it is returned to the scheduling queue.
-    This will trigger [Unreserve](#unreserve) plugins.
+    This will trigger the Unreserve phase in [Reserve plugins](#reserve).
 
 1.  **wait** (with a timeout) \
     If a Permit plugin returns "wait", then the Pod is kept in an internal "waiting"
     Pods list, and the binding cycle of this Pod starts but directly blocks until it
-    gets [approved](#frameworkhandle). If a timeout occurs, **wait** becomes **deny**
-    and the Pod is returned to the scheduling queue, triggering [Unreserve](#unreserve)
-    plugins.
+    gets approved. If a timeout occurs, **wait** becomes **deny**
+    and the Pod is returned to the scheduling queue, triggering the
+    Unreserve phase in [Reserve plugins](#reserve).
 
 {{< note >}}
 While any plugin can access the list of "waiting" Pods and approve them
-(see [`FrameworkHandle`](#frameworkhandle)), we expect only the permit
+(see [`FrameworkHandle`](https://git.k8s.io/enhancements/keps/sig-scheduling/624-scheduling-framework#frameworkhandle)), we expect only the permit
 plugins to approve binding of reserved Pods that are in "waiting" state. Once a Pod
 is approved, it is sent to the [PreBind](#pre-bind) phase.
 {{< /note >}}
@@ -174,7 +194,7 @@ These plugins are used to perform any work required before a Pod is bound. For
 example, a pre-bind plugin may provision a network volume and mount it on the
 target node before allowing the Pod to run there.
 
-If any PreBind plugin returns an error, the Pod is [rejected](#unreserve) and
+If any PreBind plugin returns an error, the Pod is [rejected](#reserve) and
 returned to the scheduling queue.
 
 ### Bind
@@ -190,15 +210,6 @@ skipped**.
 This is an informational extension point. Post-bind plugins are called after a
 Pod is successfully bound. This is the end of a binding cycle, and can be used
 to clean up associated resources.
-
-### Unreserve
-
-This is an informational extension point. If a Pod was reserved and then
-rejected in a later phase, then unreserve plugins will be notified. Unreserve
-plugins should clean up state associated with the reserved Pod.
-
-Plugins that use this extension point usually should also use
-[Reserve](#reserve).
 
 ## Plugin API
 
@@ -228,7 +239,7 @@ type PreFilterPlugin interface {
 
 You can enable or disable plugins in the scheduler configuration. If you are using
 Kubernetes v1.18 or later, most scheduling
-[plugins](/docs/reference/scheduling/profiles/#scheduling-plugins) are in use and
+[plugins](/docs/reference/scheduling/config/#scheduling-plugins) are in use and
 enabled by default.
 
 In addition to default plugins, you can also implement your own scheduling
@@ -237,6 +248,5 @@ plugins and get them configured along with default plugins. You can visit
 
 If you are using Kubernetes v1.18 or later, you can configure a set of plugins as
 a scheduler profile and then define multiple profiles to fit various kinds of workload.
-Learn more at [multiple profiles](/docs/reference/scheduling/profiles/#multiple-profiles).
+Learn more at [multiple profiles](/docs/reference/scheduling/config/#multiple-profiles).
 
-{{% /capture %}}

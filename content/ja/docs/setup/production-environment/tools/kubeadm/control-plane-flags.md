@@ -1,10 +1,10 @@
 ---
 title: kubeadmを使ったコントロールプレーンの設定のカスタマイズ
-content_template: templates/concept
+content_type: concept
 weight: 40
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 
 {{< feature-state for_k8s_version="1.12" state="stable" >}}
 
@@ -27,15 +27,15 @@ kubeadmの`ClusterConfiguration`オブジェクトはAPIServer、ControllerManag
 `kubeadm config print init-defaults`を実行し、選択したファイルに出力を保存することで、デフォルト値で`ClusterConfiguration`オブジェクトを生成できます。
 {{< /note >}}
 
-{{% /capture %}}
 
-{{% capture body %}}
+
+<!-- body -->
 
 ## APIServerフラグ
 
 詳細は[kube-apiserverのリファレンスドキュメント](/docs/reference/command-line-tools-reference/kube-apiserver/)を参照してください。
 
-Example usage:
+使用例:
 ```yaml
 apiVersion: kubeadm.k8s.io/v1beta2
 kind: ClusterConfiguration
@@ -52,7 +52,7 @@ apiServer:
 
 詳細は[kube-controller-managerのリファレンスドキュメント](/docs/reference/command-line-tools-reference/kube-controller-manager/)を参照してください。
 
-Example usage:
+使用例:
 ```yaml
 apiVersion: kubeadm.k8s.io/v1beta2
 kind: ClusterConfiguration
@@ -68,16 +68,16 @@ controllerManager:
 
 詳細は[kube-schedulerのリファレンスドキュメント](/docs/reference/command-line-tools-reference/kube-scheduler/)を参照してください。
 
-Example usage:
+使用例:
 ```yaml
 apiVersion: kubeadm.k8s.io/v1beta2
 kind: ClusterConfiguration
 kubernetesVersion: v1.16.0
 scheduler:
   extraArgs:
-    address: 0.0.0.0
+    bind-address: 0.0.0.0
     config: /home/johndoe/schedconfig.yaml
     kubeconfig: /home/johndoe/kubeconfig.yaml
 ```
 
-{{% /capture %}}
+

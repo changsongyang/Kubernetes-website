@@ -1,20 +1,20 @@
 ---
 title: 쿠버네티스 오브젝트 이해하기
-content_template: templates/concept
+content_type: concept
 weight: 10
 card:
   name: concepts
   weight: 40
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 이 페이지에서는 쿠버네티스 오브젝트가 쿠버네티스 API에서 어떻게 표현되고, 그 오브젝트를 어떻게 `.yaml` 형식으로 표현할 수 있는지에 대해 설명한다.
-{{% /capture %}}
 
-{{% capture body %}}
+
+<!-- body -->
 ## 쿠버네티스 오브젝트 이해하기 {#kubernetes-objects}
 
-*쿠버네티스 오브젝트* 는 쿠버네티스 시스템에서 영속성을 가지는 개체이다. 쿠버네티스는 클러스터의 상태를 나타내기 위해 이 개체를 이용한다. 구체적으로 말하자면, 다음을 기술할 수 있다.
+*쿠버네티스 오브젝트* 는 쿠버네티스 시스템에서 영속성을 가지는 오브젝트이다. 쿠버네티스는 클러스터의 상태를 나타내기 위해 이 오브젝트를 이용한다. 구체적으로 말하자면, 다음같이 기술할 수 있다.
 
 * 어떤 컨테이너화된 애플리케이션이 동작 중인지 (그리고 어느 노드에서 동작 중인지)
 * 그 애플리케이션이 이용할 수 있는 리소스
@@ -32,8 +32,8 @@ card:
 원하는 특징(_의도한 상태_)에 대한 설명을
 제공해서 설정한다.
 
-`status`는 오브젝트의 _현재 상태_ 를 기술하고, 쿠버네티스
-컴포넌트에 의해 제공되고 업데이트 된다. 쿠버네티스
+`status` 는 쿠버네티스 시스템과 컴포넌트에 의해 제공되고
+업데이트된 오브젝트의 _현재 상태_ 를 설명한다. 쿠버네티스
 {{< glossary_tooltip text="컨트롤 플레인" term_id="control-plane" >}}은 모든 오브젝트의
 실제 상태를 사용자가 의도한 상태와 일치시키기 위해 끊임없이 그리고
 능동적으로 관리한다.
@@ -44,7 +44,8 @@ spec에 3개의 애플리케이션 레플리카가 동작되도록
 설정할 수 있다. 쿠버네티스 시스템은 그 디플로이먼트 spec을 읽어
 spec에 일치되도록 상태를 업데이트하여 3개의 의도한
 애플리케이션 인스턴스를 구동시킨다. 만약, 그 인스턴스들 중 어느 하나가
-어떤 문제로 인해 멈춘다면(상태 변화 발생), 쿠버네티스 시스템은 보정(이 경우에는 대체 인스턴스를 시작하여)을 통해
+어떤 문제로 인해 멈춘다면(상태 변화 발생), 쿠버네티스 시스템은 보정(이
+경우에는 대체 인스턴스를 시작하여)을 통해
 spec과 status간의 차이에 대응한다.
 
 오브젝트 명세, 상태, 그리고 메타데이터에 대한 추가 정보는, [Kubernetes API Conventions](https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md) 를 참조한다.
@@ -62,7 +63,7 @@ spec과 status간의 차이에 대응한다.
 [`kubectl apply`](/docs/reference/generated/kubectl/kubectl-commands#apply) 커맨드를 이용하는 것이다. 다음 예시와 같다.
 
 ```shell
-kubectl apply -f https://k8s.io/examples/application/deployment.yaml --record
+kubectl apply -f https://k8s.io/examples/application/deployment.yaml
 ```
 
 그 출력 내용은 다음과 유사하다.
@@ -80,17 +81,24 @@ deployment.apps/nginx-deployment created
 * `metadata` - `이름` 문자열, `UID`, 그리고 선택적인 `네임스페이스`를 포함하여 오브젝트를 유일하게 구분지어 줄 데이터
 * `spec` - 오브젝트에 대해 어떤 상태를 의도하는지
 
-오브젝트 `spec`에 대한 정확한 포맷은 모든 쿠버네티스 오브젝트마다 다르고, 그 오브젝트 특유의 중첩된 필드를 포함한다. [Kubernetes API Reference](/docs/reference/generated/kubernetes-api/{{< param "version" >}}/) 는 쿠버네티스를 이용하여 생성할 수 있는 오브젝트에 대한 모든 spec 포맷을 살펴볼 수 있도록 해준다. 
-예를 들어, 파드에 대한 `spec` 포맷은 
-[PodSpec v1 Core](/docs/reference/generated/kubernetes-api/{{< param "version" >}}/#podspec-v1-core)
-에서 확인할 수 있고, 디플로이먼트에 대한 `spec` 포맷은 
-[DeploymentSpec v1 apps](/docs/reference/generated/kubernetes-api/{{< param "version" >}}/#deploymentspec-v1-apps)에서 확인할 수 있다.
+오브젝트 `spec`에 대한 정확한 포맷은 모든 쿠버네티스 오브젝트마다 다르고, 그 오브젝트 특유의 중첩된 필드를 포함한다. [쿠버네티스 API 레퍼런스](/docs/reference/generated/kubernetes-api/{{< param "version" >}}/) 는 쿠버네티스를 이용하여 생성할 수 있는 오브젝트에 대한 모든 spec 포맷을 살펴볼 수 있도록 해준다.
 
-{{% /capture %}}
+예를 들어, 파드 API 레퍼런스를 보려면 
+[`spec` 필드](/docs/reference/kubernetes-api/workload-resources/pod-v1/#PodSpec)를 참조한다. 
+각 파드에 대해, `.spec` 필드는 파드 및 파드의 원하는 상태(desired state)를 
+기술한다(예: 파드의 각 컨테이너에 대한 컨테이너 이미지). 
+오브젝트 상세에 대한 또 다른 예시는 스테이트풀셋 API의 
+[`spec` 필드](/docs/reference/kubernetes-api/workload-resources/stateful-set-v1/#StatefulSetSpec)이다. 
+스테이트풀셋의 경우, `.spec` 필드는 스테이트풀셋 및 스테이트풀셋의 원하는 상태(desired state)를 기술한다. 
+스테이트풀셋의 `.spec`에는 파드 오브젝트에 대한 
+[템플릿](/ko/docs/concepts/workloads/pods/#파드-템플릿)이 존재한다. 
+이 템플릿은 스테이트풀셋 명세를 만족시키기 위해 
+스테이트풀셋 컨트롤러가 생성할 파드에 대한 상세 사항을 설명한다.
+서로 다른 종류의 오브젝트는 서로 다른 `.status`를 가질 수 있다. 
+다시 한번 말하자면, 각 API 레퍼런스 페이지는 각 오브젝트 타입에 대해 해당 `.status` 필드의 구조와 내용에 대해 소개한다. 
 
-{{% capture whatsnext %}}
-* API 개념의 더 많은 설명은 [Kubernetes API 개요](/ko/docs/reference/using-api/api-overview/)를 본다.
-* [파드(Pod)](/ko/docs/concepts/workloads/pods/pod-overview/)와 같이, 가장 중요하고 기본적인 쿠버네티스 오브젝트에 대해 배운다.
+## {{% heading "whatsnext" %}}
+
+* [파드](/ko/docs/concepts/workloads/pods/)와 같이, 가장 중요하고 기본적인 쿠버네티스 오브젝트에 대해 배운다.
 * 쿠버네티스의 [컨트롤러](/ko/docs/concepts/architecture/controller/)에 대해 배운다.
-{{% /capture %}}
-
+* API 개념의 더 많은 설명은 [쿠버네티스 API 사용](/ko/docs/reference/using-api/)을 본다.

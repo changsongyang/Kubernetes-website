@@ -2,27 +2,26 @@
 reviewers:
 - lavalamp
 title: Kubernetes Components
-content_template: templates/concept
+content_type: concept
+description: >
+  A Kubernetes cluster consists of the components that are a part of the control
+  plane and a set of machines called nodes.
 weight: 20
 card: 
   name: concepts
   weight: 20
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 When you deploy Kubernetes, you get a cluster.
 {{< glossary_definition term_id="cluster" length="all" prepend="A Kubernetes cluster consists of">}}
 
-This document outlines the various components you need to have
+This document outlines the various components you need to have for
 a complete and working Kubernetes cluster.
 
-Here's the diagram of a Kubernetes cluster with all the components tied together.
+{{< figure src="/images/docs/components-of-kubernetes.svg" alt="Components of Kubernetes" caption="The components of a Kubernetes cluster" class="diagram-large" >}}
 
-![Components of Kubernetes](/images/docs/components-of-kubernetes.png)
-
-{{% /capture %}}
-
-{{% capture body %}}
+<!-- body -->
 ## Control Plane Components
 
 The control plane's components make global decisions about the cluster (for example, scheduling), as well as detecting and responding to cluster events (for example, starting up a new {{< glossary_tooltip text="pod" term_id="pod">}} when a deployment's `replicas` field is unsatisfied).
@@ -30,7 +29,8 @@ The control plane's components make global decisions about the cluster (for exam
 Control plane components can be run on any machine in the cluster. However,
 for simplicity, set up scripts typically start all control plane components on
 the same machine, and do not run user containers on this machine. See
-[Building High-Availability Clusters](/docs/admin/high-availability/) for an example multi-master-VM setup.
+[Creating Highly Available clusters with kubeadm](/docs/setup/production-environment/tools/kubeadm/high-availability/)
+for an example control plane setup that runs across multiple machines.
 
 ### kube-apiserver
 
@@ -48,11 +48,11 @@ the same machine, and do not run user containers on this machine. See
 
 {{< glossary_definition term_id="kube-controller-manager" length="all" >}}
 
-These controllers include:
+Some types of these controllers are:
 
   * Node controller: Responsible for noticing and responding when nodes go down.
-  * Replication controller: Responsible for maintaining the correct number of pods for every replication
-  controller object in the system.
+  * Job controller: Watches for Job objects that represent one-off tasks, then creates
+    Pods to run those tasks to completion.
   * Endpoints controller: Populates the Endpoints object (that is, joins Services & Pods).
   * Service Account & Token controllers: Create default accounts and API access tokens for new namespaces.
 
@@ -86,7 +86,7 @@ Node components run on every node, maintaining running pods and providing the Ku
 
 {{< glossary_definition term_id="kube-proxy" length="all" >}}
 
-### Container Runtime
+### Container runtime
 
 {{< glossary_definition term_id="container-runtime" length="all" >}}
 
@@ -114,7 +114,7 @@ Containers started by Kubernetes automatically include this DNS server in their 
 
 ### Container Resource Monitoring
 
-[Container Resource Monitoring](/docs/tasks/debug-application-cluster/resource-usage-monitoring/) records generic time-series metrics
+[Container Resource Monitoring](/docs/tasks/debug/debug-cluster/resource-usage-monitoring/) records generic time-series metrics
 about containers in a central database, and provides a UI for browsing that data.
 
 ### Cluster-level Logging
@@ -122,10 +122,10 @@ about containers in a central database, and provides a UI for browsing that data
 A [cluster-level logging](/docs/concepts/cluster-administration/logging/) mechanism is responsible for
 saving container logs to a central log store with search/browsing interface.
 
-{{% /capture %}}
-{{% capture whatsnext %}}
+
+## {{% heading "whatsnext" %}}
+
 * Learn about [Nodes](/docs/concepts/architecture/nodes/)
 * Learn about [Controllers](/docs/concepts/architecture/controller/)
 * Learn about [kube-scheduler](/docs/concepts/scheduling-eviction/kube-scheduler/)
 * Read etcd's official [documentation](https://etcd.io/docs/)
-{{% /capture %}}

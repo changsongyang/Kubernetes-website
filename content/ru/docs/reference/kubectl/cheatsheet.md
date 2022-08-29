@@ -4,21 +4,21 @@ reviewers:
 - erictune
 - krousey
 - clove
-content_template: templates/concept
+content_type: concept
 card:
   name: reference
   weight: 30
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 
 Смотрите также: [обзор Kubectl](/ru/docs/reference/kubectl/overview/) и [руководство по JsonPath](/ru/docs/reference/kubectl/jsonpath).
 
 Эта команда представляет собой обзор команды `kubectl`.
 
-{{% /capture %}}
 
-{{% capture body %}}
+
+<!-- body -->
 
 # kubectl - Шпаргалка
 
@@ -186,6 +186,9 @@ kubectl get pods --show-labels
 JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}' \
  && kubectl get nodes -o jsonpath="$JSONPATH" | grep "Ready=True"
 
+# Вывод декодированных секретов без внешних инструментов
+kubectl get secret my-secret -o go-template='{{range $k,$v := .data}}{{"### "}}{{$k}}{{"\n"}}{{$v|base64decode}}{{"\n\n"}}{{end}}'
+
 # Вывести все секреты, используемые сейчас в поде.
 kubectl get pods -o json | jq '.items[].spec.containers[].env[]?.valueFrom.secretKeyRef.name' | grep -v null | sort | uniq
 
@@ -232,7 +235,7 @@ kubectl get pod mypod -o yaml | sed 's/\(image: myimage\):.*$/\1:v4/' | kubectl 
 
 kubectl label pods my-pod new-label=awesome                      # Добавить метку
 kubectl annotate pods my-pod icon-url=http://goo.gl/XXBTWq       # Добавить аннотацию
-kubectl autoscale deployment foo --min=2 --max=10                # Автоматически промасштабировать развёртывание "foo"
+kubectl autoscale deployment foo --min=2 --max=10                # Автоматически масштабировать развёртывание "foo" в диапазоне от 2 до 10 подов
 ```
 
 ## Обновление ресурсов
@@ -266,10 +269,10 @@ KUBE_EDITOR="nano" kubectl edit svc/docker-registry   # Использовать
 ## Масштабирование ресурсов
 
 ```bash
-kubectl scale --replicas=3 rs/foo                                 # Промасштабировать набор реплик (replicaset) 'foo' до 3
-kubectl scale --replicas=3 -f foo.yaml                            # Промасштабировать ресурс в "foo.yaml" до 3
-kubectl scale --current-replicas=2 --replicas=3 deployment/mysql  # Если количество реплик в развёртывании mysql равен 2, промасштабировать его до 3
-kubectl scale --replicas=5 rc/foo rc/bar rc/baz                   # Промасштабировать несколько контроллеров репликации
+kubectl scale --replicas=3 rs/foo                                 # Масштабирование набора реплик (replicaset) 'foo' до 3
+kubectl scale --replicas=3 -f foo.yaml                            # Масштабирование ресурса в "foo.yaml" до 3
+kubectl scale --current-replicas=2 --replicas=3 deployment/mysql  # Если количество реплик в развёртывании mysql равен 2, масштабировать его до 3
+kubectl scale --replicas=5 rc/foo rc/bar rc/baz                   # Масштабирование нескольких контроллеров репликации до 5
 ```
 
 ## Удаление ресурсов
@@ -359,7 +362,7 @@ kubectl api-resources --api-group=extensions # Все ресурсы в API-гр
 
 ### Уровни детальности вывода и отладки в Kubectl
 
-Уровни детальности вывода Kubectl регулируются с помощью флагов `-v` или `--v`, за которыми следует целое число, представляющее уровни логирования. Общие соглашения по логированиия Kubernetes и связанные с ними уровни описаны [здесь](https://github.com/kubernetes/community/blob/master/contributors/devel/sig-instrumentation/logging.md).
+Уровни детальности вывода Kubectl регулируются с помощью флагов `-v` или `--v`, за которыми следует целое число, представляющее уровни логирования. Общие соглашения по логированию Kubernetes и связанные с ними уровни описаны [здесь](https://github.com/kubernetes/community/blob/master/contributors/devel/sig-instrumentation/logging.md).
 
 
 Уровень детальности | Описание
@@ -374,9 +377,10 @@ kubectl api-resources --api-group=extensions # Все ресурсы в API-гр
 `--v=8` | Показать содержимое HTTP-запросов.
 `--v=9` | Показать содержимого HTTP-запроса в полном виде.
 
-{{% /capture %}}
 
-{{% capture whatsnext %}}
+
+## {{% heading "whatsnext" %}}
+
 
 * Подробнее о kubectl на странице [обзора](/ru/docs/reference/kubectl/overview/).
 
@@ -386,4 +390,4 @@ kubectl api-resources --api-group=extensions # Все ресурсы в API-гр
 
 * Посмотреть [шпаргалки по kubectl](https://github.com/dennyzhang/cheatsheet-kubernetes-A4) сообщества.
 
-{{% /capture %}}
+

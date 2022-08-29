@@ -1,9 +1,9 @@
 ---
-no_issue: true
 title: Od czego zacząć
 main_menu: true
 weight: 20
-content_template: templates/concept
+content_type: concept
+no_list: true
 card:
   name: setup
   weight: 20
@@ -14,36 +14,49 @@ card:
     title: Środowisko produkcyjne  
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 
 Ten rozdział poświęcony jest różnym metodom konfiguracji i uruchomienia Kubernetesa.
+Instalując Kubernetesa, przy wyborze platformy kieruj się: łatwością w utrzymaniu, spełnianymi wymogami bezpieczeństwa, poziomem sterowania, dostępnością zasobów oraz doświadczeniem wymaganym do zarządzania klastrem.
 
-Istnieje wiele rozwiązań dopasowanych do różnych potrzeb użytkowników: łatwości w utrzymaniu, wymagań bezpieczeństwa, poziomu sterowania, dostępności zasobów oraz niezbędnego doświadczenia do zarządzania klastrem.
+Możesz [pobrać Kubernetesa](/releases/download/), aby zainstalować klaster
+na lokalnym komputerze, w chmurze czy w prywatnym centrum obliczeniowym.
 
-Klaster Kubernetes możesz zainstalować na lokalnym komputerze, w chmurze czy w prywatnym centrum obliczeniowym albo skorzystać z klastra Kubernetes udostępnianego jako usługa. Inną możliwością jest budowa własnego rozwiązania opartego o różnych dostawców usług chmurowych, bądź bazującego bezpośrednio na sprzęcie fizycznym.
+Jeśli nie chcesz zarządzać klastrem Kubernetesa samodzielnie, możesz wybrać serwis zarządzany przez zewnętrznego dostawcę,
+wybierając na przykład spośród [certyfikowanych platform](/docs/setup/production-environment/turnkey-solutions/).
+Dostępne są także inne standardowe i specjalizowane rozwiązania dla różnych środowisk chmurowych
+bądź bazujące bezpośrednio na sprzęcie fizycznym.
 
-W dużym uproszczeniu, możesz zbudować klaster Kubernetes zarówno w środowisku szkoleniowym, jak i na potrzeby produkcyjne.
-
-{{% /capture %}}
-
-{{% capture body %}}
+<!-- body -->
 
 ## Środowisko do nauki {#srodowisko-do-nauki}
 
-Aby uruchomić klaster Kubernetes do nauki na lokalnym komputerze, skorzystaj z rozwiązań opartych o Dockera — z narzędzi wspieranych przez społeczność Kubernetesa, bądź innych narzędzi dostępnych w ekosystemie.
-
-{{< table caption="Tabela z rozwiązaniami pozwalającymi na uruchomienie Kubernetesa na komputerze lokalnym - wspieranymi przez społeczność lub innymi dostępnymi w ekosystemie" >}}
-
-|Społeczność           |Ekosystem     |
-| ------------       | --------     |
-| [Minikube](/docs/setup/learning-environment/minikube/) | [Docker Desktop](https://www.docker.com/products/docker-desktop)|
-| [kind (Kubernetes IN Docker)](/docs/setup/learning-environment/kind/) | [Minishift](https://docs.okd.io/latest/minishift/)|
-|                     | [MicroK8s](https://microk8s.io/)|
+Do nauki Kubernetesa wykorzystaj narzędzia wspierane przez społeczność Kubernetesa
+lub inne narzędzia dostępne w ekosystemie, aby uruchomić klaster Kubernetesa na swoim komputerze lokalnym.
+Zapoznaj się z [narzędziami instalacyjnymi](/docs/tasks/tools/).
 
 ## Środowisko produkcyjne {#srodowisko-produkcyjne}
 
-Wybierając rozwiązanie dla środowiska produkcyjnego musisz zdecydować, którymi poziomami zarządzania klastrem (_abstrakcjami_) chcesz zajmować się sam, a które będą realizowane po stronie zewnętrznego operatora.
+Wybierając rozwiązanie dla
+[środowiska produkcyjnego](/docs/setup/production-environment/) musisz zdecydować,
+którymi poziomami zarządzania klastrem (_abstrakcjami_) chcesz zajmować się sam,
+a które będą realizowane po stronie zewnętrznego operatora.
 
-Na stronie [Partnerzy Kubernetes](https://kubernetes.io/partners/#conformance) znajdziesz listę dostawców posiadających [certyfikację Kubernetes](https://github.com/cncf/k8s-conformance/#certified-kubernetes).
+Do instalacji klastra Kubernetesa zarządzanego samodzielnie oficjalnym narzędziem
+jest [kubeadm](/docs/setup/production-environment/tools/kubeadm/).
 
-{{% /capture %}}
+## {{% heading "whatsnext" %}}
+
+- [Pobierz Kubernetesa](/releases/download/)
+- Pobierz i [zainstaluj narzędzia](/docs/tasks/tools/), w tym `kubectl`
+- Wybierz [środowisko uruchomieniowe dla kontenerów](/docs/setup/production-environment/container-runtimes/) w nowym klastrze
+- Naucz się [najlepszych praktyk](/docs/setup/best-practices/) przy konfigurowaniu klastra
+
+Na stronie [Partnerów Kubernetesa](https://kubernetes.io/partners/#conformance) znajdziesz listę dostawców posiadających
+[certyfikację Kubernetes](https://github.com/cncf/k8s-conformance/#certified-kubernetes).
+
+Kubernetes zaprojektowano w ten sposób, że {{< glossary_tooltip term_id="control-plane" text="warstwa sterowania" >}}
+wymaga do działania systemu Linux. W ramach klastra aplikacje mogą być uruchamiane na systemie Linux i innych,
+w tym Windows.
+
+- Naucz się, [jak zbudować klaster z węzłami Windows](/docs/setup/production-environment/windows/)

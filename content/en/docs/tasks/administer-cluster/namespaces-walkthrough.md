@@ -3,10 +3,10 @@ reviewers:
 - derekwaynecarr
 - janetkuo
 title: Namespaces Walkthrough
-content_template: templates/task
+content_type: task
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 Kubernetes {{< glossary_tooltip text="namespaces" term_id="namespace" >}}
 help different projects, teams, or customers to share a Kubernetes cluster.
 
@@ -19,23 +19,24 @@ Use of multiple namespaces is optional.
 
 This example demonstrates how to use Kubernetes namespaces to subdivide your cluster.
 
-{{% /capture %}}
 
 
-{{% capture prerequisites %}}
+
+## {{% heading "prerequisites" %}}
+
 
 {{< include "task-tutorial-prereqs.md" >}} {{< version-check >}}
 
-{{% /capture %}}
 
-{{% capture steps %}}
+
+<!-- steps -->
 
 ## Prerequisites
 
 This example assumes the following:
 
 1. You have an [existing Kubernetes cluster](/docs/setup/).
-2. You have a basic understanding of Kubernetes _[Pods](/docs/concepts/workloads/pods/pod/)_, _[Services](/docs/concepts/services-networking/service/)_, and _[Deployments](/docs/concepts/workloads/controllers/deployment/)_.
+2. You have a basic understanding of Kubernetes {{< glossary_tooltip text="Pods" term_id="pod" >}}, {{< glossary_tooltip term_id="service" text="Services" >}}, and {{< glossary_tooltip text="Deployments" term_id="deployment" >}}.
 
 ## Understand the default namespace
 
@@ -231,7 +232,7 @@ Apply the manifest to create a Deployment
 ```shell
 kubectl apply -f https://k8s.io/examples/admin/snowflake-deployment.yaml
 ```
-We have just created a deployment whose replica size is 2 that is running the pod called `snowflake` with a basic container that just serves the hostname.
+We have created a deployment whose replica size is 2 that is running the pod called `snowflake` with a basic container that serves the hostname.
 
 ```shell
 kubectl get deployment
@@ -242,7 +243,7 @@ snowflake    2/2     2            2           2m
 ```
 
 ```shell
-kubectl get pods -l run=snowflake
+kubectl get pods -l app=snowflake
 ```
 ```
 NAME                         READY     STATUS    RESTARTS   AGE
@@ -268,7 +269,7 @@ kubectl get pods
 Production likes to run cattle, so let's create some cattle pods.
 
 ```shell
-kubectl run cattle --image=k8s.gcr.io/serve_hostname --replicas=5
+kubectl create deployment cattle --image=registry.k8s.io/serve_hostname --replicas=5
 
 kubectl get deployment
 ```
@@ -278,7 +279,7 @@ cattle       5/5     5            5           10s
 ```
 
 ```shell
-kubectl get pods -l run=cattle
+kubectl get pods -l app=cattle
 ```
 ```
 NAME                      READY     STATUS    RESTARTS   AGE
@@ -294,4 +295,4 @@ At this point, it should be clear that the resources users create in one namespa
 As the policy support in Kubernetes evolves, we will extend this scenario to show how you can provide different
 authorization rules for each namespace.
 
-{{% /capture %}}
+

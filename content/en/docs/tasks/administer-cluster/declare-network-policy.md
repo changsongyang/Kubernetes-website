@@ -4,30 +4,28 @@ reviewers:
 - danwinship
 title: Declare Network Policy
 min-kubernetes-server-version: v1.8
-content_template: templates/task
+content_type: task
 ---
-{{% capture overview %}}
+<!-- overview -->
 This document helps you get started using the Kubernetes [NetworkPolicy API](/docs/concepts/services-networking/network-policies/) to declare network policies that govern how pods communicate with each other.
-{{% /capture %}}
 
-{{% capture prerequisites %}}
+{{% thirdparty-content %}}
+
+## {{% heading "prerequisites" %}}
+
 
 {{< include "task-tutorial-prereqs.md" >}} {{< version-check >}}
 
 Make sure you've configured a network provider with network policy support. There are a number of network providers that support NetworkPolicy, including:
 
+* [Antrea](/docs/tasks/administer-cluster/network-policy-provider/antrea-network-policy/)
 * [Calico](/docs/tasks/administer-cluster/network-policy-provider/calico-network-policy/)
 * [Cilium](/docs/tasks/administer-cluster/network-policy-provider/cilium-network-policy/)
 * [Kube-router](/docs/tasks/administer-cluster/network-policy-provider/kube-router-network-policy/)
 * [Romana](/docs/tasks/administer-cluster/network-policy-provider/romana-network-policy/)
 * [Weave Net](/docs/tasks/administer-cluster/network-policy-provider/weave-network-policy/)
 
-{{< note >}}
-The above list is sorted alphabetically by product name, not by recommendation or preference. This example is valid for a Kubernetes cluster using any of these providers.
-{{< /note >}}
-{{% /capture %}}
-
-{{% capture steps %}}
+<!-- steps -->
 
 ## Create an `nginx` deployment and expose it via a service
 
@@ -70,7 +68,7 @@ pod/nginx-701339712-e0qfq   1/1           Running       0          35s
 You should be able to access the new `nginx` service from other Pods. To access the `nginx` Service from another Pod in the `default` namespace, start a busybox container:
 
 ```console
-kubectl run busybox --rm -ti --image=busybox -- /bin/sh
+kubectl run busybox --rm -ti --image=busybox:1.28 -- /bin/sh
 ```
 
 In your shell, run the following command:
@@ -113,7 +111,7 @@ networkpolicy.networking.k8s.io/access-nginx created
 When you attempt to access the `nginx` Service from a Pod without the correct labels, the request times out:
 
 ```console
-kubectl run busybox --rm -ti --image=busybox -- /bin/sh
+kubectl run busybox --rm -ti --image=busybox:1.28 -- /bin/sh
 ```
 
 In your shell, run the command:
@@ -132,7 +130,7 @@ wget: download timed out
 You can create a Pod with the correct labels to see that the request is allowed:
 
 ```console
-kubectl run busybox --rm -ti --labels="access=true" --image=busybox -- /bin/sh
+kubectl run busybox --rm -ti --labels="access=true" --image=busybox:1.28 -- /bin/sh
 ```
 
 In your shell, run the command:
@@ -146,4 +144,4 @@ Connecting to nginx (10.100.0.16:80)
 remote file exists
 ```
 
-{{% /capture %}}
+

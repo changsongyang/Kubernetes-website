@@ -1,19 +1,20 @@
 ---
 title: Installer Minikube
-content_template: templates/task
+content_type: task
 weight: 20
 card:
   name: tasks
   weight: 10
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 
 Cette page vous montre comment installer [Minikube](/fr/docs/tutorials/hello-minikube/), qui est un outil qui fait tourner un cluster Kubernetes à un noeud unique dans une machine virtuelle sur votre machine.
 
-{{% /capture %}}
 
-{{% capture prerequisites %}}
+
+## {{% heading "prerequisites" %}}
+
 
 {{< tabs name="minikube_before_you_begin" >}}
 {{% tab name="Linux" %}}
@@ -53,11 +54,11 @@ Configuration requise pour Hyper-V: un hyperviseur a été détecté. Les foncti
 {{% /tab %}}
 {{< /tabs >}}
 
-{{% /capture %}}
 
-{{% capture steps %}}
 
-# Installer Minikube
+<!-- steps -->
+
+## Installer Minikube
 
 {{< tabs name="tab_with_md" >}}
 {{% tab name="Linux" %}}
@@ -74,7 +75,7 @@ Si vous n'avez pas déjà un hyperviseur installé, installez-le maintenant pour
 
 • [VirtualBox](https://www.virtualbox.org/wiki/Downloads)
 
-Minikube supporte également une option `--vm-driver=none` qui exécute les composants Kubernetes sur la machine hôte et dans pas dans une VM.
+Minikube supporte également une option `--vm-driver=none` qui exécute les composants Kubernetes sur la machine hôte et pas dans une VM.
 L'utilisation de ce pilote nécessite [Docker](https://www.docker.com/products/docker-desktop) et un environnement Linux mais pas un hyperviseur.
 
 Si vous utilisez le pilote `none` dans Debian ou un dérivé, utilisez les paquets` .deb` pour
@@ -83,7 +84,7 @@ Vous pouvez télécharger les packages `.deb` depuis [Docker](https://www.docker
 
 {{< caution >}}
 Le pilote VM `none` peut entraîner des problèmes de sécurité et de perte de données.
-Avant d'utiliser `--driver=none`, consultez [cette documentation] (https://minikube.sigs.k8s.io/docs/reference/drivers/none/) pour plus d'informations.
+Avant d'utiliser `--driver=none`, consultez [cette documentation](https://minikube.sigs.k8s.io/docs/reference/drivers/none/) pour plus d'informations.
 {{</ caution >}}
 
 Minikube prend également en charge un `vm-driver=podman` similaire au pilote Docker. Podman est exécuté en tant que superutilisateur (utilisateur root), c'est le meilleur moyen de garantir que vos conteneurs ont un accès complet à toutes les fonctionnalités disponibles sur votre système.
@@ -200,13 +201,11 @@ Pour installer Minikube manuellement sur Windows, téléchargez [`minikube-windo
 {{< /tabs >}}
 
 
-{{% /capture %}}
 
-{{% capture whatsnext %}}
 
-* [Exécutez Kubernetes localement via Minikube](/fr/docs/setup/learning-environment/minikube/)
 
-{{% /capture %}}
+
+
 
 ## Confirmer l'installation
 
@@ -259,3 +258,8 @@ Vous devez supprimer les fichiers de configuration :
 ```shell
 rm -rf ~/.minikube
 ```
+
+## {{% heading "whatsnext" %}}
+
+
+* [Exécutez Kubernetes localement via Minikube](/fr/docs/setup/learning-environment/minikube/)

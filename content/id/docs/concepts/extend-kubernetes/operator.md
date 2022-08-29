@@ -1,20 +1,20 @@
 ---
 title: Pola Operator
-content_template: templates/concept
+content_type: concept
 weight: 30
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 
 Operator adalah ekstensi perangkat lunak untuk Kubernetes yang memanfaatkan 
-[_custom resource_](/docs/concepts/extend-kubernetes/api-extension/custom-resources/)
+[_custom resource_](/id/docs/concepts/extend-kubernetes/api-extension/custom-resources/)
 untuk mengelola aplikasi dan komponen-komponennya. Operator mengikuti prinsip 
 Kubernetes, khususnya dalam hal [_control loop_](/docs/concepts/#kubernetes-control-plane).
 
-{{% /capture %}}
 
 
-{{% capture body %}}
+
+<!-- body -->
 
 ## Motivasi
 
@@ -124,17 +124,15 @@ Kamu juga dapat mengimplementasikan Operator (yaitu, _Controller_) dengan
 menggunakan bahasa / _runtime_ yang dapat bertindak sebagai 
 [klien dari API Kubernetes](/docs/reference/using-api/client-libraries/).
 
-{{% /capture %}}
+## {{% heading "whatsnext" %}}
 
-{{% capture Selanjutnya %}}
-
-* Memahami lebih lanjut tentang [_custome resources_](/docs/concepts/extend-kubernetes/api-extension/custom-resources/)
+* Memahami lebih lanjut tentang [_custome resources_](/id/docs/concepts/extend-kubernetes/api-extension/custom-resources/)
 * Temukan "ready-made" _operators_ dalam [OperatorHub.io](https://operatorhub.io/) 
   untuk memenuhi use case kamu
 * Menggunakan perangkat yang ada untuk menulis Operator kamu sendiri, misalnya:
   * menggunakan [KUDO](https://kudo.dev/) (Kubernetes Universal Declarative Operator)
   * menggunakan [kubebuilder](https://book.kubebuilder.io/)
-  * menggunakan [Metacontroller](https://metacontroller.app/) bersama dengan
+  * menggunakan [Metacontroller](https://metacontroller.github.io/metacontroller/intro.html) bersama dengan
     `WebHooks` yang kamu implementasikan sendiri
   * menggunakan the [Operator _Framework_](https://github.com/operator-framework/getting-started)
 * [Terbitkan](https://operatorhub.io/) Operator kamu agar dapat digunakan oleh 
@@ -143,4 +141,4 @@ menggunakan bahasa / _runtime_ yang dapat bertindak sebagai
   yang memperkenalkan pola Operator
 * Baca sebuah [artikel](https://cloud.google.com/blog/products/containers-kubernetes/best-practices-for-building-kubernetes-operators-and-stateful-apps) 
   dari Google Cloud soal panduan terbaik membangun Operator
-{{% /capture %}}
+

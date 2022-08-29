@@ -1,7 +1,7 @@
 <!-- # The Kubernetes documentation -->
 # Документація Kubernetes
 
-[![Netlify Status](https://api.netlify.com/api/v1/badges/be93b718-a6df-402a-b4a4-855ba186c97d/deploy-status)](https://app.netlify.com/sites/kubernetes-io-master-staging/deploys) [![GitHub release](https://img.shields.io/github/release/kubernetes/website.svg)](https://github.com/kubernetes/website/releases/latest)
+[![Netlify Status](https://api.netlify.com/api/v1/badges/be93b718-a6df-402a-b4a4-855ba186c97d/deploy-status)](https://app.netlify.com/sites/kubernetes-io-main-staging/deploys) [![GitHub release](https://img.shields.io/github/release/kubernetes/website.svg)](https://github.com/kubernetes/website/releases/latest)
 
 <!-- This repository contains the assets required to build the [Kubernetes website and documentation](https://kubernetes.io/). We're glad that you want to contribute! -->
 Вітаємо! В цьому репозиторії міститься все необхідне для роботи над [сайтом і документацією Kubernetes](https://kubernetes.io/). Ми щасливі, що ви хочете зробити свій внесок!
@@ -18,7 +18,8 @@
 ```bash
 git clone https://github.com/kubernetes/website.git
 cd website
-hugo server --buildFuture
+git submodule update --init --recursive --depth 1
+make serve
 ```
 
 <!-- This will start the local Hugo server on port 1313. Open up your browser to http://localhost:1313 to view the website. As you make changes to the source files, Hugo updates the website and forces a browser refresh. -->
@@ -55,7 +56,7 @@ hugo server --buildFuture
 Більше інформації про внесок у документацію Kubernetes ви знайдете у наступних джерелах:
 
 * [Внесок: з чого почати](https://kubernetes.io/docs/contribute/)
-* [Використання шаблонів сторінок](http://kubernetes.io/docs/contribute/style/page-templates/)
+* [Використання шаблонів сторінок](https://kubernetes.io/docs/contribute/style/page-content-types/)
 * [Керівництво зі стилю оформлення документації](http://kubernetes.io/docs/contribute/style/style-guide/)
 * [Переклад документації Kubernetes іншими мовами](https://kubernetes.io/docs/contribute/localization/)
 

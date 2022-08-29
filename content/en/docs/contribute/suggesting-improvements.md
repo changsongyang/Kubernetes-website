@@ -1,30 +1,29 @@
 ---
 title: Suggesting content improvements
-slug: suggest-improvements
-content_template: templates/concept
+content_type: concept
 weight: 10
 card:
   name: contribute
   weight: 20
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 
-If you notice an issue with Kubernetes documentation, or have an idea for new content, then open an issue. All you need is a [GitHub account](https://github.com/join) and a web browser.
+If you notice an issue with Kubernetes documentation or have an idea for new content, then open an issue. All you need is a [GitHub account](https://github.com/join) and a web browser.
 
 In most cases, new work on Kubernetes documentation begins with an issue in GitHub. Kubernetes contributors
 then review, categorize and tag issues as needed. Next, you or another member
 of the Kubernetes community open a pull request with changes to resolve the issue.
 
-{{% /capture %}}
 
-{{% capture body %}}
+
+<!-- body -->
 
 ## Opening an issue
 
-If you want to suggest improvements to existing content, or notice an error, then open an issue.
+If you want to suggest improvements to existing content or notice an error, then open an issue.
 
-1. Go to the bottom of the page and click the **Create an Issue** button. This redirects you
+1. Click the **Create an issue** link on the right sidebar. This redirects you
  to a GitHub issue page pre-populated with some headers.
 2. Describe the issue or suggestion for improvement. Provide as many details as you can.
 3. Click **Submit new issue**.
@@ -62,4 +61,4 @@ Keep the following in mind when filing an issue:
 fellow contributors. For example, "The docs are terrible" is not
   helpful or polite feedback.
 
-{{% /capture %}}
+

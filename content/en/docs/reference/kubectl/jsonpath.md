@@ -1,14 +1,13 @@
 ---
 title: JSONPath Support
-content_template: templates/concept
-weight: 25
+content_type: concept
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 Kubectl supports JSONPath template.
-{{% /capture %}}
 
-{{% capture body %}}
+
+<!-- body -->
 
 JSONPath template is composed of JSONPath expressions enclosed by curly braces {}.
 Kubectl uses JSONPath expressions to filter on specific fields in the JSON object and format the output.
@@ -98,4 +97,16 @@ kubectl get pods -o=jsonpath="{range .items[*]}{.metadata.name}{\"\t\"}{.status.
 ```
 {{< /note >}}
 
-{{% /capture %}}
+{{< note >}}
+
+JSONPath regular expressions are not supported. If you want to match using regular expressions, you can use a tool such as `jq`.
+
+```shell
+# kubectl does not support regular expressions for JSONpath output
+# The following command does not work
+kubectl get pods -o jsonpath='{.items[?(@.metadata.name=~/^test$/)].metadata.name}'
+
+# The following command achieves the desired result
+kubectl get pods -o json | jq -r '.items[] | select(.metadata.name | test("test-")).spec.containers[].image'
+```
+{{< /note >}}

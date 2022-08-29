@@ -1,10 +1,10 @@
 ---
 title: Resource Quota
-content_template: templates/concept
+content_type: concept
 weight: 10
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 
 Saat beberapa pengguna atau tim berbagi sebuah klaster dengan jumlah Node yang tetap,
 ada satu hal yang perlu diperhatikan yaitu suatu tim dapat menggunakan sumber daya
@@ -13,9 +13,9 @@ lebih dari jatah yang mereka perlukan.
 _Resource Quota_ (kuota sumber daya) adalah sebuah alat yang dapat digunakan oleh
 administrator untuk mengatasi hal ini.
 
-{{% /capture %}}
 
-{{% capture body %}}
+
+<!-- body -->
 
 Sebuah Resource Quota, didefinisikan oleh objek API `ResourceQuota`, menyediakan batasan-batasan
 yang membatasi konsumsi gabungan sumber daya komputasi untuk tiap Namespace. Resource Quota dapat
@@ -81,7 +81,7 @@ Berikut jenis-jenis sumber daya yang didukung:
 ### Resource Quota untuk sumber daya yang diperluas
 
 Sebagai tambahan untuk sumber daya yang disebutkan di atas, pada rilis 1.10, dukungan kuota untuk
-[sumber daya yang diperluas](/docs/concepts/configuration/manage-compute-resources-container/#extended-resources) ditambahkan.
+[sumber daya yang diperluas](/id/docs/concepts/configuration/manage-compute-resources-container/#extended-resources) ditambahkan.
 
 Karena _overcommit_ tidak diperbolehkan untuk sumber daya yang diperluas, tidak masuk akal untuk menentukan
 keduanya; `requests` dan `limits` untuk sumber daya yang diperluas yang sama pada sebuah kuota. Jadi, untuk
@@ -98,7 +98,7 @@ Lihat [Melihat dan Menyetel Kuota](#melihat-dan-menyetel-kuota) untuk informasi 
 
 ## Resource Quota untuk penyimpanan
 
-Kamu dapat membatasi jumlah total [sumber daya penyimpanan](/docs/concepts/storage/persistent-volumes/) yang dapat
+Kamu dapat membatasi jumlah total [sumber daya penyimpanan](/id/docs/concepts/storage/persistent-volumes/) yang dapat
 diminta pada sebuah Namespace.
 
 Sebagai tambahan, kamu dapat membatasi penggunaan sumber daya penyimpanan berdasarkan _storage class_
@@ -107,9 +107,9 @@ sumber daya penyimpanan tersebut.
 | Nama Sumber Daya | Deskripsi |
 | --------------------- | ----------------------------------------------------------- |
 | `requests.storage` | Pada seluruh Persistent Volume Claim, jumlah `requests` penyimpanan tidak dapat melebihi nilai ini. |
-| `persistentvolumeclaims` | Jumlah kuantitas [Persistent Volume Claim](/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims) yang dapat ada di dalam sebuah Namespace. |
+| `persistentvolumeclaims` | Jumlah kuantitas [Persistent Volume Claim](/id/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims) yang dapat ada di dalam sebuah Namespace. |
 | `<storage-class-name>.storageclass.storage.k8s.io/requests.storage` | Pada seluruh Persistent Volume Claim yang dikaitkan dengan sebuah nama _storage-class_ (melalui kolom `storageClassName`), jumlah permintaan penyimpanan tidak dapat melebihi nilai ini. |
-| `<storage-class-name>.storageclass.storage.k8s.io/persistentvolumeclaims` | Pada seluruh Persistent Volume Claim yang dikaitkan dengan sebuah nama _storage-class_ (melalui kolom `storageClassName`), jumlah kuantitas [Persistent Volume Claim](/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims) yang dapat ada di dalam sebuah Namespace. |
+| `<storage-class-name>.storageclass.storage.k8s.io/persistentvolumeclaims` | Pada seluruh Persistent Volume Claim yang dikaitkan dengan sebuah nama _storage-class_ (melalui kolom `storageClassName`), jumlah kuantitas [Persistent Volume Claim](/id/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims) yang dapat ada di dalam sebuah Namespace. |
 
 Sebagai contoh, jika sebuah operator ingin membatasi penyimpanan dengan Storage Class `gold` yang berbeda dengan Storage Class `bronze`, maka operator tersebut dapat menentukan kuota sebagai berikut:
 
@@ -163,7 +163,7 @@ Berikut jenis-jenis yang telah didukung:
 | Nama Sumber Daya | Deskripsi |
 | ------------------------------- | ------------------------------------------------- |
 | `configmaps` | Jumlah total ConfigMap yang dapat berada pada suatu Namespace. |
-| `persistentvolumeclaims` | Jumlah total PersistentVolumeClaim[persistent volume claims](/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims) yang dapat berada pada suatu Namespace. |
+| `persistentvolumeclaims` | Jumlah total PersistentVolumeClaim[persistent volume claims](/id/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims) yang dapat berada pada suatu Namespace. |
 | `pods` | Jumlah total Pod yang berada pada kondisi non-terminal yang dapat berada pada suatu Namespace. Sebuah Pod berada kondisi terminal yaitu jika `.status.phase in (Failed, Succeded)` adalah `true`. |
 | `replicationcontrollers` | Jumlah total ReplicationController yang dapat berada pada suatu Namespace. |
 | `resourcequotas` | Jumlah total [ResourceQuota](/docs/reference/access-authn-authz/admission-controllers/#resourcequota) yang dapat berada pada suatu Namespace. |
@@ -208,7 +208,7 @@ Lingkup  `Terminating`, `NotTerminating`, dan `NotBestEffort` membatasi sebuah k
 
 {{< feature-state for_k8s_version="1.12" state="beta" >}}
 
-Pod-Pod dapat dibuat dengan sebuah [Priority (prioritas)](/docs/concepts/configuration/pod-priority-preemption/#pod-priority) tertentu.
+Pod-Pod dapat dibuat dengan sebuah [Priority (prioritas)](/id/docs/concepts/configuration/pod-priority-preemption/#pod-priority) tertentu.
 Kamu dapat mengontrol konsumsi sumber daya sistem sebuah Pod berdasarkan Priority Pod tersebut, menggunakan
 kolom `scopeSelector` pada spesifikasi kuota tersebut.
 
@@ -613,10 +613,11 @@ Lihat [LimitedResources](https://github.com/kubernetes/kubernetes/pull/36765) da
 
 Lihat [contoh detail cara menggunakan sebuah Resource Quota](/docs/tasks/administer-cluster/quota-api-object/).
 
-{{% /capture %}}
 
-{{% capture whatsnext %}}
+
+## {{% heading "whatsnext" %}}
+
 
 Lihat [dokumen desain ResourceQuota](https://git.k8s.io/community/contributors/design-proposals/resource-management/admission_control_resource_quota.md) untuk informasi lebih lanjut.
 
-{{% /capture %}}
+

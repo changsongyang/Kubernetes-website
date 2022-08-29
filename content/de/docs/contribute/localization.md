@@ -1,6 +1,6 @@
 ---
 title: Lokalisierung der Kubernetes Dokumentation
-content_template: templates/concept
+content_type: concept
 weight: 50
 card:
   name: mitarbeiten
@@ -8,13 +8,13 @@ card:
   title: Übersetzen der Dokumentation
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 
 Diese Seite zeigt dir wie die Dokumentation für verschiedene Sprachen [lokalisiert](https://blog.mozilla.org/l10n/2011/12/14/i18n-vs-l10n-whats-the-diff/) wird.
 
-{{% /capture %}}
 
-{{% capture body %}}
+
+<!-- body -->
 
 ## Erste Schritte
 
@@ -22,30 +22,30 @@ Da Mitwirkende nicht ihren eigenen Pull Request freigeben können, brauchst du m
 
 Alle Lokalisierungsteams müssen sich mit ihren eigenen Ressourcen selbst tragen. Die Kubernetes-Website ist gerne bereit, deine Arbeit zu beherbergen, aber es liegt an dir, sie zu übersetzen.
 
-### Finden deinen Zwei-Buchstaben-Sprachcode
+### Ermittlung deines Zwei-Buchstaben-Sprachcodes
 
 Rufe den [ISO 639-1 Standard](https://www.loc.gov/standards/iso639-2/php/code_list.php) auf und finde deinen Zwei-Buchstaben-Ländercode zur Lokalisierung. Zum Beispiel ist der Zwei-Buchstaben-Code für Korea `ko`.
 
-### Duplizieren und klonen des Repositories
+### Duplizieren und Klonen des Repositories
 
-Als erstes [erstells du dir deine eigenes Duplikat](/docs/contribute/new-content/new-content/#fork-the-repo) vom [kubernetes/website] Repository.
+Als erstes [erstellst du dir deine eigenes Duplikat](/docs/contribute/new-content/new-content/#fork-the-repo) vom [kubernetes/website] Repository.
 
-Dann klonst du das Duplikat und `cd` hinein:
+Dann klonst du das Duplikat und wechselst in das neu erstellte Verzeichnis:
 
 ```shell
 git clone https://github.com/<username>/website
 cd website
 ```
 
-### Eröffne ein Pull Request
+### Eröffnen eines Pull Requests
 
 Als nächstes [eröffnest du einen Pull Request](/docs/contribute/new-content/open-a-pr/#open-a-pr) (PR) um eine Lokalisierung zum `kubernetes/website` Repository hinzuzufügen.
 
-Der PR muss die [minimalen Inhaltsanforderungen](#mindestanforderungen) erfüllen bevor dieser genehmigt werden kann.
+Der PR muss die [minimalen Inhaltsanforderungen](#mindestanforderungen) erfüllen, bevor dieser genehmigt werden kann.
 
-Wie der PR für eine neue Lokalisierung aussieht kannst du dir an dem PR für die [Französische Dokumentation](https://github.com/kubernetes/website/pull/12548) ansehen.
+Wie der PR für eine neue Lokalisierung aussieht, kannst du dir an dem PR für die [Französische Dokumentation](https://github.com/kubernetes/website/pull/12548) ansehen.
 
-### Trete der Kubernetes GitHub Organisation bei
+### Tritt der Kubernetes GitHub Organisation bei
 
 Sobald du eine Lokalisierungs-PR eröffnet hast, kannst du Mitglied der Kubernetes GitHub Organisation werden. Jede Person im Team muss einen eigenen [Antrag auf Mitgliedschaft in der Organisation](https://github.com/kubernetes/org/issues/new/choose) im `kubernetes/org`-Repository erstellen.
 
@@ -94,9 +94,9 @@ contentDir = "content/de"
 weight = 3
 ```
 
-Wenn du deinem Block einen Parameter `weight` zuweist, suche den Sprachblock mit dem höchsten Gewicht und addiere  1 zu diesem Wert.
+Wenn du deinem Block einen Parameter `weight` zuweist, suche den Sprachblock mit dem höchsten Gewicht und addiere 1 zu diesem Wert.
 
-Weitere Informationen zu Hugos Multilingualen Support findest du unter "[Multilingual Mode](https://gohugo.io/content-management/multilingual/)" auf in der Hugo Dokumentation.
+Weitere Informationen zu Hugos multilingualem Support findest du unter "[Multilingual Mode](https://gohugo.io/content-management/multilingual/)" auf in der Hugo Dokumentation.
 
 ### Neuen Lokalisierungsordner erstellen
 
@@ -213,7 +213,7 @@ Die neueste Version ist {{< latest-version >}}, so dass der neueste Versionszwei
 
 ### Seitenverlinkung in der Internationalisierung
 
-Lokalisierungen müssen den Inhalt von [`i18n/de.toml`](https://github.com/kubernetes/website/blob/master/i18n/en.toml) in einer neuen sprachspezifischen Datei enthalten. Als Beispiel: `i18n/de.toml`.
+Lokalisierungen müssen den Inhalt von [`i18n/de.toml`](https://github.com/kubernetes/website/blob/main/i18n/en.toml) in einer neuen sprachspezifischen Datei enthalten. Als Beispiel: `i18n/de.toml`.
 
 Füge eine neue Lokalisierungsdatei zu `i18n/` hinzu. Zum Beispiel mit Deutsch (`de`):
 
@@ -229,9 +229,24 @@ other = "ICH BIN..."
 ```
 Durch die Lokalisierung von Website-Zeichenfolgen kannst du Website-weiten Text und Funktionen anpassen: z. B. den gesetzlichen Copyright-Text in der Fußzeile auf jeder Seite.
 
-### Sprachspezifischer Styleguide und Glossar
+## Sprachspezifischer Styleguide
 
 Einige Sprachteams haben ihren eigenen sprachspezifischen Styleguide und ihr eigenes Glossar. Siehe zum Beispiel den [Leitfaden zur koreanischen Lokalisierung](/ko/docs/contribute/localization_ko/).
+
+### Informale Schreibweise
+Für die deutsche Übersetzungen verwenden wir eine informelle Schreibweise und der Ansprache per `Du`. Allerdings werden keine Jargon, Slang, Wortspiele, Redewendungen oder kulturspezifische Bezüge eingebracht.
+
+### Datums und Maßeinheiten
+Wenn notwendig sollten Datumsangaben in das in Deutschland übliche dd.mm.yyyy überführt werden. Alternativ können diese auch in den Textfluss eingebunden werden: "... am 24. April ....".
+
+### Abkürzungen 
+Abkürzungen sollten nach Möglichkeit nicht verwendet werden und entweder ausgeschrieben oder anderweitig umgangen werden.
+
+### Zusammengesetzte Wörter
+Durch die Übersetzung werden oft Nomen aneinandergereiht, diese Wortketten müssen durch Bindestriche verbunden werden. Dies ist auch möglich wenn ein Teil ins Deutsche übersetzt wird ein weiterer jedoch im Englischen bestehen bleibt. Als Richtlinie gilt hier der [Duden](https://www.duden.de/sprachwissen/rechtschreibregeln/bindestrich).
+
+### Anglizismen
+Die Verwendung von Anglizismen ist dann wünschenswert, wenn die Verwendung eines deutschen Wortes, vor allem für technische Begriffe, nicht eindeutig ist oder zu Unklarheiten führt. 
 
 ## Branching Strategie
 
@@ -263,7 +278,7 @@ Die Teams müssen den lokalisierten Inhalt in demselben Versionszweig zusammenf�
 
 Ein Genehmiger muss einen Entwicklungszweig aufrechterhalten, indem er seinen Quellzweig auf dem aktuellen Stand hält und Merge-Konflikte auflöst. Je länger ein Entwicklungszweig geöffnet bleibt, desto mehr Wartung erfordert er in der Regel. Ziehe in Betracht, regelmäßig Entwicklungszweige zusammenzuführen und neue zu eröffnen, anstatt einen extrem lang laufenden Entwicklungszweig zu unterhalten.
 
-Zu Beginn jedes Team-Meilensteins ist es hilfreich, ein Problem [Vergleich der Upstream-Änderungen](https://github.com/kubernetes/website/blob/master/scripts/upstream_changes.py) zwischen dem vorherigen Entwicklungszweig und dem aktuellen Entwicklungszweig zu öffnen.
+Zu Beginn jedes Team-Meilensteins ist es hilfreich, ein Problem [Vergleich der Upstream-Änderungen](https://github.com/kubernetes/website/blob/main/scripts/upstream_changes.py) zwischen dem vorherigen Entwicklungszweig und dem aktuellen Entwicklungszweig zu öffnen.
 
  Während nur Genehmiger einen neuen Entwicklungszweig eröffnen und Pull-Anfragen zusammenführen können, kann jeder eine Pull-Anfrage für einen neuen Entwicklungszweig eröffnen. Es sind keine besonderen Genehmigungen erforderlich.
 
@@ -277,13 +292,12 @@ SIG Docs begrüßt Upstream Beiträge, also auf das englische Original, und Korr
 
 Du kannst auch dazu beitragen, Inhalte zu einer bestehenden Lokalisierung hinzuzufügen oder zu verbessern. Trete dem [Slack-Kanal](https://kubernetes.slack.com/messages/C1J0BPD2M/) für die Lokalisierung bei und beginne mit der Eröffnung von PRs, um zu helfen. Bitte beschränke deine Pull-Anfragen auf eine einzige Lokalisierung, da Pull-Anfragen, die Inhalte in mehreren Lokalisierungen ändern, schwer zu überprüfen sein könnten.
 
-{{% /capture %}}
 
-{{% capture whatsnext %}}
+
+## {{% heading "whatsnext" %}}
+
 
 Sobald eine Lokalisierung die Anforderungen an den Arbeitsablauf und die Mindestausgabe erfüllt, wird SIG docs:
 
 - Die Sprachauswahl auf der Website aktivieren
 - Die Verfügbarkeit der Lokalisierung über die Kanäle der [Cloud Native Computing Foundation](https://www.cncf.io/about/) (CNCF), einschließlich des [Kubernetes Blogs](https://kubernetes.io/blog/) veröffentlichen.
-
-{{% /capture %}}

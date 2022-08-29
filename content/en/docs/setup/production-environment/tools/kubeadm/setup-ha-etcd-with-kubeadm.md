@@ -1,12 +1,12 @@
 ---
 reviewers:
 - sig-cluster-lifecycle
-title: Set up a High Availability etcd cluster with kubeadm
-content_template: templates/task
+title: Set up a High Availability etcd Cluster with kubeadm
+content_type: task
 weight: 70
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 
 {{< note >}}
 While kubeadm is being used as the management tool for external etcd nodes
@@ -16,29 +16,28 @@ or upgrades for such nodes. The long term plan is to empower the tool
 aspects.
 {{< /note >}}
 
-Kubeadm defaults to running a single member etcd cluster in a static pod managed
-by the kubelet on the control plane node. This is not a high availability setup
-as the etcd cluster contains only one member and cannot sustain any members
-becoming unavailable. This task walks through the process of creating a high
-availability etcd cluster of three members that can be used as an external etcd
-when using kubeadm to set up a kubernetes cluster.
+By default, kubeadm runs a local etcd instance on each control plane node.
+It is also possible to treat the etcd cluster as external and provision
+etcd instances on separate hosts. The differences between the two approaches are covered in the
+[Options for Highly Available topology](/docs/setup/production-environment/tools/kubeadm/ha-topology) page.
 
-{{% /capture %}}
+This task walks through the process of creating a high availability external
+etcd cluster of three members that can be used by kubeadm during cluster creation.
 
-{{% capture prerequisites %}}
+## {{% heading "prerequisites" %}}
 
-* Three hosts that can talk to each other over ports 2379 and 2380. This
+* Three hosts that can talk to each other over TCP ports 2379 and 2380. This
   document assumes these default ports. However, they are configurable through
   the kubeadm config file.
-* Each host must [have docker, kubelet, and kubeadm installed][toolbox].
+* Each host must have systemd and a bash compatible shell installed.
+* Each host must [have a container runtime, kubelet, and kubeadm installed](/docs/setup/production-environment/tools/kubeadm/install-kubeadm/).
+* Each host should have access to the Kubernetes container image registry (`registry.k8s.io`) or list/pull the required etcd image using
+`kubeadm config images list/pull`. This guide will setup etcd instances as
+[static pods](/docs/tasks/configure-pod-container/static-pod/) managed by a kubelet.
 * Some infrastructure to copy files between hosts. For example `ssh` and `scp`
   can satisfy this requirement.
 
-[toolbox]: /docs/setup/production-environment/tools/kubeadm/install-kubeadm/
-
-{{% /capture %}}
-
-{{% capture steps %}}
+<!-- steps -->
 
 ## Setting up the cluster
 
@@ -46,14 +45,20 @@ The general approach is to generate all certs on one node and only distribute
 the *necessary* files to the other nodes.
 
 {{< note >}}
-kubeadm contains all the necessary crytographic machinery to generate
+kubeadm contains all the necessary cryptographic machinery to generate
 the certificates described below; no other cryptographic tooling is required for
 this example.
 {{< /note >}}
 
+{{< note >}}
+The examples below use IPv4 addresses but you can also configure kubeadm, the kubelet and etcd
+to use IPv6 addresses. Dual-stack is supported by some Kubernetes options, but not by etcd. For more details
+on Kubernetes dual-stack support see [Dual-stack support with kubeadm](/docs/setup/production-environment/tools/kubeadm/dual-stack-support/).
+{{< /note >}}
 
 1. Configure the kubelet to be a service manager for etcd.
 
+   {{< note >}}You must do this on every host where etcd should be running.{{< /note >}}
     Since etcd was created first, you must override the service priority by creating a new unit file
     that has higher precedence than the kubeadm-provided kubelet unit file.
 
@@ -61,13 +66,20 @@ this example.
     cat << EOF > /etc/systemd/system/kubelet.service.d/20-etcd-service-manager.conf
     [Service]
     ExecStart=
-    #  Replace "systemd" with the cgroup driver of your container runtime. The default value in the kubelet is "cgroupfs".
-    ExecStart=/usr/bin/kubelet --address=127.0.0.1 --pod-manifest-path=/etc/kubernetes/manifests --cgroup-driver=systemd
+    # Replace "systemd" with the cgroup driver of your container runtime. The default value in the kubelet is "cgroupfs".
+    # Replace the value of "--container-runtime-endpoint" for a different container runtime if needed.
+    ExecStart=/usr/bin/kubelet --address=127.0.0.1 --pod-manifest-path=/etc/kubernetes/manifests --cgroup-driver=systemd --container-runtime=remote --container-runtime-endpoint=unix:///var/run/containerd/containerd.sock
     Restart=always
     EOF
 
     systemctl daemon-reload
     systemctl restart kubelet
+    ```
+
+    Check the kubelet status to ensure it is running.
+
+    ```sh
+    systemctl status kubelet
     ```
 
 1. Create configuration files for kubeadm.
@@ -76,22 +88,35 @@ this example.
     member running on it using the following script.
 
     ```sh
-    # Update HOST0, HOST1, and HOST2 with the IPs or resolvable names of your hosts
+    # Update HOST0, HOST1 and HOST2 with the IPs of your hosts
     export HOST0=10.0.0.6
     export HOST1=10.0.0.7
     export HOST2=10.0.0.8
 
+    # Update NAME0, NAME1 and NAME2 with the hostnames of your hosts
+    export NAME0="infra0"
+    export NAME1="infra1"
+    export NAME2="infra2"
+
     # Create temp directories to store files that will end up on other hosts.
     mkdir -p /tmp/${HOST0}/ /tmp/${HOST1}/ /tmp/${HOST2}/
 
-    ETCDHOSTS=(${HOST0} ${HOST1} ${HOST2})
-    NAMES=("infra0" "infra1" "infra2")
+    HOSTS=(${HOST0} ${HOST1} ${HOST2})
+    NAMES=(${NAME0} ${NAME1} ${NAME2})
 
-    for i in "${!ETCDHOSTS[@]}"; do
-    HOST=${ETCDHOSTS[$i]}
+    for i in "${!HOSTS[@]}"; do
+    HOST=${HOSTS[$i]}
     NAME=${NAMES[$i]}
     cat << EOF > /tmp/${HOST}/kubeadmcfg.yaml
-    apiVersion: "kubeadm.k8s.io/v1beta2"
+    ---
+    apiVersion: "kubeadm.k8s.io/v1beta3"
+    kind: InitConfiguration
+    nodeRegistration:
+        name: ${NAME}
+    localAPIEndpoint:
+        advertiseAddress: ${HOST}
+    ---
+    apiVersion: "kubeadm.k8s.io/v1beta3"
     kind: ClusterConfiguration
     etcd:
         local:
@@ -100,7 +125,7 @@ this example.
             peerCertSANs:
             - "${HOST}"
             extraArgs:
-                initial-cluster: ${NAMES[0]}=https://${ETCDHOSTS[0]}:2380,${NAMES[1]}=https://${ETCDHOSTS[1]}:2380,${NAMES[2]}=https://${ETCDHOSTS[2]}:2380
+                initial-cluster: ${NAMES[0]}=https://${HOSTS[0]}:2380,${NAMES[1]}=https://${HOSTS[1]}:2380,${NAMES[2]}=https://${HOSTS[2]}:2380
                 initial-cluster-state: new
                 name: ${NAME}
                 listen-peer-urls: https://${HOST}:2380
@@ -242,8 +267,8 @@ this example.
 
     ```sh
     root@HOST0 $ kubeadm init phase etcd local --config=/tmp/${HOST0}/kubeadmcfg.yaml
-    root@HOST1 $ kubeadm init phase etcd local --config=/home/ubuntu/kubeadmcfg.yaml
-    root@HOST2 $ kubeadm init phase etcd local --config=/home/ubuntu/kubeadmcfg.yaml
+    root@HOST1 $ kubeadm init phase etcd local --config=$HOME/kubeadmcfg.yaml
+    root@HOST2 $ kubeadm init phase etcd local --config=$HOME/kubeadmcfg.yaml
     ```
 
 1. Optional: Check the cluster health
@@ -251,7 +276,7 @@ this example.
     ```sh
     docker run --rm -it \
     --net host \
-    -v /etc/kubernetes:/etc/kubernetes k8s.gcr.io/etcd:${ETCD_TAG} etcdctl \
+    -v /etc/kubernetes:/etc/kubernetes registry.k8s.io/etcd:${ETCD_TAG} etcdctl \
     --cert /etc/kubernetes/pki/etcd/peer.crt \
     --key /etc/kubernetes/pki/etcd/peer.key \
     --cacert /etc/kubernetes/pki/etcd/ca.crt \
@@ -264,12 +289,12 @@ this example.
     - Set `${ETCD_TAG}` to the version tag of your etcd image. For example `3.4.3-0`. To see the etcd image and tag that kubeadm uses execute `kubeadm config images list --kubernetes-version ${K8S_VERSION}`, where `${K8S_VERSION}` is for example `v1.17.0`
     - Set `${HOST0}`to the IP address of the host you are testing.
 
-{{% /capture %}}
 
-{{% capture whatsnext %}}
+
+## {{% heading "whatsnext" %}}
+
 
 Once you have a working 3 member etcd cluster, you can continue setting up a
 highly available control plane using the [external etcd method with
 kubeadm](/docs/setup/production-environment/tools/kubeadm/high-availability/).
 
-{{% /capture %}}

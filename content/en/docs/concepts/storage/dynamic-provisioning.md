@@ -5,11 +5,11 @@ reviewers:
 - thockin
 - msau42
 title: Dynamic Volume Provisioning
-content_template: templates/concept
+content_type: concept
 weight: 40
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 
 Dynamic volume provisioning allows storage volumes to be created on-demand.
 Without dynamic provisioning, cluster administrators have to manually make
@@ -19,10 +19,10 @@ to represent them in Kubernetes. The dynamic provisioning feature eliminates
 the need for cluster administrators to pre-provision storage. Instead, it
 automatically provisions storage when it is requested by users.
 
-{{% /capture %}}
 
 
-{{% capture body %}}
+
+<!-- body -->
 
 ## Background
 
@@ -33,7 +33,7 @@ from the API group `storage.k8s.io`. A cluster administrator can define as many
 that provisioner when provisioning.
 A cluster administrator can define and expose multiple flavors of storage (from
 the same or different storage systems) within a cluster, each with a custom set
-of parameters. This design also ensures that end users don’t have to worry
+of parameters. This design also ensures that end users don't have to worry
 about the complexity and nuances of how storage is provisioned, but still
 have the ability to select from multiple storage options.
 
@@ -80,13 +80,13 @@ parameters:
 Users request dynamically provisioned storage by including a storage class in
 their `PersistentVolumeClaim`. Before Kubernetes v1.6, this was done via the
 `volume.beta.kubernetes.io/storage-class` annotation. However, this annotation
-is deprecated since v1.6. Users now can and should instead use the
+is deprecated since v1.9. Users now can and should instead use the
 `storageClassName` field of the `PersistentVolumeClaim` object. The value of
 this field must match the name of a `StorageClass` configured by the
 administrator (see [below](#enabling-dynamic-provisioning)).
 
-To select the “fast” storage class, for example, a user would create the
-following `PersistentVolumeClaim`:
+To select the "fast" storage class, for example, a user would create the
+following PersistentVolumeClaim:
 
 ```yaml
 apiVersion: v1
@@ -116,7 +116,7 @@ can enable this behavior by:
   is enabled on the API server.
 
 An administrator can mark a specific `StorageClass` as default by adding the
-`storageclass.kubernetes.io/is-default-class` annotation to it.
+`storageclass.kubernetes.io/is-default-class` [annotation](/docs/reference/labels-annotations-taints/#storageclass-kubernetes-io-is-default-class) to it.
 When a default `StorageClass` exists in a cluster and a user creates a
 `PersistentVolumeClaim` with `storageClassName` unspecified, the
 `DefaultStorageClass` admission controller automatically adds the
@@ -133,4 +133,4 @@ Zones in a Region. Single-Zone storage backends should be provisioned in the Zon
 Pods are scheduled. This can be accomplished by setting the [Volume Binding
 Mode](/docs/concepts/storage/storage-classes/#volume-binding-mode).
 
-{{% /capture %}}
+

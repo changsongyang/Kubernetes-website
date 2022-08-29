@@ -1,34 +1,36 @@
 ---
 title: Run a Stateless Application Using a Deployment
 min-kubernetes-server-version: v1.9
-content_template: templates/tutorial
+content_type: tutorial
 weight: 10
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 
 This page shows how to run an application using a Kubernetes Deployment object.
 
-{{% /capture %}}
 
 
-{{% capture objectives %}}
+
+## {{% heading "objectives" %}}
+
 
 * Create an nginx deployment.
 * Use kubectl to list information about the deployment.
 * Update the deployment.
 
-{{% /capture %}}
 
 
-{{% capture prerequisites %}}
+
+## {{% heading "prerequisites" %}}
+
 
 {{< include "task-tutorial-prereqs.md" >}} {{< version-check >}}
 
-{{% /capture %}}
 
 
-{{% capture lessoncontent %}}
+
+<!-- lessoncontent -->
 
 ## Creating and exploring an nginx deployment
 
@@ -49,7 +51,6 @@ a Deployment that runs the nginx:1.14.2 Docker image:
 
     The output is similar to this:
 
-        user@computer:~/website$ kubectl describe deployment nginx-deployment
         Name:     nginx-deployment
         Namespace:    default
         CreationTimestamp:  Tue, 30 Aug 2016 18:11:37 -0700
@@ -78,7 +79,7 @@ a Deployment that runs the nginx:1.14.2 Docker image:
         NewReplicaSet:    nginx-deployment-1771418926 (2/2 replicas created)
         No events.
 
-1. List the pods created by the deployment:
+1. List the Pods created by the deployment:
 
         kubectl get pods -l app=nginx
 
@@ -111,9 +112,9 @@ specifies that the deployment should be updated to use nginx 1.16.1.
 
 ## Scaling the application by increasing the replica count
 
-You can increase the number of pods in your Deployment by applying a new YAML
+You can increase the number of Pods in your Deployment by applying a new YAML
 file. This YAML file sets `replicas` to 4, which specifies that the Deployment
-should have four pods:
+should have four Pods:
 
 {{< codenew file="application/deployment-scale.yaml" >}}
 
@@ -121,7 +122,7 @@ should have four pods:
 
         kubectl apply -f https://k8s.io/examples/application/deployment-scale.yaml
 
-1. Verify that the Deployment has four pods:
+1. Verify that the Deployment has four Pods:
 
         kubectl get pods -l app=nginx
 
@@ -146,13 +147,14 @@ which in turn uses a ReplicaSet. Before the Deployment and ReplicaSet were
 added to Kubernetes, replicated applications were configured using a
 [ReplicationController](/docs/concepts/workloads/controllers/replicationcontroller/).
 
-{{% /capture %}}
 
 
-{{% capture whatsnext %}}
+
+## {{% heading "whatsnext" %}}
+
 
 * Learn more about [Deployment objects](/docs/concepts/workloads/controllers/deployment/).
 
-{{% /capture %}}
+
 
 

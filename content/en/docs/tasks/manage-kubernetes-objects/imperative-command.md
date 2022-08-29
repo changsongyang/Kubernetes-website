@@ -1,23 +1,24 @@
 ---
 title: Managing Kubernetes Objects Using Imperative Commands
-content_template: templates/task
+content_type: task
 weight: 30
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 Kubernetes objects can quickly be created, updated, and deleted directly using
 imperative commands built into the `kubectl` command-line tool. This document
 explains how those commands are organized and how to use them to manage live objects.
-{{% /capture %}}
 
-{{% capture prerequisites %}}
-Install [`kubectl`](/docs/tasks/tools/install-kubectl/).
+
+## {{% heading "prerequisites" %}}
+
+Install [`kubectl`](/docs/tasks/tools/).
 
 {{< include "task-tutorial-prereqs.md" >}} {{< version-check >}}
 
-{{% /capture %}}
 
-{{% capture steps %}}
+
+<!-- steps -->
 
 ## Trade-offs
 
@@ -36,7 +37,7 @@ The `kubectl` tool supports verb-driven commands for creating some of the most c
 object types. The commands are named to be recognizable to users unfamiliar with
 the Kubernetes object types.
 
-- `run`: Create a new Deployment object to run Containers in one or more Pods.
+- `run`: Create a new Pod to run a Container.
 - `expose`: Create a new Service object to load balance traffic across Pods.
 - `autoscale`: Create a new Autoscaler object to automatically horizontally scale a controller, such as a Deployment.
 
@@ -159,13 +160,14 @@ kubectl create --edit -f /tmp/srv.yaml
 1. The `kubectl create service` command creates the configuration for the Service and saves it to `/tmp/srv.yaml`.
 1. The `kubectl create --edit` command opens the configuration file for editing before it creates the object.
 
-{{% /capture %}}
 
-{{% capture whatsnext %}}
 
-* [Managing Kubernetes Objects Using Object Configuration (Imperative)](/docs/tasks/manage-kubernetes-objects/imperative-config/)
-* [Managing Kubernetes Objects Using Object Configuration (Declarative)](/docs/tasks/manage-kubernetes-objects/declarative-config/)
-* [Kubectl Command Reference](/docs/reference/generated/kubectl/kubectl/)
+## {{% heading "whatsnext" %}}
+
+
+* [Imperative Management of Kubernetes Objects Using Configuration Files](/docs/tasks/manage-kubernetes-objects/imperative-config/)
+* [Declarative Management of Kubernetes Objects Using Configuration Files](/docs/tasks/manage-kubernetes-objects/declarative-config/)
+* [Kubectl Command Reference](/docs/reference/generated/kubectl/kubectl-commands/)
 * [Kubernetes API Reference](/docs/reference/generated/kubernetes-api/{{< param "version" >}}/)
 
-{{% /capture %}}
+

@@ -5,18 +5,18 @@ reviewers:
 - thockin
 - msau42
 title: CSI Volume Cloning
-content_template: templates/concept
-weight: 30
+content_type: concept
+weight: 60
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 
 This document describes the concept of cloning existing CSI Volumes in Kubernetes.  Familiarity with [Volumes](/docs/concepts/storage/volumes) is suggested.
 
-{{% /capture %}}
 
 
-{{% capture body %}}
+
+<!-- body -->
 
 ## Introduction
 
@@ -24,7 +24,7 @@ The {{< glossary_tooltip text="CSI" term_id="csi" >}} Volume Cloning feature add
 
 A Clone is defined as a duplicate of an existing Kubernetes Volume that can be consumed as any standard Volume would be.  The only difference is that upon provisioning, rather than creating a "new" empty Volume, the back end device creates an exact duplicate of the specified Volume.
 
-The implementation of cloning, from the perspective of the Kubernetes API, simply adds the ability to specify an existing PVC as a dataSource during new PVC creation. The source PVC must be bound and available (not in use).
+The implementation of cloning, from the perspective of the Kubernetes API, adds the ability to specify an existing PVC as a dataSource during new PVC creation. The source PVC must be bound and available (not in use).
 
 Users need to be aware of the following when using this feature:
 
@@ -32,15 +32,15 @@ Users need to be aware of the following when using this feature:
 * Cloning support is only available for dynamic provisioners.
 * CSI drivers may or may not have implemented the volume cloning functionality.
 * You can only clone a PVC when it exists in the same namespace as the destination PVC (source and destination must be in the same namespace).
-* Cloning is only supported within the same Storage Class.
-    - Destination volume must be the same storage class as the source
-    - Default storage class can be used and storageClassName omitted in the spec
+* Cloning is supported with a different Storage Class.
+    - Destination volume can be the same or a different storage class as the source.
+    - Default storage class can be used and storageClassName omitted in the spec.
 * Cloning can only be performed between two volumes that use the same VolumeMode setting (if you request a block mode volume, the source MUST also be block mode)
 
 
 ## Provisioning
 
-Clones are provisioned just like any other PVC with the exception of adding a dataSource that references an existing PVC in the same namespace.
+Clones are provisioned like any other PVC with the exception of adding a dataSource that references an existing PVC in the same namespace.
 
 ```yaml
 apiVersion: v1
@@ -70,4 +70,4 @@ The result is a new PVC with the name `clone-of-pvc-1` that has the exact same c
 
 Upon availability of the new PVC, the cloned PVC is consumed the same as other PVC.  It's also expected at this point that the newly created PVC is an independent object.  It can be consumed, cloned, snapshotted, or deleted independently and without consideration for it's original dataSource PVC.  This also implies that the source is not linked in any way to the newly created clone, it may also be modified or deleted without affecting the newly created clone.
 
-{{% /capture %}}
+

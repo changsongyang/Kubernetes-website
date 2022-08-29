@@ -1,24 +1,24 @@
 ---
 title: Jaringan Kluster
-content_template: templates/concept
+content_type: concept
 weight: 50
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 Jaringan adalah bagian utama dari Kubernetes, tetapi bisa menjadi sulit
 untuk memahami persis bagaimana mengharapkannya bisa bekerja.
 Ada 4 masalah yang berbeda untuk diatasi:
 
 1. Komunikasi antar kontainer yang sangat erat: hal ini diselesaikan oleh
-   [Pod](/docs/concepts/workloads/pods/pod/) dan komunikasi `localhost`.
+   [Pod](/id/docs/concepts/workloads/pods/pod/) dan komunikasi `localhost`.
 2. Komunikasi antar Pod: ini adalah fokus utama dari dokumen ini.
-3. Komunikasi Pod dengan Service: ini terdapat di [Service](/docs/concepts/services-networking/service/).
-4. Komunikasi eksternal dengan Service: ini terdapat di [Service](/docs/concepts/services-networking/service/).
-
-{{% /capture %}}
+3. Komunikasi Pod dengan Service: ini terdapat di [Service](/id/docs/concepts/services-networking/service/).
+4. Komunikasi eksternal dengan Service: ini terdapat di [Service](/id/docs/concepts/services-networking/service/).
 
 
-{{% capture body %}}
+
+
+<!-- body -->
 
 Kubernetes adalah tentang berbagi mesin antar aplikasi. Pada dasarnya,
 saat berbagi mesin harus memastikan bahwa dua aplikasi tidak mencoba menggunakan
@@ -139,7 +139,7 @@ DOCKER_OPTS="--bridge=cbr0 --iptables=false --ip-masq=false"
 
 Jembatan ini dibuat oleh Kubelet (dikontrol oleh _flag_ `--network-plugin=kubenet`) sesuai dengan `.spec.podCIDR` yang dimiliki oleh Node.
 
-Docker sekarang akan mengalokasikan IP dari blok `cbr-cidr`. Kontainer dapat menjangkau satu sama lain dan Node di atas jembatan` cbr0`. IP-IP tersebut semuanya dapat dirutekan dalam jaringan proyek GCE.
+Docker sekarang akan mengalokasikan IP dari blok `cbr-cidr`. Kontainer dapat menjangkau satu sama lain dan Node di atas jembatan `cbr0`. IP-IP tersebut semuanya dapat dirutekan dalam jaringan proyek GCE.
 
 GCE sendiri tidak tahu apa-apa tentang IP ini, jadi tidak akan NAT untuk lalu lintas internet keluar. Untuk mencapai itu aturan iptables digunakan untuk menyamar (alias SNAT - untuk membuatnya seolah-olah paket berasal dari lalu lintas `Node` itu sendiri) yang terikat untuk IP di luar jaringan proyek GCE (10.0.0.0/8).
 
@@ -195,10 +195,6 @@ Multus mendukung semua [plugin referensi](https://github.com/containernetworking
 
 Platform Nuage menggunakan _overlay_ untuk menyediakan jaringan berbasis kebijakan yang mulus antara Kubernetes Pod-Pod dan lingkungan non-Kubernetes (VM dan server _bare metal_). Model abstraksi kebijakan Nuage dirancang dengan mempertimbangkan aplikasi dan membuatnya mudah untuk mendeklarasikan kebijakan berbutir halus untuk aplikasi. Mesin analisis _real-time_ platform memungkinkan pemantauan visibilitas dan keamanan untuk aplikasi Kubernetes.
 
-### OpenVSwitch
-
-[OpenVSwitch](https://www.openvswitch.org/) adalah cara yang agak lebih dewasa tetapi juga rumit untuk membangun jaringan _overlay_. Ini didukung oleh beberapa "Toko Besar" untuk jaringan.
-
 ### OVN (Open Virtual Networking)
 
 OVN adalah solusi virtualisasi jaringan opensource yang dikembangkan oleh komunitas Open vSwitch. Ini memungkinkan seseorang membuat switch logis, router logis, ACL stateful, load-balancers dll untuk membangun berbagai topologi jaringan virtual. Proyek ini memiliki plugin dan dokumentasi Kubernetes spesifik di [ovn-kubernetes](https://github.com/openvswitch/ovn-kubernetes).
@@ -213,16 +209,17 @@ Calico juga dapat dijalankan dalam mode penegakan kebijakan bersama dengan solus
 
 ### Romana
 
-[Romana](http://romana.io) adalah jaringan sumber terbuka dan solusi otomasi keamanan yang memungkinkan kamu menggunakan Kubernetes tanpa jaringan hamparan. Romana mendukung Kubernetes [Kebijakan Jaringan](/docs/concepts/services-networking/network-policies/) untuk memberikan isolasi di seluruh ruang nama jaringan.
+[Romana](http://romana.io) adalah jaringan sumber terbuka dan solusi otomasi keamanan yang memungkinkan kamu menggunakan Kubernetes tanpa jaringan hamparan. Romana mendukung Kubernetes [Kebijakan Jaringan](/id/docs/concepts/services-networking/network-policies/) untuk memberikan isolasi di seluruh ruang nama jaringan.
 
 ### Weave Net dari Weaveworks
 
 [Weave Net](https://www.weave.works/products/weave-net/) adalah jaringan yang tangguh dan mudah digunakan untuk Kubernetes dan aplikasi yang dihostingnya. Weave Net berjalan sebagai [plug-in CNI](https://www.weave.works/docs/net/latest/cni-plugin/) atau berdiri sendiri. Di kedua versi, itu tidak memerlukan konfigurasi atau kode tambahan untuk dijalankan, dan dalam kedua kasus, jaringan menyediakan satu alamat IP per Pod - seperti standar untuk Kubernetes.
 
-{{% /capture %}}
 
-{{% capture whatsnext %}}
+
+## {{% heading "whatsnext" %}}
+
 
 Desain awal model jaringan dan alasannya, dan beberapa rencana masa depan dijelaskan secara lebih rinci dalam [dokumen desain jaringan](https://git.k8s.io/community/contributors/design-proposals/network/networking.md).
 
-{{% /capture %}}
+

@@ -2,21 +2,21 @@
 title: kubectl Cheat Sheet
 reviewers:
 - ngtuna
-content_template: templates/concept
+content_type: concept
 card:
   name: reference
   weight: 30
 ---
 
-{{% capture overview %}}
+<!-- overview -->
 
 Xem thêm: [Kubectl Overview](/docs/reference/kubectl/overview/) và [JsonPath Guide](/docs/reference/kubectl/jsonpath).
 
 Trang này là trang tổng quan của lệnh `kubectl`.
 
-{{% /capture %}}
 
-{{% capture body %}}
+
+<!-- body -->
 
 # kubectl - Cheat Sheet
 
@@ -317,7 +317,7 @@ kubectl taint nodes foo dedicated=special-user:NoSchedule
 
 ### Các loại tài nguyên
 
-Liệt kê tất cả các loại tài nguyên được hỗ trợ cùng với tên viết tắt của chúng, [API group](/docs/concepts/overview/kubernetes-api/#api-groups), cho dù chúng là [namespaced](/docs/concepts/overview/working-with-objects/namespaces), và [Kind](/docs/concepts/overview/working-with-objects/kubernetes-objects):
+Liệt kê tất cả các loại tài nguyên được hỗ trợ cùng với tên viết tắt của chúng, [API group](/docs/concepts/overview/kubernetes-api/#api-groups-and-versioning), cho dù chúng là [namespaced](/docs/concepts/overview/working-with-objects/namespaces), và [Kind](/docs/concepts/overview/working-with-objects/kubernetes-objects):
 
 ```bash
 kubectl api-resources
@@ -365,9 +365,10 @@ Verbosity | Description
 `--v=8` | Hiển thị nội dung HTTP request.
 `--v=9` | Hiển thị nội dung HTTP request mà không cắt ngắn nội dung.
 
-{{% /capture %}}
 
-{{% capture whatsnext %}}
+
+## {{% heading "whatsnext" %}}
+
 
 * Đọc thêm về [Tổng quan kubectl](/docs/reference/kubectl/overview/).
 
@@ -377,4 +378,4 @@ Verbosity | Description
 
 * Xem thêm bản cộng đồng [kubectl cheatsheets](https://github.com/dennyzhang/cheatsheet-kubernetes-A4).
 
-{{% /capture %}}
+
