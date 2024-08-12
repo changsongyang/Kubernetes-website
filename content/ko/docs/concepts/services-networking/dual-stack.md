@@ -1,5 +1,9 @@
 ---
 title: IPv4/IPv6 이중 스택
+description: >-
+  쿠버네티스는 단일 스택 IPv4 네트워킹,
+  단일 스택 IPv6 네트워킹 혹은 두 네트워크 패밀리를 활성화한
+  이중 스택 네트워킹 설정할 수 있도록 해준다. 이 페이지는 이 방법을 설명한다.
 feature:
   title: IPv4/IPv6 이중 스택
   description: >
@@ -10,7 +14,7 @@ content_type: concept
 #   - khenidak
 #   - aramase
 #   - bridgetkromhout
-weight: 70
+weight: 90
 ---
 
 <!-- overview -->
@@ -174,7 +178,7 @@ IPv4, IPv6 또는 둘 다를 사용할 수 있는 {{< glossary_tooltip text="서
    kind: Service
    metadata:
      labels:
-       app: MyApp
+       app.kubernetes.io/name: MyApp
      name: my-service
    spec:
      clusterIP: 10.0.197.123
@@ -188,7 +192,7 @@ IPv4, IPv6 또는 둘 다를 사용할 수 있는 {{< glossary_tooltip text="서
        protocol: TCP
        targetPort: 80
      selector:
-       app: MyApp
+       app.kubernetes.io/name: MyApp
      type: ClusterIP
    status:
      loadBalancer: {}
@@ -214,7 +218,7 @@ IPv4, IPv6 또는 둘 다를 사용할 수 있는 {{< glossary_tooltip text="서
    kind: Service
    metadata:
      labels:
-       app: MyApp
+       app.kubernetes.io/name: MyApp
      name: my-service
    spec:
      clusterIP: None
@@ -228,7 +232,7 @@ IPv4, IPv6 또는 둘 다를 사용할 수 있는 {{< glossary_tooltip text="서
        protocol: TCP
        targetPort: 80
      selector:
-       app: MyApp
+       app.kubernetes.io/name: MyApp
    ```
 
 #### 단일 스택과 이중 스택 간 서비스 전환
@@ -305,7 +309,7 @@ IP 위장과 같은 메커니즘을 통해 공개적으로 라우팅한 IPv6 주
 {{< /note >}}
 
 윈도우의 다른 네트워크 모델에 대한 내용은
-[윈도우에서의 네트워킹](/docs/concepts/services-networking/windows-networking#network-modes)을 살펴본다.
+[윈도우에서의 네트워킹](/ko/docs/concepts/services-networking/windows-networking/#네트워크-모드)을 살펴본다.
 
 ## {{% heading "whatsnext" %}}
 

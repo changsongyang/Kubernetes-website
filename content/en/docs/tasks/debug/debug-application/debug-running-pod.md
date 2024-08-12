@@ -25,7 +25,7 @@ This page explains how to debug Pods running (or crashing) on a Node.
 
 For this example we'll use a Deployment to create two pods, similar to the earlier example.
 
-{{< codenew file="application/nginx-with-request.yaml" >}}
+{{% code_sample file="application/nginx-with-request.yaml" %}}
 
 Create deployment by running following command:
 
@@ -127,7 +127,7 @@ Restart Count tells you how many times the container has been restarted; this in
 
 Currently the only Condition associated with a Pod is the binary Ready condition, which indicates that the pod is able to service requests and should be added to the load balancing pools of all matching services.
 
-Lastly, you see a log of recent events related to your Pod. The system compresses multiple identical events by indicating the first and last time it was seen and the number of times it was seen. "From" indicates the component that is logging the event, "SubobjectPath" tells you which object (e.g. container within the pod) is being referred to, and "Reason" and "Message" tell you what happened.
+Lastly, you see a log of recent events related to your Pod. "From" indicates the component that is logging the event. "Reason" and "Message" tell you what happened.
 
 
 ## Example: debugging Pending Pods
@@ -631,11 +631,90 @@ When creating a debugging session on a node, keep in mind that:
 * The root filesystem of the Node will be mounted at `/host`.
 * The container runs in the host IPC, Network, and PID namespaces, although
   the pod isn't privileged, so reading some process information may fail,
-  and `chroot /host` will fail.
-* If you need a privileged pod, create it manually.
+  and `chroot /host` may fail.
+* If you need a privileged pod, create it manually or use the `--profile=sysadmin` flag.
 
 Don't forget to clean up the debugging Pod when you're finished with it:
 
 ```shell
 kubectl delete pod node-debugger-mynode-pdx84
+```
+
+## Debugging Profiles {#debugging-profiles}
+
+When using `kubectl debug` to debug a node via a debugging Pod, a Pod via an ephemeral container, 
+or a copied Pod, you can apply a debugging profile to them using the `--profile` flag.
+By applying a profile, specific properties such as [securityContext](/docs/tasks/configure-pod-container/security-context/)
+are set, allowing for adaptation to various scenarios.
+
+
+The available profiles are as follows:
+
+| Profile      | Description                                                     |
+| ------------ | --------------------------------------------------------------- |
+| legacy       | A set of properties backwards compatibility with 1.22 behavior |
+| general      | A reasonable set of generic properties for each debugging journey |
+| baseline     | A set of properties compatible with [PodSecurityStandard baseline policy](/docs/concepts/security/pod-security-standards/#baseline) |
+| restricted   | A set of properties compatible with [PodSecurityStandard restricted policy](/docs/concepts/security/pod-security-standards/#restricted) |
+| netadmin     | A set of properties including Network Administrator privileges |
+| sysadmin     | A set of properties including System Administrator (root) privileges |
+
+
+{{< note >}}
+If you don't specify `--profile`, the `legacy` profile is used by default, but it is planned to be deprecated in the near future.
+So it is recommended to use other profiles such as `general`.
+{{< /note >}}
+
+
+Assume that you create a Pod and debug it.
+First, create a Pod named `myapp` as an example:
+
+```shell
+kubectl run myapp --image=busybox:1.28 --restart=Never -- sleep 1d
+```
+
+Then, debug the Pod using an ephemeral container.
+If the ephemeral container needs to have privilege, you can use the `sysadmin` profile:
+
+```shell
+kubectl debug -it myapp --image=busybox:1.28 --target=myapp --profile=sysadmin
+```
+
+```
+Targeting container "myapp". If you don't see processes from this container it may be because the container runtime doesn't support this feature.
+Defaulting debug container name to debugger-6kg4x.
+If you don't see a command prompt, try pressing enter.
+/ #
+```
+
+Check the capabilities of the ephemeral container process by running the following command inside the container:
+
+```shell
+/ # grep Cap /proc/$$/status
+```
+
+```
+...
+CapPrm:	000001ffffffffff
+CapEff:	000001ffffffffff
+...
+```
+
+This means the container process is granted full capabilities as a privileged container by applying `sysadmin` profile.
+See more details about [capabilities](/docs/tasks/configure-pod-container/security-context/#set-capabilities-for-a-container).
+
+You can also check that the ephemeral container was created as a privileged container:
+
+```shell
+kubectl get pod myapp -o jsonpath='{.spec.ephemeralContainers[0].securityContext}'
+```
+
+```
+{"privileged":true}
+```
+
+Clean up the Pod when you're finished with it:
+
+```shell
+kubectl delete pod myapp
 ```

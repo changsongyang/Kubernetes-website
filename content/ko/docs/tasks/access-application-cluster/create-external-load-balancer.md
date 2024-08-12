@@ -72,7 +72,7 @@ kubectl expose deployment example --port=8765 --target-port=9376 \
 {{< glossary_tooltip text="디플로이먼트(Deployment)" term_id="deployment" >}} ).
 
 명령줄 옵션 플래그를 포함한, 더 자세한 내용은 
-[`kubectl expose` 레퍼런스](/ko/docs/reference/generated/kubectl/kubectl-commands/#expose) 문서를 참고한다.
+[`kubectl expose` 레퍼런스](/docs/reference/generated/kubectl/kubectl-commands/#expose) 문서를 참고한다.
 
 ## IP 주소 찾기
 
@@ -198,6 +198,6 @@ spec:
 
 ## {{% heading "whatsnext" %}}
 
+* [서비스와 애플리케이션 연결하기](/ko/docs/tutorials/services/connect-applications-service/) 튜토리얼을 따라하기
 * [서비스](/ko/docs/concepts/services-networking/service/)에 대해 알아보기
 * [인그레스](/ko/docs/concepts/services-networking/ingress/)에 대해 알아보기
-* [서비스와 애플리케이션 연결하기](/ko/docs/concepts/services-networking/connect-applications-service/) 알아보기

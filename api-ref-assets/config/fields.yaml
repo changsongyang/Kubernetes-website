@@ -54,6 +54,8 @@
   - name: Alpha level
     fields:
     - hostUsers
+    - resourceClaims
+    - schedulingGates
   - name: Deprecated
     fields:
     - serviceAccount
@@ -86,6 +88,7 @@
   - fields:
     - nominatedNodeName
     - hostIP
+    - hostIPs
     - startTime
     - phase
     - message
@@ -97,6 +100,8 @@
     - initContainerStatuses
     - containerStatuses
     - ephemeralContainerStatuses
+    - resourceClaimStatuses
+    - resize
 
 - definition: io.k8s.api.core.v1.Container
   field_categories:
@@ -125,6 +130,7 @@
   - name: Resources
     fields:
     - resources
+    - resizePolicy
   - name: Lifecycle
     fields:
     - lifecycle
@@ -133,6 +139,7 @@
     - livenessProbe
     - readinessProbe
     - startupProbe
+    - restartPolicy
   - name: Security Context
     fields:
     - securityContext
@@ -217,10 +224,14 @@
     fields:
     - volumeMounts
     - volumeDevices
+  - name: Resources
+    fields:
+    - resizePolicy
   - name: Lifecycle
     fields:
     - terminationMessagePath
     - terminationMessagePolicy
+    - restartPolicy
   - name: Debugging
     fields:
     - stdin
@@ -317,6 +328,7 @@
     - volumeClaimTemplates
     - minReadySeconds
     - persistentVolumeClaimRetentionPolicy
+    - ordinals
 
 - definition: io.k8s.api.apps.v1.StatefulSetUpdateStrategy
   field_categories:
@@ -385,9 +397,14 @@
     fields:
     - selector
     - manualSelector
-  - name: Alpha level
+  - name: Beta level
     fields:
     - podFailurePolicy
+  - name: Alpha level
+    fields:
+    - backoffLimitPerIndex
+    - maxFailedIndexes
+    - podReplacementPolicy
 
 - definition: io.k8s.api.batch.v1.JobStatus
   field_categories:
@@ -403,6 +420,10 @@
   - name: Beta level
     fields:
     - ready
+  - name: Alpha level
+    fields:
+    - failedIndexes
+    - terminating
 
 - definition: io.k8s.api.batch.v1.CronJobSpec
   field_categories:

@@ -1,30 +1,17 @@
-<!--
-The file is auto-generated from the Go source code of the component using a generic
-[generator](https://github.com/kubernetes-sigs/reference-docs/). To learn how
-to generate the reference documentation, please read
-[Contributing to the reference documentation](/docs/contribute/generate-ref-docs/).
-To update the reference conent, please follow the 
-[Contributing upstream](/docs/contribute/generate-ref-docs/contribute-upstream/)
-guide. You can file document formatting bugs against the
-[reference-docs](https://github.com/kubernetes-sigs/reference-docs/) project.
--->
-
 <!-- 
 [EXPERIMENTAL] Download certificates shared among control-plane nodes from the kubeadm-certs Secret 
 -->
-[实验]从 kubeadm-certs Secret 下载控制平面节点之间共享的证书
+[实验] 从 kubeadm-certs Secret 下载控制平面节点之间共享的证书。
 
 <!--
 ### Synopsis
 -->
-
 ### 概要
 
 <!--
 [EXPERIMENTAL] Download certificates shared among control-plane nodes from the kubeadm-certs Secret
 -->
-
-[实验]从 kubeadm-certs Secret 下载控制平面节点之间共享的证书
+[实验] 从 kubeadm-certs Secret 下载控制平面节点之间共享的证书。
 
 ```
 kubeadm join phase control-plane-prepare download-certs [api-server-endpoint] [flags]
@@ -33,7 +20,6 @@ kubeadm join phase control-plane-prepare download-certs [api-server-endpoint] [f
 <!--
 ### Options
 -->
-
 ### 选项
 
    <table style="width: 100%; table-layout: fixed;">
@@ -48,10 +34,13 @@ kubeadm join phase control-plane-prepare download-certs [api-server-endpoint] [f
 </tr>
 <tr>
 <td></td><td style="line-height: 130%; word-wrap: break-word;">
+<p>
 <!--
-<p>Use this key to decrypt the certificate secrets uploaded by init.</p>
+Use this key to decrypt the certificate secrets uploaded by init. The certificate key is a hex encoded string that is an AES key of size 32 bytes.
 -->
-<p>使用此密钥可以解密由 init 上传的证书 secret。</p>
+使用此密钥可以解密由 init 上传的证书 Secret。
+证书密钥为一个十六进制编码的字符串，是大小为 32 字节的 AES 密钥。
+</p>
 </td>
 </tr>
 
@@ -61,7 +50,7 @@ kubeadm join phase control-plane-prepare download-certs [api-server-endpoint] [f
 <tr>
 <td></td><td style="line-height: 130%; word-wrap: break-word;">
 <!--
-<p>Path to kubeadm config file.</p>
+<p>Path to a kubeadm configuration file.</p>
 -->
 <p>kubeadm 配置文件的路径。</p>
 </td>
@@ -75,7 +64,7 @@ kubeadm join phase control-plane-prepare download-certs [api-server-endpoint] [f
 <!--
 <p>Create a new control plane instance on this node</p>
 -->
-<p>在此节点上创建一个新的控制平面实例</p>
+<p>在此节点上创建一个新的控制平面实例。</p>
 </td>
 </tr>
 
@@ -128,6 +117,18 @@ kubeadm join phase control-plane-prepare download-certs [api-server-endpoint] [f
 </tr>
 
 <tr>
+<td colspan="2">--dry-run</td>
+</tr>
+<tr>
+<td></td><td style="line-height: 130%; word-wrap: break-word;">
+<!--
+<p>Don't apply any changes; just output what would be done.</p>
+-->
+<p>不做任何更改；只输出将要执行的操作。</p>
+</td>
+</tr>
+
+<tr>
 <td colspan="2">-h, --help</td>
 </tr>
 <tr>
@@ -135,7 +136,7 @@ kubeadm join phase control-plane-prepare download-certs [api-server-endpoint] [f
 <!--
 <p>help for download-certs</p>
 -->
-<p>download-certs 操作的帮助命令</p>
+<p>download-certs 操作的帮助命令。</p>
 </td>
 </tr>
 
@@ -169,7 +170,6 @@ kubeadm join phase control-plane-prepare download-certs [api-server-endpoint] [f
 <!--
 ### Options inherited from parent commands
 -->
-
 ### 从父命令中继承的选项
 
    <table style="width: 100%; table-layout: fixed;">
@@ -193,4 +193,3 @@ kubeadm join phase control-plane-prepare download-certs [api-server-endpoint] [f
 
 </tbody>
 </table>
-

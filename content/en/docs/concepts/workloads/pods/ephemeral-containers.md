@@ -4,7 +4,7 @@ reviewers:
 - yujuhong
 title: Ephemeral Containers
 content_type: concept
-weight: 80
+weight: 60
 ---
 
 <!-- overview -->
@@ -51,6 +51,10 @@ possible to add an ephemeral container using `kubectl edit`.
 
 Like regular containers, you may not change or remove an ephemeral container
 after you have added it to a Pod.
+
+{{< note >}}
+Ephemeral containers are not supported by [static pods](/docs/tasks/configure-pod-container/static-pod/).
+{{< /note >}}
 
 ## Uses for ephemeral containers
 

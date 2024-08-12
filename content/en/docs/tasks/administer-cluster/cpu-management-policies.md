@@ -4,12 +4,15 @@ reviewers:
 - sjenning
 - ConnorDoyle
 - balajismaniam
+
 content_type: task
+min-kubernetes-server-version: v1.26
+weight: 140
 ---
 
 <!-- overview -->
 
-{{< feature-state for_k8s_version="v1.12" state="beta" >}}
+{{< feature-state for_k8s_version="v1.26" state="stable" >}}
 
 Kubernetes keeps many aspects of how pods execute on nodes abstracted
 from the user. This is by design.  However, some workloads require
@@ -18,7 +21,9 @@ acceptably. The kubelet provides methods to enable more complex workload
 placement policies while keeping the abstraction free from explicit placement
 directives.
 
-
+For detailed information on resource management, please refer to the
+[Resource Management for Pods and Containers](/docs/concepts/configuration/manage-resources-containers)
+documentation.
 
 
 ## {{% heading "prerequisites" %}}
@@ -26,6 +31,7 @@ directives.
 
 {{< include "task-tutorial-prereqs.md" >}} {{< version-check >}}
 
+If you are running an older version of Kubernetes, please look at the documentation for the version you are actually running.
 
 
 <!-- steps -->
@@ -61,17 +67,21 @@ duration as `--node-status-update-frequency`.
 
 The behavior of the static policy can be fine-tuned using the `--cpu-manager-policy-options` flag.
 The flag takes a comma-separated list of `key=value` policy options.
-This feature can be disabled completely using the `CPUManagerPolicyOptions` feature gate.
+If you disable the `CPUManagerPolicyOptions`
+[feature gate](/docs/reference/command-line-tools-reference/feature-gates/)
+then you cannot fine-tune CPU manager policies. In that case, the CPU manager
+operates only using its default settings.
 
-The policy options are split into two groups: alpha quality (hidden by default) and beta quality
-(visible by default). The groups are guarded respectively by the `CPUManagerPolicyAlphaOptions`
+In addition to the top-level `CPUManagerPolicyOptions` feature gate, the policy options are split
+into two groups: alpha quality (hidden by default) and beta quality (visible by default).
+The groups are guarded respectively by the `CPUManagerPolicyAlphaOptions`
 and `CPUManagerPolicyBetaOptions` feature gates. Diverging from the Kubernetes standard, these
 feature gates guard groups of options, because it would have been too cumbersome to add a feature
 gate for each individual option.
 
 ### Changing the CPU Manager Policy
 
-Since the CPU manger policy can only be applied when kubelet spawns new pods, simply changing from
+Since the CPU manager policy can only be applied when kubelet spawns new pods, simply changing from
 "none" to "static" won't apply to existing pods. So in order to properly change the CPU manager
 policy on a node, perform the following steps:
 
@@ -155,7 +165,7 @@ spec:
     image: nginx
 ```
 
-This pod runs in the `BestEffort` QoS class because no resource `requests` or
+The pod above runs in the `BestEffort` QoS class because no resource `requests` or
 `limits` are specified. It runs in the shared pool.
 
 ```yaml
@@ -170,7 +180,7 @@ spec:
         memory: "100Mi"
 ```
 
-This pod runs in the `Burstable` QoS class because resource `requests` do not
+The pod above runs in the `Burstable` QoS class because resource `requests` do not
 equal `limits` and the `cpu` quantity is not specified. It runs in the shared
 pool.
 
@@ -188,7 +198,7 @@ spec:
         cpu: "1"
 ```
 
-This pod runs in the `Burstable` QoS class because resource `requests` do not
+The pod above runs in the `Burstable` QoS class because resource `requests` do not
 equal `limits`. It runs in the shared pool.
 
 ```yaml
@@ -205,7 +215,7 @@ spec:
         cpu: "2"
 ```
 
-This pod runs in the `Guaranteed` QoS class because `requests` are equal to `limits`.
+The pod above runs in the `Guaranteed` QoS class because `requests` are equal to `limits`.
 And the container's resource limit for the CPU resource is an integer greater than
 or equal to one. The `nginx` container is granted 2 exclusive CPUs.
 
@@ -224,7 +234,7 @@ spec:
         cpu: "1.5"
 ```
 
-This pod runs in the `Guaranteed` QoS class because `requests` are equal to `limits`.
+The pod above runs in the `Guaranteed` QoS class because `requests` are equal to `limits`.
 But the container's resource limit for the CPU resource is a fraction. It runs in
 the shared pool.
 
@@ -240,7 +250,7 @@ spec:
         cpu: "2"
 ```
 
-This pod runs in the `Guaranteed` QoS class because only `limits` are specified
+The pod above runs in the `Guaranteed` QoS class because only `limits` are specified
 and `requests` are set equal to `limits` when not explicitly specified. And the
 container's resource limit for the CPU resource is an integer greater than or
 equal to one. The `nginx` container is granted 2 exclusive CPUs.
@@ -254,9 +264,9 @@ using the following feature gates:
 You will still have to enable each option using the `CPUManagerPolicyOptions` kubelet option.
 
 The following policy options exist for the static `CPUManager` policy:
-* `full-pcpus-only` (beta, visible by default)
-* `distribute-cpus-across-numa` (alpha, hidden by default)
-* `align-by-socket` (alpha, hidden by default)
+* `full-pcpus-only` (beta, visible by default) (1.22 or higher)
+* `distribute-cpus-across-numa` (alpha, hidden by default) (1.23 or higher)
+* `align-by-socket` (alpha, hidden by default) (1.25 or higher)
 
 If the `full-pcpus-only` policy option is specified, the static policy will always allocate full physical cores.
 By default, without this option, the static policy allocates CPUs using a topology-aware best-fit allocation.
@@ -293,7 +303,7 @@ policy option is not compatible with `TopologyManager` `single-numa-node`
 policy and does not apply to hardware where the number of sockets is greater
 than number of NUMA nodes.
 
-The `full-pcpus-only` option can be enabled by adding `full-pcups-only=true` to
+The `full-pcpus-only` option can be enabled by adding `full-pcpus-only=true` to
 the CPUManager policy options.
 Likewise, the `distribute-cpus-across-numa` option can be enabled by adding
 `distribute-cpus-across-numa=true` to the CPUManager policy options.

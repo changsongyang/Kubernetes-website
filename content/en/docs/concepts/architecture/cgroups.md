@@ -11,7 +11,7 @@ constrain resources that are allocated to processes.
 
 The {{< glossary_tooltip text="kubelet" term_id="kubelet" >}} and the
 underlying container runtime need to interface with cgroups to enforce
-[resource mangement for pods and containers](/docs/concepts/configuration/manage-resources-containers/) which
+[resource management for pods and containers](/docs/concepts/configuration/manage-resources-containers/) which
 includes cpu/memory requests and limits for containerized workloads.
 
 There are two versions of cgroups in Linux: cgroup v1 and cgroup v2. cgroup v2 is
@@ -38,7 +38,7 @@ cgroup v2 offers several improvements over cgroup v1, such as the following:
 
 Some Kubernetes features exclusively use cgroup v2 for enhanced resource
 management and isolation. For example, the
-[MemoryQoS](/blog/2021/11/26/qos-memory-resources/) feature improves memory QoS
+[MemoryQoS](/docs/concepts/workloads/pods/pod-qos/#memory-qos-with-cgroup-v2) feature improves memory QoS
 and relies on cgroup v2 primitives.
 
 
@@ -102,11 +102,16 @@ updated to newer versions that support cgroup v2. For example:
  Update these agents to versions that support cgroup v2.
 * If you run [cAdvisor](https://github.com/google/cadvisor) as a stand-alone
  DaemonSet for monitoring pods and containers, update it to v0.43.0 or later.
-* If you use JDK, prefer to use JDK 11.0.16 and later or JDK 15 and later, which [fully support cgroup v2](https://bugs.openjdk.org/browse/JDK-8230305).
+* If you deploy Java applications, prefer to use versions which fully support cgroup v2:
+    * [OpenJDK / HotSpot](https://bugs.openjdk.org/browse/JDK-8230305): jdk8u372, 11.0.16, 15 and later
+    * [IBM Semeru Runtimes](https://www.ibm.com/support/pages/apar/IJ46681): 8.0.382.0, 11.0.20.0, 17.0.8.0, and later
+    * [IBM Java](https://www.ibm.com/support/pages/apar/IJ46681): 8.0.8.6 and later
+* If you are using the [uber-go/automaxprocs](https://github.com/uber-go/automaxprocs) package, make sure
+  the version you use is v1.5.1 or higher.
 
 ## Identify the cgroup version on Linux Nodes  {#check-cgroup-version}
 
-The cgroup version depends on on the Linux distribution being used and the
+The cgroup version depends on the Linux distribution being used and the
 default cgroup version configured on the OS. To check which cgroup version your
 distribution uses, run the `stat -fc %T /sys/fs/cgroup/` command on
 the node:

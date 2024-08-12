@@ -1,12 +1,12 @@
 ---
-
-
+# approvers:
+# - chenopis
 title: 쿠버네티스 문서
 noedit: true
 cid: docsHome
 layout: docsportal_home
 class: gridPage gridPageHome
-linkTitle: "홈"
+linkTitle: "문서"
 main_menu: true
 weight: 10
 hide_feedback: true

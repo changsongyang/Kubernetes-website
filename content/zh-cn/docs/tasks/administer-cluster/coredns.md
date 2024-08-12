@@ -2,6 +2,7 @@
 title: 使用 CoreDNS 进行服务发现
 min-kubernetes-server-version: v1.9
 content_type: task
+weight: 380
 ---
 
 <!--
@@ -10,6 +11,7 @@ reviewers:
 title: Using CoreDNS for Service Discovery
 min-kubernetes-server-version: v1.9
 content_type: task
+weight: 380
 -->
 
 <!-- overview -->
@@ -44,18 +46,18 @@ kube-dns in an existing deployment, or by using tools like kubeadm
 that will deploy and upgrade the cluster for you.
 -->
 通过替换现有集群部署中的 kube-dns，或者使用 kubeadm 等工具来为你部署和升级集群，
-可以在你的集群中使用 CoreDNS 而非 kube-dns，
+可以在你的集群中使用 CoreDNS 而非 kube-dns。
 
 <!--
 ## Installing CoreDNS
 
 For manual deployment or replacement of kube-dns, see the documentation at the
-[CoreDNS GitHub project.](https://github.com/coredns/deployment/tree/master/kubernetes)
+[CoreDNS website](https://coredns.io/manual/installation/).
 -->
 ## 安装 CoreDNS
 
 有关手动部署或替换 kube-dns，请参阅
-[CoreDNS GitHub 项目](https://github.com/coredns/deployment/tree/master/kubernetes)。
+[CoreDNS 网站](https://coredns.io/manual/installation/)。
 
 <!--
 ## Migrating to CoreDNS
@@ -93,7 +95,8 @@ Kubernetes in the page
 -->
 ## 升级 CoreDNS 
 
-你可以在 [CoreDNS version in Kubernetes](https://github.com/coredns/deployment/blob/master/kubernetes/CoreDNS-k8s_version.md)
+你可以在
+[Kubernetes 中的 CoreDNS 版本](https://github.com/coredns/deployment/blob/master/kubernetes/CoreDNS-k8s_version.md)
 页面查看 kubeadm 为不同版本 Kubernetes 所安装的 CoreDNS 版本。
 
 <!--
@@ -119,9 +122,9 @@ can take care of retaining the existing CoreDNS configuration automatically.
 <!--
 ## Tuning CoreDNS
 
-When resource utilisation is a concern, it may be useful to tune
-the configuration of CoreDNS. For more details, check out the
-[documentation on scaling CoreDNS]((https://github.com/coredns/deployment/blob/master/kubernetes/Scaling_CoreDNS.md)).
+When resource utilisation is a concern, it may be useful to tune the
+configuration of CoreDNS. For more details, check out the
+[documentation on scaling CoreDNS](https://github.com/coredns/deployment/blob/master/kubernetes/Scaling_CoreDNS.md).
 -->
 ## CoreDNS 调优
 
@@ -142,6 +145,5 @@ in the CoreDNS blog.
 以支持比 kube-dns 更多的用例。
 请参考 `kubernetes` CoreDNS 插件的[文档](https://coredns.io/plugins/kubernetes/)
 或者 CoreDNS 博客上的博文
-[Custom DNS Entries for Kubernetes](https://coredns.io/2017/05/08/custom-dns-entries-for-kubernetes/)，
+[Kubernetes 的自定义 DNS 条目](https://coredns.io/2017/05/08/custom-dns-entries-for-kubernetes/)，
 以了解更多信息。
-

@@ -7,7 +7,8 @@ description: Kubernetes 网络背后的概念和资源。
 <!--
 ## The Kubernetes network model
 
-Every [`Pod`](/docs/concepts/workloads/pods/) in a cluster gets its own unique cluster-wide IP address. 
+Every [`Pod`](/docs/concepts/workloads/pods/) in a cluster gets its own unique cluster-wide IP address
+(one address per IP address family).
 This means you do not need to explicitly create links between `Pods` and you
 almost never need to deal with mapping container ports to host ports.  
 This creates a clean, backwards-compatible model where `Pods` can be treated
@@ -18,7 +19,7 @@ application configuration, and migration.
 ## Kubernetes 网络模型   {#the-kubernetes-network-model}
 
 集群中每一个 [`Pod`](/zh-cn/docs/concepts/workloads/pods/) 都会获得自己的、
-独一无二的 IP 地址，
+独一无二的 IP 地址（每个 IP 地址族一个地址），
 这就意味着你不需要显式地在 `Pod` 之间创建链接，你几乎不需要处理容器端口到主机端口之间的映射。
 这将形成一个干净的、向后兼容的模型；在这个模型里，从端口分配、命名、服务发现、
 [负载均衡](/zh-cn/docs/concepts/services-networking/ingress/#load-balancing)、
@@ -41,11 +42,9 @@ Kubernetes 强制要求所有网络设施都满足以下基本要求（从而排
 * 节点上的代理（比如：系统守护进程、kubelet）可以和节点上的所有 Pod 通信
 
 <!--
-Note: For those platforms that support `Pods` running in the host network (e.g.
-Linux), when pods are attached to the host network of a node they can still communicate 
-with all pods on all nodes without NAT.
+For those platforms that support `Pods` running in the host network (such as Linux), when pods are attached to the host network of a node they can still communicate with all pods on all nodes without NAT.
 -->
-说明：对于支持在主机网络中运行 `Pod` 的平台（比如：Linux），
+对于支持在主机网络中运行 `Pod` 的平台（比如：Linux），
 当 Pod 挂接到节点的宿主网络上时，它们仍可以不通过 NAT 和所有节点上的 Pod 通信。
 
 <!--
@@ -89,15 +88,40 @@ blind to the existence or non-existence of host ports.
 Kubernetes networking addresses four concerns:
 - Containers within a Pod [use networking to communicate](/docs/concepts/services-networking/dns-pod-service/) via loopback.
 - Cluster networking provides communication between different Pods.
-- The [Service resource](/docs/concepts/services-networking/service/) lets you [expose an application running in Pods](/docs/concepts/services-networking/connect-applications-service/) to be reachable from outside your cluster.
-- You can also use Services to [publish services only for consumption inside your cluster](/docs/concepts/services-networking/service-traffic-policy/).
+- The [Service](/docs/concepts/services-networking/service/) API lets you
+  [expose an application running in Pods](/docs/tutorials/services/connect-applications-service/)
+  to be reachable from outside your cluster.
+  - [Ingress](/docs/concepts/services-networking/ingress/) provides extra functionality
+    specifically for exposing HTTP applications, websites and APIs.
+  - [Gateway API](/docs/concepts/services-networking/gateway/) is an {{<glossary_tooltip text="add-on" term_id="addons">}}
+    that provides an expressive, extensible, and role-oriented family of API kinds for modeling service networking.
+- You can also use Services to
+  [publish services only for consumption inside your cluster](/docs/concepts/services-networking/service-traffic-policy/).
 -->
-
 Kubernetes 网络解决四方面的问题：
 
 - 一个 Pod 中的容器之间[通过本地回路（loopback）通信](/zh-cn/docs/concepts/services-networking/dns-pod-service/)。
-- 集群网络在不同 pod 之间提供通信。
-- [Service 资源](/zh-cn/docs/concepts/services-networking/service/)允许你
-  [向外暴露 Pods 中运行的应用](/zh-cn/docs/concepts/services-networking/connect-applications-service/)，
+- 集群网络在不同 Pod 之间提供通信。
+- [Service](/zh-cn/docs/concepts/services-networking/service/) API
+  允许你[向外暴露 Pod 中运行的应用](/zh-cn/docs/tutorials/services/connect-applications-service/)，
   以支持来自于集群外部的访问。
-- 可以使用 Services 来[发布仅供集群内部使用的服务](/zh-cn/docs/concepts/services-networking/service-traffic-policy/)。
+  - [Ingress](/zh-cn/docs/concepts/services-networking/ingress/)
+    提供专门用于暴露 HTTP 应用程序、网站和 API 的额外功能。
+  - [Gateway API](/zh-cn/docs/concepts/services-networking/gateway/)
+    是一个{{<glossary_tooltip text="插件" term_id="addons">}}，
+    为服务网络建模提供富有表现力、可扩展和面向角色的 API 系列类别。
+- 你也可以使用 Service
+  来[发布仅供集群内部使用的服务](/zh-cn/docs/concepts/services-networking/service-traffic-policy/)。
+
+<!--
+The [Connecting Applications with Services](/docs/tutorials/services/connect-applications-service/)
+tutorial lets you learn about Services and Kubernetes networking with a hands-on example.
+
+[Cluster Networking](/docs/concepts/cluster-administration/networking/) explains how to set
+up networking for your cluster, and also provides an overview of the technologies involved.
+-->
+[使用 Service 连接到应用](/zh-cn/docs/tutorials/services/connect-applications-service/)教程通过一个实际的示例让你了解
+Service 和 Kubernetes 如何联网。
+
+[集群网络](/zh-cn/docs/concepts/cluster-administration/networking/)解释了如何为集群设置网络，
+还概述了所涉及的技术。

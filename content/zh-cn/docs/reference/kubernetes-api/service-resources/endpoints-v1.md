@@ -28,33 +28,20 @@ auto_generated: true
 
 <!--
 Endpoints is a collection of endpoints that implement the actual service. Example:
-  Name: "mysvc",
-  Subsets: [
-    {
-      Addresses: [{"ip": "10.10.1.1"}, {"ip": "10.10.2.2"}],
-      Ports: [{"name": "a", "port": 8675}, {"name": "b", "port": 309}]
-    },
-    {
-      Addresses: [{"ip": "10.10.3.3"}],
-      Ports: [{"name": "a", "port": 93}, {"name": "b", "port": 76}]
-    },
- ]
 -->
 Endpoints 是实现实际服务的端点的集合。举例:
 
-```
-Name: "mysvc",
-Subsets: [
-  {
-    Addresses: [{"ip": "10.10.1.1"}, {"ip": "10.10.2.2"}],
-    Ports: [{"name": "a", "port": 8675}, {"name": "b", "port": 309}]
-  },
-  {
-    Addresses: [{"ip": "10.10.3.3"}],
-    Ports: [{"name": "a", "port": 93}, {"name": "b", "port": 76}]
-  },
-]
-```
+	 Name: "mysvc",
+	 Subsets: [
+	   {
+	     Addresses: [{"ip": "10.10.1.1"}, {"ip": "10.10.2.2"}],
+	     Ports: [{"name": "a", "port": 8675}, {"name": "b", "port": 309}]
+	   },
+	   {
+	     Addresses: [{"ip": "10.10.3.3"}],
+	     Ports: [{"name": "a", "port": 93}, {"name": "b", "port": 76}]
+	   },
+	]
 
 <hr>
 
@@ -83,30 +70,24 @@ Subsets: [
   <!--
   <a name="EndpointSubset"></a>
   *EndpointSubset is a group of addresses with a common set of ports. The expanded set of endpoints is the Cartesian product of Addresses x Ports. For example, given:
-    {
-      Addresses: [{"ip": "10.10.1.1"}, {"ip": "10.10.2.2"}],
-      Ports:     [{"name": "a", "port": 8675}, {"name": "b", "port": 309}]
-    }
-  The resulting set of endpoints can be viewed as:
-      a: [ 10.10.1.1:8675, 10.10.2.2:8675 ],
-      b: [ 10.10.1.1:309, 10.10.2.2:309 ]*
   -->
   <a name="EndpointSubset"></a>
   **EndpointSubset 是一组具有公共端口集的地址。扩展的端点集是 addresses 和 ports 的笛卡尔乘积。例如假设：**
 
-  ```
-    {
-      Addresses: [{"ip": "10.10.1.1"}, {"ip": "10.10.2.2"}],
-      Ports:     [{"name": "a", "port": 8675}, {"name": "b", "port": 309}]
-    }
-  ```
+  	{
+  	  Addresses: [{"ip": "10.10.1.1"}, {"ip": "10.10.2.2"}],
+  	  Ports:     [{"name": "a", "port": 8675}, {"name": "b", "port": 309}]
+  	}
 
+  <!--
+  The resulting set of endpoints can be viewed as:
+  -->
   则最终的端点集可以看作:
 
-  ```
-      a: [ 10.10.1.1:8675, 10.10.2.2:8675 ],
-      b: [ 10.10.1.1:309, 10.10.2.2:309 ]
-  ```
+
+  	a: [ 10.10.1.1:8675, 10.10.2.2:8675 ],
+  	b: [ 10.10.1.1:309, 10.10.2.2:309 ]*
+
 
   - **subsets.addresses** ([]EndpointAddress)
   
@@ -128,14 +109,14 @@ Subsets: [
     <!--
     - **subsets.addresses.ip** (string), required
   
-      The IP of this endpoint. May not be loopback (127.0.0.0/8), link-local (169.254.0.0/16), or link-local multicast ((224.0.0.0/24). IPv6 is also accepted but not fully supported on all platforms. Also, certain kubernetes components, like kube-proxy, are not IPv6 ready.
+      The IP of this endpoint. May not be loopback (127.0.0.0/8 or ::1), link-local (169.254.0.0/16 or fe80::/10), or link-local multicast ((224.0.0.0/24).
     -->
 
     - **subsets.addresses.ip** (string), 必需
 
-      端点的 IP。不可以是本地回路（127.0.0.0/8）、链路本地（169.254.0.0/16）或链路本地多播（224.0.0.0/24）地址。
-      IPv6 也被接受，但并非在所有平台上都完全支持。
-      此外，诸如 kube-proxy 等某些 Kubernetes 组件还没有准备好支持 IPv6。
+      端点的 IP。不可以是本地回路（127.0.0.0/8 或 ::1）、
+      链路本地（169.254.0.0/16 或 fe80::/10）或链路本地多播（224.0.0.0/24
+      或 ff02::/16)）地址。
 
     - **subsets.addresses.hostname** (string)
       
@@ -177,14 +158,14 @@ Subsets: [
     <!--
     - **subsets.notReadyAddresses.ip** (string), required
 
-      The IP of this endpoint. May not be loopback (127.0.0.0/8), link-local (169.254.0.0/16), or link-local multicast ((224.0.0.0/24). IPv6 is also accepted but not fully supported on all platforms. Also, certain kubernetes components, like kube-proxy, are not IPv6 ready.
+      The IP of this endpoint. May not be loopback (127.0.0.0/8 or ::1), link-local (169.254.0.0/16 or fe80::/10), or link-local multicast (224.0.0.0/24 or ff02::/16).
     -->
 
     - **subsets.notReadyAddresses.ip** (string), 必需
 
-      端点的 IP。不可以是本地环路（127.0.0.0/8）、链路本地（169.254.0.0/16）或链路本地多播（224.0.0.0/24）地址。
-      IPv6 也被接受，但并非在所有平台上都完全支持。
-      此外，诸如 kube-proxy 等某些 Kubernetes 组件还没有准备好支持 IPv6。
+      端点的 IP。不可以是本地环路（127.0.0.0/8 或 ::1）、
+      链路本地（169.254.0.0/16 或 fe80::/10）或链路本地多播（224.0.0.0/24
+      或 ff02::/16）地址。
 
     - **subsets.notReadyAddresses.hostname** (string)
 
@@ -224,7 +205,7 @@ Subsets: [
     -->
 
     <a name="EndpointPort"></a>
-    **EndpointAddress 是描述单个 IP 地址的元组。**
+    **EndpointPort 是描述单个端口的元组。**
 
     <!--    
     - **subsets.ports.port** (int32), required
@@ -256,12 +237,31 @@ Subsets: [
     - **subsets.ports.appProtocol** (string)
       
       <!--
-      The application protocol for this port. This field follows standard Kubernetes label syntax. Un-prefixed names are reserved for IANA standard service names (as per RFC-6335 and https://www.iana.org/assignments/service-names). Non-standard protocols should use prefixed names such as mycompany.com/my-custom-protocol.
+      The application protocol for this port. This is used as a hint for implementations to offer richer behavior for protocols that they understand. This field follows standard Kubernetes label syntax. Valid values are either:
       -->
 
-      端口的应用程序协议。此字段遵循标准的 Kubernetes 标签语法。
-      未加前缀的名称保留给 IANA 标准服务名称（遵循 RFC-6335 和 https://www.iana.org/assignments/service-names)。
-      非标准协议应使用带前缀名称，如 `mycompany.com/my-custom-protocol`。
+      端口的应用程序协议。这被用作实现的提示，为他们理解的协议提供更丰富的行为。
+      此字段遵循标准的 Kubernetes 标签语法。有效值为：
+
+      <!--
+      * Un-prefixed protocol names - reserved for IANA standard service names (as per RFC-6335 and https://www.iana.org/assignments/service-names).
+     
+      * Kubernetes-defined prefixed names:
+        * 'kubernetes.io/h2c' - HTTP/2 over cleartext as described in https://www.rfc-editor.org/rfc/rfc7540
+        * 'kubernetes.io/ws'  - WebSocket over cleartext as described in https://www.rfc-editor.org/rfc/rfc6455
+        * 'kubernetes.io/wss' - WebSocket over TLS as described in https://www.rfc-editor.org/rfc/rfc6455
+     
+      * Other protocols should use implementation-defined prefixed names such as mycompany.com/my-custom-protocol.
+      -->
+      
+      * 未加前缀的名称保留给 IANA 标准服务名称（遵循 RFC-6335 和 https://www.iana.org/assignments/service-names)。
+      
+      * Kubernetes 定义的前缀名称
+        * 'kubernetes.io/h2c' - HTTP/2 明文，如 https://www.rfc-editor.org/rfc/rfc7540 中所述
+        * 'kubernetes.io/ws'  - WebSocket 明文，如 https://www.rfc-editor.org/rfc/rfc6455 中所述
+        * 'kubernetes.io/wss' - WebSocket TLS 传输方式，如 https://www.rfc-editor.org/rfc/rfc6455 中所述
+    
+      * 其他协议应使用实现定义的前缀名称，如 mycompany.com/my-custom-protocol。
 
 ## EndpointsList {#EndpointsList}
 
@@ -429,6 +429,15 @@ GET /api/v1/namespaces/{namespace}/endpoints
   <a href="{{< ref "../common-parameters/common-parameters#resourceVersionMatch" >}}">resourceVersionMatch</a>
 
 <!--
+- **sendInitialEvents** (*in query*): boolean
+
+  <a href="{{< ref "../common-parameters/common-parameters#sendInitialEvents" >}}">sendInitialEvents</a>
+-->
+- **sendInitialEvents** (**查询参数**): boolean
+
+  <a href="{{< ref "../common-parameters/common-parameters#sendInitialEvents" >}}">sendInitialEvents</a>
+
+<!--
 - **timeoutSeconds** (*in query*): integer
 -->
 - **timeoutSeconds** (**查询参数**)：integer
@@ -541,6 +550,15 @@ GET /api/v1/endpoints
   <a href="{{< ref "../common-parameters/common-parameters#resourceVersionMatch" >}}">resourceVersionMatch</a>
 
 <!--
+- **sendInitialEvents** (*in query*): boolean
+
+  <a href="{{< ref "../common-parameters/common-parameters#sendInitialEvents" >}}">sendInitialEvents</a>
+-->
+- **sendInitialEvents** (**查询参数**): boolean
+
+  <a href="{{< ref "../common-parameters/common-parameters#sendInitialEvents" >}}">sendInitialEvents</a>
+
+<!--
 - **timeoutSeconds** (*in query*): integer
 
   <a href="{{< ref "../common-parameters/common-parameters#timeoutSeconds" >}}">timeoutSeconds</a>
@@ -590,7 +608,7 @@ POST /api/v1/namespaces/{namespace}/endpoints
 
 - **body**: <a href="{{< ref "../service-resources/endpoints-v1#Endpoints" >}}">Endpoints</a>, required
 -->
- - **namespace** (**路径参数**)：string，必需
+- **namespace** (**路径参数**)：string，必需
 
   <a href="{{< ref "../common-parameters/common-parameters#namespace" >}}">namespace</a>
 
@@ -753,7 +771,7 @@ PATCH /api/v1/namespaces/{namespace}/endpoints/{name}
 -->
 - **name** (**路径参数**)：string，必需
 
-  Endpoints名称
+  Endpoints 名称
 
 <!--
 - **namespace** (*in path*): string, required
@@ -1025,6 +1043,15 @@ DELETE /api/v1/namespaces/{namespace}/endpoints
 - **resourceVersionMatch** (**查询参数**)：string
 
   <a href="{{< ref "../common-parameters/common-parameters#resourceVersionMatch" >}}">resourceVersionMatch</a>
+
+<!--
+- **sendInitialEvents** (*in query*): boolean
+
+  <a href="{{< ref "../common-parameters/common-parameters#sendInitialEvents" >}}">sendInitialEvents</a>
+-->
+- **sendInitialEvents** (**查询参数**): boolean
+
+  <a href="{{< ref "../common-parameters/common-parameters#sendInitialEvents" >}}">sendInitialEvents</a>
 
 <!--
 - **timeoutSeconds** (*in query*): integer

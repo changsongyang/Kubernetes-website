@@ -1,6 +1,7 @@
 ---
 title: Downward API
 content_type: concept
+weight: 170
 description: >
   There are two ways to expose Pod and container fields to a running container:
   environment variables, and as files that are populated by a special volume type.
@@ -43,7 +44,7 @@ You can pass information from available Container-level fields using
 
 ### Information available via `fieldRef` {#downwardapi-fieldRef}
 
-For most Pod-level fields, you can provide them to a container either as
+For some Pod-level fields, you can provide them to a container either as
 an environment variable or using a `downwardAPI` volume. The fields available
 via either mechanism are:
 
@@ -62,6 +63,9 @@ via either mechanism are:
 `metadata.labels['<KEY>']`
 : the text value of the pod's {{< glossary_tooltip text="label" term_id="label" >}} named `<KEY>` (for example, `metadata.labels['mylabel']`)
 
+The following information is available through environment variables
+**but not as a downwardAPI volume fieldRef**:
+
 `spec.serviceAccountName`
 : the name of the pod's {{< glossary_tooltip text="service account" term_id="service-account" >}}
 
@@ -71,11 +75,17 @@ via either mechanism are:
 `status.hostIP`
 : the primary IP address of the node to which the Pod is assigned
 
+`status.hostIPs`
+: the IP addresses is a dual-stack version of `status.hostIP`, the first is always the same as `status.hostIP`.
+
 `status.podIP`
 : the pod's primary IP address (usually, its IPv4 address)
 
-In addition, the following information is available through
-a `downwardAPI` volume `fieldRef`, but **not as environment variables**:
+`status.podIPs`
+: the IP addresses is a dual-stack version of `status.podIP`, the first is always the same as `status.podIP`
+
+The following information is available through a `downwardAPI` volume 
+`fieldRef`, **but not as environment variables**:
 
 `metadata.labels`
 : all of the pod's labels, formatted as `label-key="escaped-label-value"` with one label per line
@@ -103,10 +113,10 @@ for resources such as CPU and memory.
 : A container's memory request
 
 `resource: limits.hugepages-*`
-: A container's hugepages limit (provided that the `DownwardAPIHugePages` [feature gate](/docs/reference/command-line-tools-reference/feature-gates/) is enabled)
+: A container's hugepages limit
 
 `resource: requests.hugepages-*`
-: A container's hugepages request (provided that the `DownwardAPIHugePages` [feature gate](/docs/reference/command-line-tools-reference/feature-gates/) is enabled)
+: A container's hugepages request
 
 `resource: limits.ephemeral-storage`
 : A container's ephemeral-storage limit

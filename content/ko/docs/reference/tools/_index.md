@@ -1,9 +1,9 @@
 ---
 title: 도구
-
-
+# reviewers:
+# - janetkuo
 content_type: concept
-weight: 80
+weight: 150
 no_list: true
 ---
 

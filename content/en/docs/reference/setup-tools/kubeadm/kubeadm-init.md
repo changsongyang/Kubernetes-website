@@ -1,7 +1,4 @@
 ---
-reviewers:
-- luxas
-- jbeda
 title: kubeadm init
 content_type: concept
 weight: 20
@@ -32,8 +29,9 @@ following steps:
    arguments, lowercased if necessary.
 
 1. Writes kubeconfig files in `/etc/kubernetes/` for the kubelet, the controller-manager and the
-   scheduler to use to connect to the API server, each with its own identity, as well as an
-   additional kubeconfig file for administration named `admin.conf`.
+   scheduler to use to connect to the API server, each with its own identity. Also
+   additional kubeconfig files are written, for kubeadm as administrative entity (`admin.conf`)
+   and for a super admin user that can bypass RBAC (`super-admin.conf`).
 
 1. Generates static Pod manifests for the API server,
    controller-manager and scheduler. In case an external etcd is not provided,
@@ -157,9 +155,10 @@ List of feature gates:
 {{< table caption="kubeadm feature gates" >}}
 Feature | Default | Alpha | Beta | GA
 :-------|:--------|:------|:-----|:----
+`EtcdLearnerMode` | `true` | 1.27 | 1.29 | -
 `PublicKeysECDSA` | `false` | 1.19 | - | -
 `RootlessControlPlane` | `false` | 1.22 | - | -
-`UnversionedKubeletConfigMap` | `true` | 1.22 | 1.23 | 1.25
+`WaitForAllControlPlaneComponents` | `false` | 1.30 | - | -
 {{< /table >}}
 
 {{< note >}}
@@ -168,16 +167,71 @@ Once a feature gate goes GA its value becomes locked to `true` by default.
 
 Feature gate descriptions:
 
+`EtcdLearnerMode`
+: With this feature gate enabled, when joining a new control plane node, a new etcd member will be created
+as a learner and promoted to a voting member only after the etcd data are fully aligned.
+
 `PublicKeysECDSA`
 : Can be used to create a cluster that uses ECDSA certificates instead of the default RSA algorithm.
 Renewal of existing ECDSA certificates is also supported using `kubeadm certs renew`, but you cannot
-switch between the RSA and ECDSA algorithms on the fly or during upgrades.
+switch between the RSA and ECDSA algorithms on the fly or during upgrades. Kubernetes
+{{< skew currentVersion >}} has a bug where keys in generated kubeconfig files are set use RSA
+despite the feature gate being enabled.
 
 `RootlessControlPlane`
 : Setting this flag configures the kubeadm deployed control plane component static Pod containers
 for `kube-apiserver`, `kube-controller-manager`, `kube-scheduler` and `etcd` to run as non-root users.
 If the flag is not set, those components run as root. You can change the value of this feature gate before
 you upgrade to a newer version of Kubernetes.
+
+`WaitForAllControlPlaneComponents`
+: With this feature gate enabled kubeadm will wait for all control plane components (kube-apiserver,
+kube-controller-manager, kube-scheduler) on a control plane node to report status 200 on their `/healthz`
+endpoints. These checks are performed on `https://127.0.0.1:PORT/healthz`, where `PORT` is taken from
+`--secure-port` of a component. If you specify custom `--secure-port` values in the kubeadm configuration
+they will be respected. Without the feature gate enabled, kubeadm will only wait for the kube-apiserver
+on a control plane node to become ready. The wait process starts right after the kubelet on the host
+is started by kubeadm. You are advised to enable this feature gate in case you wish to observe a ready
+state from all control plane components during the `kubeadm init` or `kubeadm join` command execution.
+
+List of deprecated feature gates:
+
+{{< table caption="kubeadm deprecated feature gates" >}}
+Feature | Default
+:-------|:--------
+`UpgradeAddonsBeforeControlPlane` | `false`
+{{< /table >}}
+
+Feature gate descriptions:
+
+`UpgradeAddonsBeforeControlPlane`
+: This is as a **disabled** feature gate that was introduced for Kubernetes v1.28, in order to allow reactivating a legacy
+and deprecated behavior during cluster upgrade. For kubeadm versions prior to v1.28, kubeadm upgrades cluster addons (including
+CoreDNS and kube-proxy) immediately during `kubeadm upgrade apply`, regardless of whether there are other control plane
+instances that have not been upgraded. This may cause compatibility problems. Since v1.28, kubeadm defaults to a mode that
+always checks whether all the control plane instances have been upgraded before starting to upgrade the addons. This behavior
+is applied to both `kubeadm upgrade apply` and `kubeadm upgrade node`. kubeadm determines whether a control plane instance
+has been upgraded by checking whether the image of the kube-apiserver Pod has been upgraded. You must perform control plane
+instances upgrade sequentially or at least ensure that the last control plane instance upgrade is not started until all the
+other control plane instances have been upgraded completely, and the addons upgrade will be performed after the last control plane
+instance is upgraded. The deprecated `UpgradeAddonsBeforeControlPlane` feature gate gives you a chance to keep the old upgrade
+behavior. You should not need this old behavior; if you do, you should consider changing your cluster or upgrade processes, as this
+feature gate will be removed in a future release.
+
+List of removed feature gates:
+
+{{< table caption="kubeadm removed feature gates" >}}
+Feature | Alpha | Beta | GA | Removed
+:-------|:------|:-----|:---|:-------
+`IPv6DualStack` | 1.16 | 1.21 | 1.23 | 1.24
+`UnversionedKubeletConfigMap` | 1.22 | 1.23 | 1.25 | 1.26
+{{< /table >}}
+
+Feature gate descriptions:
+
+`IPv6DualStack`
+: This flag helps to configure components dual stack when the feature is in progress. For more details on Kubernetes
+dual-stack support see [Dual-stack support with kubeadm](/docs/setup/production-environment/tools/kubeadm/dual-stack-support/).
 
 `UnversionedKubeletConfigMap`
 : This flag controls the name of the {{< glossary_tooltip text="ConfigMap" term_id="configmap" >}} where kubeadm stores
@@ -248,7 +302,7 @@ for etcd and CoreDNS.
 
 #### Custom sandbox (pause) images {#custom-pause-image}
 
-To set a custom image for these you need to configure this in your 
+To set a custom image for these you need to configure this in your
 {{< glossary_tooltip text="container runtime" term_id="container-runtime" >}}
 to use the image.
 Consult the documentation for your container runtime to find out how to change this setting;
@@ -267,10 +321,14 @@ to download the certificates when additional control-plane nodes are joining, by
 The following phase command can be used to re-upload the certificates after expiration:
 
 ```shell
-kubeadm init phase upload-certs --upload-certs --certificate-key=SOME_VALUE --config=SOME_YAML_FILE
+kubeadm init phase upload-certs --upload-certs --config=SOME_YAML_FILE
 ```
+{{< note >}}
+A predefined `certificateKey` can be provided in `InitConfiguration` when passing the
+[configuration file](/docs/reference/config-api/kubeadm-config.v1beta3/) with `--config`.
+{{< /note >}}
 
-If the flag `--certificate-key` is not passed to `kubeadm init` and
+If a predefined certificate key is not passed to `kubeadm init` and
 `kubeadm init phase upload-certs` a new key will be generated automatically.
 
 The following command can be used to generate a new key on demand:
@@ -339,8 +397,9 @@ DNS name or an address of a load balancer.
    kubeadm certs certificate-key
    ```
 
-Once the cluster is up, you can grab the admin credentials from the control-plane node
-at `/etc/kubernetes/admin.conf` and use that to talk to the cluster.
+Once the cluster is up, you can use the `/etc/kubernetes/admin.conf` file from
+a control-plane node to talk to the cluster with administrator credentials or
+[Generating kubeconfig files for additional users](/docs/tasks/administer-cluster/kubeadm/kubeadm-certs#kubeconfig-additional-users).
 
 Note that this style of bootstrap has some relaxed security guarantees because
 it does not allow the root CA hash to be validated with

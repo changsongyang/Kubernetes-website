@@ -1,9 +1,4 @@
 ---
-reviewers:
-- jsafrane
-- saad-ali
-- thockin
-- msau42
 title: Volumes
 content_type: conceito
 weight: 10
@@ -37,7 +32,7 @@ Volumes não podem ser montados dentro de outros volumes (mas você pode consult
 
 Kubernetes suporta vários tipos de volumes.
 
-### awsElasticBlockStore {#awselasticblockstore}
+### awsElasticBlockStore (descontinuado) {#awselasticblockstore}
 
 Um volume `awsElasticBlockStore` monta um [volume EBS](https://aws.amazon.com/ebs/) da Amazon Web Services (AWS) em seu pod. Ao contrário do `emptyDir`que é apagado quando um pod é removido, o conteúdo de um volume EBS é preservado e o volume é desmontado. Isto significa que um volume EBS pode ser previamente populado com dados e que os dados podem ser compartilhados entre Pods.
 
@@ -70,7 +65,7 @@ metadata:
   name: test-ebs
 spec:
   containers:
-  - image: k8s.gcr.io/test-webserver
+  - image: registry.k8s.io/test-webserver
     name: test-container
     volumeMounts:
     - mountPath: /test-ebs
@@ -83,13 +78,13 @@ spec:
       fsType: ext4
 ```
 
-Se o volume EBS estiver particionado, é possível informar o campo opcional `partition: "<partition em umber>"` para especificar em que partição deve ser montado.
+Se o volume EBS estiver particionado, é possível informar o campo opcional `partition: "<partition em number>"` para especificar em que partição deve ser montado.
 
 #### Migração de CSI do AWS EBS
 
-{{< feature-state for_k8s_version="v1.17" state="beta" >}}
+{{< feature-state for_k8s_version="v1.25" state="stable" >}}
 
-Quando o recurso `CSIMigration` para `awsElasticBlockStore` está habilitado, todas as operações de plugin do tipo in-tree são redirecionadas para o driver Cointainer Storage Interface (CSI) `ebs.csi.aws.com`. Para usar esse recurso, o [driver CSI AWS EBS](https://github.com/kubernetes-sigs/aws-ebs-csi-driver) deve estar instalado no cluster e os recursos beta `CSIMigration` e `CSIMigrationAWS` devem estar ativados.
+Quando o recurso `CSIMigration` para `awsElasticBlockStore` está habilitado, todas as operações de plugin do tipo in-tree são redirecionadas para o driver Cointainer Storage Interface (CSI) `ebs.csi.aws.com`. Para usar esse recurso, o [driver CSI AWS EBS](https://github.com/kubernetes-sigs/aws-ebs-csi-driver) deve estar instalado no cluster.
 
 #### Migração CSI AWS EBS concluída
 
@@ -97,7 +92,9 @@ Quando o recurso `CSIMigration` para `awsElasticBlockStore` está habilitado, to
 
 Para desabilitar o carregamento do plugin de armazenamento `awsElasticBlockStore` pelo gerenciador de controladores e pelo kubelet, defina a flag `InTreePluginAWSUnregister` como `true`.
 
-### azureDisk {#azuredisk}
+### azureDisk (descontinuado) {#azuredisk}
+
+{{< feature-state for_k8s_version="v1.19" state="deprecated" >}}
 
 O tipo de volume `azureDisk` monta um [Disco de Dados](https://docs.microsoft.com/en-us/azure/aks/csi-storage-drivers) Microsoft Azure em um pod.
 
@@ -105,9 +102,9 @@ Para obter mais detalhes, consulte [plugin de volume `azureDisk`](https://github
 
 #### Migração de CSI do azureDisk
 
-{{< feature-state for_k8s_version="v1.19" state="beta" >}}
+{{< feature-state for_k8s_version="v1.24" state="stable" >}}
 
-Quando o recurso `CSIMigration` para `azureDisk` está habilitado, todas as operações de plugin do tipo in-tree são redirecionadas para o Driver de Cointêiner Storage Interface (CSI) `disk.csi.azure.com`. Para utilizar este recurso, o [Driver CSI Azure Disk](https://github.com/kubernetes-sigs/azuredisk-csi-driver) deve estar instalado no cluster e os recursos `CSIMigration` e `CSIMigrationAzureDisk` devem estar ativados.
+Quando o recurso `CSIMigration` para `azureDisk` está habilitado, todas as operações de plugin do tipo in-tree são redirecionadas para o Driver de Cointêiner Storage Interface (CSI) `disk.csi.azure.com`. Para utilizar este recurso, o [Driver CSI Azure Disk](https://github.com/kubernetes-sigs/azuredisk-csi-driver) deve estar instalado no cluster.
 
 #### Migração CSI azureDisk concluída
 
@@ -115,7 +112,9 @@ Quando o recurso `CSIMigration` para `azureDisk` está habilitado, todas as oper
 
 Para desabilitar o carregamento do plugin de armazenamento `azureDisk` pelo gerenciador de controladores e pelo kubelet, defina a flag `InTreePluginAzureDiskUnregister` como `true`.
 
-### azureFile {#azurefile}
+### azureFile (descontinuado) {#azurefile}
+
+{{< feature-state for_k8s_version="v1.21" state="deprecated" >}}
 
 O tipo de volume `azureFile` monta um volume de arquivo Microsoft Azure (SMB 2.1 e 3.0) em um pod.
 
@@ -123,7 +122,7 @@ Para obter mais detalhes, consulte [plugin de volume `azureFile`](https://github
 
 #### Migração de CSI azureFile
 
-{{< feature-state for_k8s_version="v1.21" state="beta" >}}
+{{< feature-state for_k8s_version="v1.26" state="stable" >}}
 
 Quando o recurso `CSIMigration` para `azureFile` está habilitado, todas as operações de plugin do tipo in-tree são redirecionadas para o Driver de Cointainer Storage Interface (CSI) `file.csi.azure.com`. Para utilizar este recurso, o [Driver CSI do Azure Disk](https://github.com/kubernetes-sigs/azurefile-csi-driver) deve estar instalado no cluster e as [feature gates](/docs/reference/command-line-tools-reference/feature-gates/) `CSIMigration` e `CSIMigrationAzureFile` devem estar habilitadas.
 
@@ -143,7 +142,9 @@ Um volume `cephfs` permite que um volume CephFS existente seja montado no seu Po
 
 Consulte o [ exemplo CephFS](https://github.com/kubernetes/examples/tree/master/volumes/cephfs/) para mais detalhes.
 
-### cinder
+### cinder (descontinuado)
+
+{{< feature-state for_k8s_version="v1.18" state="deprecated" >}}
 
 {{< note >}} O Kubernetes deve ser configurado com o provedor de nuvem OpenStack. {{< /note >}}
 
@@ -158,7 +159,7 @@ metadata:
   name: test-cinder
 spec:
   containers:
-  - image: k8s.gcr.io/test-webserver
+  - image: registry.k8s.io/test-webserver
     name: test-cinder-container
     volumeMounts:
     - mountPath: /test-cinder
@@ -173,7 +174,7 @@ spec:
 
 #### Migração de CSI OpenStack
 
-{{< feature-state for_k8s_version="v1.21" state="beta" >}}
+{{< feature-state for_k8s_version="v1.24" state="stable" >}}
 
 O recurso `CSIMigration` para o Cinder é ativado por padrão no Kubernetes 1.21. Ele redireciona todas as operações de plugin do tipo in-tree para o Driver de Cointainer Storage Interface (CSI) `cinder.csi.openstack.org`. O [Driver CSI OpenStack Cinder](https://github.com/kubernetes/cloud-provider-openstack/blob/master/docs/cinder-csi-plugin/using-cinder-csi-plugin.md) tem de estar instalado no cluster. Você pode desativar a migração Cinder CSI para o seu cluster definindo a [feature gate](/docs/reference/command-line-tools-reference/feature-gates/) `CSIMigrationOpenStack` como `false`. Se você desativar o recurso `CSIMigrationOpenStack`, o plugin de volume in-tree do Cinder assume a responsabilidade por todos os aspectos do gerenciamento de armazenamento de volume do Cinder.
 
@@ -192,6 +193,7 @@ spec:
   containers:
     - name: test
       image: busybox:1.28
+      command: ['sh', '-c', 'echo "The app is running!" && tail -f /dev/null']
       volumeMounts:
         - name: config-vol
           mountPath: /etc/config
@@ -209,6 +211,7 @@ O ConfigMap `log-config` é montado como um volume e todos os conteúdos armazen
 {{< note >}}
 
 * É preciso criar um [ConfigMap](/docs/tasks/configure-pod-container/configure-pod-configmap/) antes de usá-lo.
+* Um ConfigMap é sempre montado como `readOnly`.
 
 * Um contêiner que utiliza ConfigMap através de um ponto de montagem com a propriedade [`subPath`](#using-subpath) não receberá atualizações deste ConfigMap.
 
@@ -247,7 +250,7 @@ metadata:
   name: test-pd
 spec:
   containers:
-  - image: k8s.gcr.io/test-webserver
+  - image: registry.k8s.io/test-webserver
     name: test-container
     volumeMounts:
     - mountPath: /cache
@@ -255,6 +258,7 @@ spec:
   volumes:
   - name: cache-volume
     emptyDir: {}
+      sizeLimit: 500Mi
 ```
 
 ### fc (fibre channel) {#fc}
@@ -275,7 +279,8 @@ Um volume `flocker` permite que um conjunto de dados Flocker seja montado em um 
 
 Consulte [exemplo do Flocker](https://github.com/kubernetes/examples/tree/master/staging/volumes/flocker) para obter mais detalhes.
 
-### gcePersistentDisk
+### gcePersistentDisk (descontinuado)
+{{< feature-state for_k8s_version="v1.17" state="deprecated" >}}
 
 Um volume `gcePersistentDisk` monta um [disco persistente](https://cloud.google.com/compute/docs/disks) (PD) do Google Compute Engine (GCE) no seu Pod. Ao contrário do `emptyDir` que é apagado quando um pod é removido, o conteúdo de um PD é preservado e o volume é simplesmente desmontado. Isto significa que um PD pode ser previamente populado com dados e que os dados podem ser compartilhados entre os Pods.
 
@@ -307,7 +312,7 @@ metadata:
   name: test-pd
 spec:
   containers:
-  - image: k8s.gcr.io/test-webserver
+  - image: registry.k8s.io/test-webserver
     name: test-container
     volumeMounts:
     - mountPath: /test-pd
@@ -326,7 +331,7 @@ O recurso de [Discos persistentes regionais](https://cloud.google.com/compute/do
 
 #### Provisionar manualmente um PersistentVolume PD Regional
 
-O provisionamento dinâmico é possível usando [uma StorageClass para GCE PD](/docs/concepts/storage/storage-classes/#gce). Antes de criar um PersistentVolume, você deve criar o disco persistente:
+O provisionamento dinâmico é possível usando [uma StorageClass para GCE PD](/docs/concepts/storage/storage-classes/#gce-pd). Antes de criar um PersistentVolume, você deve criar o disco persistente:
 
 ```shell
 gcloud compute disks create --size=500GB my-data-disk
@@ -363,7 +368,7 @@ spec:
 
 #### Migração do CSI GCE
 
-{{< feature-state for_k8s_version="v1.17" state="beta" >}}
+{{< feature-state for_k8s_version="v1.25" state="stable" >}}
 
 Quando o recurso `CSIMigration` para o GCE PD é habilitado, todas as operações de plugin do plugin in-tree existente são redirecionadas para o Driver de Cointainer Storage Interface (CSI) `pd.csi.storage.gke.io`. Para utilizar este recurso, o [Driver CSI GCE PD](https://github.com/kubernetes-sigs/gcp-compute-persistent-disk-csi-driver) deve ser instalado no cluster e os recursos beta `CSIMigration` e `CSIMigrationGCE` devem estar habilitados.
 
@@ -400,13 +405,11 @@ spec:
       revision: "22f1d8406d464b0c0874075539c1f2e96c253775"
 ```
 
-### glusterfs
+### glusterfs (removido)
 
-Um volume `glusterfs` permite que um volume [Glusterfs](https://www.gluster.org) (um sistema de arquivos em rede de código aberto) seja montado no seu Pod. Ao contrário do `emptyDir` que é apagado quando um Pod é removido, o conteúdo de um volume `glusterfs` é preservado e o volume é simplesmente desmontado. Isto significa que um volume glusterfs pode ser previamente populado com dados e que os dados podem ser compartilhados entre Pods. O GlusterFS pode ser montado para escrita por vários pods simultaneamente.
+O Kubernetes 1.27 não inclui um tipo de volume `glusterfs`.
 
-{{< note >}} Para poder utilizá-lo, é necessário ter a sua própria instalação do GlusterFS em execução. {{< /note >}}
-
-Consulte o [exemplo do GlusterFS](https://github.com/kubernetes/examples/tree/master/volumes/glusterfs) para obter mais detalhes.
+O driver de armazenamento in-tree GlusterFS foi descontinuado na versão v1.25 do Kubernetes e, em seguida, removido totalmente na versão v1.26.
 
 ### hostPath {#hostpath}
 
@@ -452,7 +455,7 @@ metadata:
   name: test-pd
 spec:
   containers:
-  - image: k8s.gcr.io/test-webserver
+  - image: registry.k8s.io/test-webserver
     name: test-container
     volumeMounts:
     - mountPath: /test-pd
@@ -478,7 +481,7 @@ metadata:
 spec:
   containers:
   - name: test-webserver
-    image: k8s.gcr.io/test-webserver:latest
+    image: registry.k8s.io/test-webserver:latest
     volumeMounts:
     - mountPath: /var/local/aaa
       name: mydir
@@ -557,7 +560,30 @@ Um provisionador estático externo pode ser executado separadamente para uma mel
 
 Um volume `nfs` permite que um compartilhamento NFS (Network File System) existente seja montado em um Pod. Ao contrário do `emptyDir` que é apagado quando um Pod é removido, o conteúdo de um volume `nfs` é preservado e o volume é simplesmente desmontado. Isto significa que um volume NFS pode ser previamente populado com dados e que os dados podem ser compartilhados entre os Pods. O NFS pode ser montado por vários gravadores simultaneamente.
 
-{{< note >}} Você deve ter seu próprio servidor NFS rodando com o compartilhamento acessível antes de poder utilizá-lo. {{< /note >}}
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-pd
+spec:
+  containers:
+  - image: registry.k8s.io/test-webserver
+    name: test-container
+    volumeMounts:
+    - mountPath: /my-nfs-data
+      name: test-volume
+  volumes:
+  - name: test-volume
+    nfs:
+      server: my-nfs-server.example.com
+      path: /my-nfs-volume
+      readOnly: true
+```
+
+{{< note >}} Você deve ter seu próprio servidor NFS rodando com o compartilhamento acessível antes de poder utilizá-lo. 
+
+Note também que você não pode especificar opções de montagem NFS em uma especificação de pod. Você pode definir as opções de montagem do lado do servidor ou usar [/etc/nfsmount.conf](https://man7.org/linux/man-pages/man5/nfsmount.conf.5.html). Você também pode montar volumes NFS por meio de PersistentVolumes, que permitem definir opções de montagem.
+{{< /note >}}
 
 Consulte o [exemplo NFS](https://github.com/kubernetes/examples/tree/master/staging/volumes/nfs) para obter mais detalhes.
 
@@ -567,7 +593,7 @@ Um volume `persistentVolumeClaim` é usado para montar um [PersistentVolume](/pt
 
 Consulte as informações sobre [PersistentVolumes](/pt-br/docs/concepts/storage/persistent-volumes/) para obter mais detalhes.
 
-### portworxVolume {#portworxvolume}
+### portworxVolume (descontinuado) {#portworxvolume}
 
 Um `portworxVolume` é uma camada de armazenamento em bloco extensível que funciona hiperconvergente com Kubernetes. O [Portworx](https://portworx.com/use-case/kubernetes-storage/) tira as impressões digitais de um armazenamento em um servidor, organiza com base nas capacidades e agrega capacidade em múltiplos servidores. Portworx funciona em máquinas virtuais ou em nós Linux bare-metal.
 
@@ -580,7 +606,7 @@ metadata:
   name: test-portworx-volume-pod
 spec:
   containers:
-  - image: k8s.gcr.io/test-webserver
+  - image: registry.k8s.io/test-webserver
     name: test-container
     volumeMounts:
     - mountPath: /mnt
@@ -637,9 +663,10 @@ Como operador do cluster Kubernetes que administra o armazenamento, aqui estão 
 
 Um volume `secret` é usado para passar informações sensíveis, tais como senhas, para Pods. Você pode armazenar segredos na API Kubernetes e montá-los como arquivos para serem usados por pods sem necessidade de vinculação direta ao Kubernetes. Volumes `secret` são mantidos pelo tmpfs (um sistema de arquivos com baseado em memória RAM) para que nunca sejam gravados em armazenamento não volátil.
 
-{{< note >}}Você deve criar um Secret na API Kubernetes antes de poder utilizá-lo. {{< /note >}}
-
-{{< note >}} Um contêiner que utiliza um Secret como ponto de montagem para a propriedade [`subPath`](#using-subpath) não receberá atualizações deste Secret. {{< /note >}}
+{{< note >}}
+* Você deve criar um Secret na API Kubernetes antes de poder utilizá-lo.
+* Um secret é sempre montado como `readOnly`.
+* Um contêiner que utiliza um Secret como ponto de montagem para a propriedade [`subPath`](#using-subpath) não receberá atualizações deste Secret. {{< /note >}}
 
 Para obter mais detalhes, consulte [Configurando Secrets](/pt-br/docs/concepts/configuration/secret/).
 
@@ -687,15 +714,15 @@ spec:
 
 Para obter mais informações sobre StorageOS, provisionamento dinâmico e PersistentVolumeClaims, consulte os [exemplos do StorageOS](https://github.com/kubernetes/examples/blob/master/volumes/storageos).
 
-### vsphereVolume {#vspherevolume}
+### vsphereVolume (descontinuado) {#vspherevolume}
 
-{{< note >}} Você deve configurar o Kubernetes vSphere Cloud Provider. Para obter informações sobre a configuração do cloudprovider, consulte o [Guia Introdutório do vSphere](https://vmware.github.io/vsphere-storage-for-kubernetes/documentation/). {{< /note >}}
+{{< note >}}Recomendamos usar o driver out-of-tree do vSphere CSI.{{< /note >}}
 
 Um `vsphereVolume` é usado para montar um volume VMDK do vSphere em seu Pod. O conteúdo de um volume é preservado quando é desmontado. Ele suporta sistemas de armazenamento de dados tanto do tipo VMFS quanto do tipo VSAN.
 
-{{< note >}} Você deve criar o volume do VMDK vSphere usando um dos métodos a seguir antes de usar com um Pod. {{< /note >}}
+Para obter mais informações, consulte os exemplos [vSphere volume](https://github.com/kubernetes/examples/tree/master/staging/volumes/vsphere)
 
-#### Criar um volume VMDK {#creating-vmdk-volume}
+#### Criar um volume VMDK (descontinuado) {#creating-vmdk-volume}
 
 Escolha um dos seguintes métodos para criar um VMDK.
 
@@ -728,7 +755,7 @@ metadata:
   name: test-vmdk
 spec:
   containers:
-  - image: k8s.gcr.io/test-webserver
+  - image: registry.k8s.io/test-webserver
     name: test-container
     volumeMounts:
     - mountPath: /test-vmdk
@@ -745,11 +772,15 @@ Para obter mais informações, consulte os exemplos de [volume do vSphere](https
 
 #### Migração de CSI vSphere {#vsphere-csi-migration}
 
-{{< feature-state for_k8s_version="v1.19" state="beta" >}}
+{{< feature-state for_k8s_version="v1.26" state="stable" >}}
 
-Quando o recurso `CSIMigration` do `vsphereVolume` está ativado, redireciona todas as operações do plugin in-tree existente para o driver {{< glossary_tooltip text="CSI" term_id="csi" >}} `csi.vsphere.vmware.com`. Para usar esse recurso, o [driver CSI do vSphere](https://github.com/kubernetes-sigs/vsphere-csi-driver) deve estar instalado no cluster e as [feature gates](/docs/reference/command-line-tools-reference/feature-gates/) `CSIMigration` e `CSIMigrationvSphere` devem estar habilitadas.
+No Kubernetes 1.27, todas as operações para o tipo `vsphereVolume` in-tree são redirecionadas para o driver CSI `csi.vsphere.vmware.com`.
 
-Isso também requer que a versão mínima do vSphere vCenter/ESXi seja 7.0u1 e a versão mínima do hardware seja a VM versão 15.
+O driver [vSphere CSI](https://github.com/kubernetes-sigs/vsphere-csi-driver) deve ser instalado no cluster. Você pode encontrar conteúdos adicionais sobre como migrar o `vsphereVolume` in-tree na página de documentação do VMware [Migrating In-Tree vSphere Volumes to vSphere Container Storage plug-in](https://docs.vmware.com/en/VMware-vSphere-Container-Storage-Plug-in/2.0/vmware-vsphere-csp-getting-started/GUID-968D421F-D464-4E22-8127-6CB9FF54423F.html). Se o vSphere CSI Driver não estiver instalado, as operações de volume não poderão ser executadas no PV criado com o tipo `vsphereVolume` in-tree.
+
+Você deve executar o vSphere 7.0u2 ou posterior para migrar para o driver vSphere CSI.
+
+Se você estiver executando uma versão do Kubernetes diferente da v1.27, consulte a documentação dessa versão do Kubernetes.
 
 {{< note >}} Os seguintes parâmetros da StorageClass do plugin integrado `vsphereVolume` não são suportados pelo driver CSI do vSphere:
 
@@ -771,13 +802,13 @@ Para desativar o carregamento do plugin de armazenamento `vsphereVolume` pelo ge
 
 #### Migração de driver CSI do Portworx
 
-{{< feature-state for_k8s_version="v1.23" state="alpha" >}}
+{{< feature-state for_k8s_version="v1.25" state="beta" >}}
 
-O recurso `CSIMigration` para Portworx foi adicionado, mas desativado por padrão no Kubernetes 1.23 visto que está no estado alfa. Ele redireciona todas as operações de plugin do tipo in-tree para o Driver de Cointainer Storage Interface (CSI) `pxd.portworx.com`. [O driver CSI Portworx](https://docs.portworx.com/portworx-install-with-kubernetes/storage-operations/csi/) deve ser instalado no cluster. Para ativar o recurso, defina `CSIMigrationPortworx=true` no kube-controller-manager e no kubelet.
+O recurso `CSIMigration` para Portworx foi adicionado, mas desativado por padrão no Kubernetes 1.23 visto que está no estado alfa. Ele redireciona todas as operações de plugin do tipo in-tree para o Driver de Cointainer Storage Interface (CSI) `pxd.portworx.com`. [O driver CSI Portworx](https://docs.portworx.com/portworx-enterprise/operations/operate-kubernetes/storage-operations/csi) deve ser instalado no cluster. Para ativar o recurso, defina `CSIMigrationPortworx=true` no kube-controller-manager e no kubelet.
 
 ## Utilizando subPath {#using-subpath}
 
-Às vezes, é útil compartilhar um volume para múltiplos usos em um único pod. A propriedade `volumeMounts.subPath` especifica um sub caminho dentro do volume referenciado em vez de sua raiz.
+Às vezes, é útil compartilhar um volume para múltiplos usos em um único pod. A propriedade `volumeMounts[*].subPath` especifica um sub caminho dentro do volume referenciado em vez de sua raiz.
 
 O exemplo a seguir mostra como configurar um Pod com um ambiente LAMP (Linux, Apache, MySQL e PHP) usando um único volume compartilhado. Esta exemplo de configuração `subPath` não é recomendada para uso em produção.
 
@@ -878,8 +909,8 @@ Uma vez que um driver de volume compatível com CSI seja implantado em um cluste
 Um volume `csi` pode ser utilizado em um Pod de três formas diferentes:
 
 * Através de uma referência a [PersistentVolumeClaim](#persistentvolumeclaim)
-* com um [volume efêmero genérico](/docs/concepts/storage/ephemeral-volumes/#generic-ephemeral-volume) (recurso alfa)
-* com [volume efêmero de CSI](/docs/concepts/storage/ephemeral-volumes/#csi-ephemeral-volume) se o driver suportar esse (recurso beta)
+* com um [volume efêmero genérico](/docs/concepts/storage/ephemeral-volumes/#generic-ephemeral-volumes) (recurso alfa)
+* com [volume efêmero de CSI](/docs/concepts/storage/ephemeral-volumes/#csi-ephemeral-volumes) se o driver suportar esse (recurso beta)
 
 Os seguintes campos estão disponíveis para administradores de armazenamento configurarem um volume persistente de CSI:
 
@@ -902,23 +933,30 @@ Você pode configurar o [PersistentVolume/PersistentVolumeClaim com suporte de v
 
 #### Volumes efêmeros de CSI
 
-{{< feature-state for_k8s_version="v1.16" state="beta" >}}
+{{< feature-state for_k8s_version="v1.25" state="stable" >}}
 
-É possível configurar diretamente volumes CSI dentro da especificação do Pod. Os volumes especificados desta forma são efêmeros e não persistem nas reinicializações do pod. Consulte [Volumes efêmeros](/docs/concepts/storage/ephemeral-volumes/#csi-ephemeral-volume) para obter mais informações.
+É possível configurar diretamente volumes CSI dentro da especificação do Pod. Os volumes especificados desta forma são efêmeros e não persistem nas reinicializações do pod. Consulte [Volumes efêmeros](/docs/concepts/storage/ephemeral-volumes/#csi-ephemeral-volumes) para obter mais informações.
 
 Para obter mais informações sobre como desenvolver um driver CSI, consulte a [documentação kubernetes-csi](https://kubernetes-csi.github.io/docs/)
 
 #### Migrando para drivers CSI a partir de plugins in-tree
 
-{{< feature-state for_k8s_version="v1.17" state="beta" >}}
+{{< feature-state for_k8s_version="v1.25" state="stable" >}}
 
 Quando o recurso `CSIMigration` está habilitado, direciona operações relacionadas a plugins in-tree existentes para plugins CSI correspondentes (que devem ser instalados e configurados). Como resultado, os operadores não precisam fazer nenhuma alteração de configuração para Storage Classes, PersistentVolumes ou PersistentVolumeClaims existentes (referindo-se aos plugins in-tree) quando a transição para um driver CSI que substitui um plugin in-tree.
 
 As operações e características que são suportadas incluem: provisionamento/exclusão, anexação/remoção, montargem/desmontagem e redimensionamento de volumes.
 
 Plugins in-tree que suportam `CSIMigration` e têm um driver CSI correspondente implementado são listados [em tipos de volumes](#volume-types).
+Os seguintes plug-ins in-tree suportam armazenamento persistente em nós do Windows:
 
-### flexVolume
+* [`awsElasticBlockStore`](#awselasticblockstore)
+* [`azureDisk`](#azuredisk)
+* [`azureFile`](#azurefile)
+* [`gcePersistentDisk`](#gcepersistentdisk)
+* [`vsphereVolume`](#vspherevolume)
+
+### flexVolume (descontinuado)
 
 {{< feature-state for_k8s_version="v1.23" state="deprecated" >}}
 
@@ -934,7 +972,7 @@ Os mantenedores do driver FlexVolume devem implementar um driver CSI e ajudar a 
 
 A propagação de montagem permite compartilhar volumes montados por um contêiner para outros contêineres no mesmo pod, ou mesmo para outros pods no mesmo nó.
 
-A propagação de montagem de um volume é controlada pelo campo `mountPropagation` na propriedade `Container.volumeMounts`. Os seus valores são:
+A propagação de montagem de um volume é controlada pelo campo `mountPropagation` na propriedade `containers[*].volumeMounts`. Os seus valores são:
 
 * `None` - Este volume de montagem não receberá do host nenhuma montagem posterior que seja montada para este volume ou qualquer um de seus subdiretórios. De forma semelhante, nenhum ponto de montagem criado pelo contêiner será visível no host. Este é o modo padrão.
   

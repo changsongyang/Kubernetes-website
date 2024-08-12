@@ -10,7 +10,7 @@ weight: 80
 
 <!-- overview -->
 
-In the [scheduling-plugin](/docs/reference/scheduling/config/#scheduling-plugins)  `NodeResourcesFit` of kube-scheduler, there are two 
+In the [scheduling-plugin](/docs/reference/scheduling/config/#scheduling-plugins) `NodeResourcesFit` of kube-scheduler, there are two
 scoring strategies that support the bin packing of resources: `MostAllocated` and `RequestedToCapacityRatio`.
 
 <!-- body -->
@@ -23,7 +23,7 @@ To set the `MostAllocated` strategy for the `NodeResourcesFit` plugin, use a
 [scheduler configuration](/docs/reference/scheduling/config) similar to the following:
 
 ```yaml
-apiVersion: kubescheduler.config.k8s.io/v1beta3
+apiVersion: kubescheduler.config.k8s.io/v1
 kind: KubeSchedulerConfiguration
 profiles:
 - pluginConfig:
@@ -42,8 +42,8 @@ profiles:
     name: NodeResourcesFit
 ```
 
-To learn more about other parameters and their default configuration, see the API documentation for 
-[`NodeResourcesFitArgs`](/docs/reference/config-api/kube-scheduler-config.v1beta3/#kubescheduler-config-k8s-io-v1beta3-NodeResourcesFitArgs).
+To learn more about other parameters and their default configuration, see the API documentation for
+[`NodeResourcesFitArgs`](/docs/reference/config-api/kube-scheduler-config.v1/#kubescheduler-config-k8s-io-v1-NodeResourcesFitArgs).
 
 ## Enabling bin packing using RequestedToCapacityRatio
 
@@ -53,20 +53,20 @@ allows users to bin pack extended resources by using appropriate parameters
 to improve the utilization of scarce resources in large clusters. It favors nodes according to a
 configured function of the allocated resources. The behavior of the `RequestedToCapacityRatio` in
 the `NodeResourcesFit` score function can be controlled by the
-[scoringStrategy](/docs/reference/config-api/kube-scheduler-config.v1beta3/#kubescheduler-config-k8s-io-v1beta3-ScoringStrategy) field.
+[scoringStrategy](/docs/reference/config-api/kube-scheduler-config.v1/#kubescheduler-config-k8s-io-v1-ScoringStrategy) field.
 Within the `scoringStrategy` field, you can configure two parameters: `requestedToCapacityRatio` and
-`resources`. The `shape` in the `requestedToCapacityRatio` 
-parameter allows the user to tune the function as least requested or most 
-requested based on `utilization` and `score` values.  The `resources` parameter 
-consists of `name` of the resource to be considered during scoring and `weight` 
-specify the weight of each resource.
+`resources`. The `shape` in the `requestedToCapacityRatio`
+parameter allows the user to tune the function as least requested or most
+requested based on `utilization` and `score` values. The `resources` parameter
+comprises both the `name` of the resource to be considered during scoring and
+its corresponding `weight`, which specifies the weight of each resource.
 
 Below is an example configuration that sets
 the bin packing behavior for extended resources `intel.com/foo` and `intel.com/bar`
 using the `requestedToCapacityRatio` field.
 
 ```yaml
-apiVersion: kubescheduler.config.k8s.io/v1beta3
+apiVersion: kubescheduler.config.k8s.io/v1
 kind: KubeSchedulerConfiguration
 profiles:
 - pluginConfig:
@@ -87,12 +87,12 @@ profiles:
     name: NodeResourcesFit
 ```
 
-Referencing the `KubeSchedulerConfiguration` file with the kube-scheduler 
-flag `--config=/path/to/config/file` will pass the configuration to the 
+Referencing the `KubeSchedulerConfiguration` file with the kube-scheduler
+flag `--config=/path/to/config/file` will pass the configuration to the
 scheduler.
 
-To learn more about other parameters and their default configuration, see the API documentation for 
-[`NodeResourcesFitArgs`](/docs/reference/config-api/kube-scheduler-config.v1beta3/#kubescheduler-config-k8s-io-v1beta3-NodeResourcesFitArgs).
+To learn more about other parameters and their default configuration, see the API documentation for
+[`NodeResourcesFitArgs`](/docs/reference/config-api/kube-scheduler-config.v1/#kubescheduler-config-k8s-io-v1-NodeResourcesFitArgs).
 
 ### Tuning the score function
 
@@ -100,10 +100,10 @@ To learn more about other parameters and their default configuration, see the AP
 
 ```yaml
 shape:
- - utilization: 0
-   score: 0
- - utilization: 100
-   score: 10
+  - utilization: 0
+    score: 0
+  - utilization: 100
+    score: 10
 ```
 
 The above arguments give the node a `score` of 0 if `utilization` is 0% and 10 for
@@ -120,7 +120,7 @@ shape:
 
 `resources` is an optional parameter which defaults to:
 
-``` yaml
+```yaml
 resources:
   - name: cpu
     weight: 1
@@ -128,7 +128,7 @@ resources:
     weight: 1
 ```
 
-It can be used to add extended resources as follows: 
+It can be used to add extended resources as follows:
 
 ```yaml
 resources:
@@ -188,8 +188,8 @@ intel.com/foo  = resourceScoringFunction((2+1),4)
                = (100 - ((4-3)*100/4)
                = (100 - 25)
                = 75                       # requested + used = 75% * available
-               = rawScoringFunction(75) 
-               = 7                        # floor(75/10) 
+               = rawScoringFunction(75)
+               = 7                        # floor(75/10)
 
 memory         = resourceScoringFunction((256+256),1024)
                = (100 -((1024-512)*100/1024))
@@ -203,7 +203,7 @@ cpu            = resourceScoringFunction((2+1),8)
                = rawScoringFunction(37.5)
                = 3                        # floor(37.5/10)
 
-NodeScore   =  (7 * 5) + (5 * 1) + (3 * 3) / (5 + 1 + 3)
+NodeScore   =  ((7 * 5) + (5 * 1) + (3 * 3)) / (5 + 1 + 3)
             =  5
 ```
 
@@ -242,7 +242,7 @@ cpu            = resourceScoringFunction((2+6),8)
                = rawScoringFunction(100)
                = 10
 
-NodeScore   =  (5 * 5) + (7 * 1) + (10 * 3) / (5 + 1 + 3)
+NodeScore   =  ((5 * 5) + (7 * 1) + (10 * 3)) / (5 + 1 + 3)
             =  7
 
 ```
@@ -251,4 +251,3 @@ NodeScore   =  (5 * 5) + (7 * 1) + (10 * 3) / (5 + 1 + 3)
 
 - Read more about the [scheduling framework](/docs/concepts/scheduling-eviction/scheduling-framework/)
 - Read more about [scheduler configuration](/docs/reference/scheduling/config/)
-

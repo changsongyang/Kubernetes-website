@@ -26,7 +26,7 @@ cluster using kubeadm:
 本文讲述了使用 kubeadm 设置一个高可用的 Kubernetes 集群的两种不同方式：
 
 - 使用具有堆叠的控制平面节点。这种方法所需基础设施较少。etcd 成员和控制平面节点位于同一位置。
-- 使用外部集群。这种方法所需基础设施较多。控制平面的节点和 etcd 成员是分开的。
+- 使用外部 etcd 集群。这种方法所需基础设施较多。控制平面的节点和 etcd 成员是分开的。
 
 <!--
 Before proceeding, you should carefully consider which approach best meets the needs of your applications
@@ -91,7 +91,7 @@ _See [Stacked etcd topology](/docs/setup/production-environment/tools/kubeadm/ha
 需要准备：
 
 - 配置满足 [kubeadm 的最低要求](/zh-cn/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#准备开始)
-  的三台机器作为控制面节点。奇数台控制平面节点有利于机器故障或者网络分区时进行重新选主。
+  的三台机器作为控制面节点。控制平面节点为奇数有利于机器故障或者分区故障时重新选举。
   - 机器已经安装好{{< glossary_tooltip text="容器运行时" term_id="container-runtime" >}}，并正常运行
 - 配置满足 [kubeadm 的最低要求](/zh-cn/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#准备开始)
   的三台机器作为工作节点
@@ -131,7 +131,7 @@ You need:
 需要准备：
 
 - 配置满足 [kubeadm 的最低要求](/zh-cn/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#准备开始)
-  的三台机器作为控制面节点。奇数台控制平面节点有利于机器故障或者网络分区时进行重新选主。
+  的三台机器作为控制面节点。控制平面节点为奇数有利于机器故障或者分区故障时重新选举。
   - 机器已经安装好{{< glossary_tooltip text="容器运行时" term_id="container-runtime" >}}，并正常运行
 - 配置满足 [kubeadm 的最低要求](/zh-cn/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#准备开始)
   的三台机器作为工作节点
@@ -152,7 +152,7 @@ And you also need:
   - These machines also require a container runtime, that is already set up and working.
 -->
 还需要准备：
-- 给 etcd 集群使用的另外三台及以上机器。为了分布式一致性算法达到更好的投票效果，集群必须由奇数个节点组成。
+- 给 etcd 集群使用的另外至少三台机器。为了分布式一致性算法达到更好的投票效果，集群必须由奇数个节点组成。
   - 机器上已经安装 `kubeadm` 和 `kubelet`。
   - 机器上同样需要安装好容器运行时，并能正常运行。
 
@@ -168,10 +168,10 @@ _See [External etcd topology](/docs/setup/production-environment/tools/kubeadm/h
 ### 容器镜像
 
 <!--
-Each host should have access read and fetch images from the Kubernetes container image registry, `k8s.gcr.io`.
+Each host should have access read and fetch images from the Kubernetes container image registry, `registry.k8s.io`.
 If you want to deploy a highly-available cluster where the hosts do not have access to pull images, this is possible. You must ensure by some other means that the correct container images are already available on the relevant hosts.
 -->
-每台主机需要能够从 Kubernetes 容器镜像仓库（`k8s.gcr.io`）读取和拉取镜像。
+每台主机需要能够从 Kubernetes 容器镜像仓库（`registry.k8s.io`）读取和拉取镜像。
 想要在无法拉取 Kubernetes 仓库镜像的机器上部署高可用集群也是可行的。通过其他的手段保证主机上已经有对应的容器镜像即可。
 
 <!-- ### Command line interface {#kubectl} -->
@@ -202,7 +202,7 @@ helpful for troubleshooting.
 There are many configurations for load balancers. The following example is only one
 option. Your cluster requirements may need a different configuration.
 -->
-使用负载均衡器需要许多配置。你的集群搭建可能需要不同的配置。下面的例子只是其中的一方面配置。
+负载均衡器有很多种可能的配置方式。以下仅提供一个配置的例子。你的集群可能需要进行不同的配置。
 {{< /note >}}
 
 <!--
@@ -314,7 +314,7 @@ option. Your cluster requirements may need a different configuration.
    you must add the `certificateKey` field in the appropriate config locations
    (under `InitConfiguration` and `JoinConfiguration: controlPlane`).
    -->
-   标志 `kubeadm init`、`--config` 和 `--certificate-key` 不能混合使用，
+   在使用 `kubeadm init` 时，标记 `--config` 和 `--certificate-key` 不能混用，
    因此如果你要使用
    [kubeadm 配置](/zh-cn/docs/reference/config-api/kubeadm-config.v1beta3/)，你必须在相应的配置结构
    （位于 `InitConfiguration` 和 `JoinConfiguration: controlPlane`）添加 `certificateKey` 字段。
@@ -329,26 +329,26 @@ option. Your cluster requirements may need a different configuration.
    -->
    一些 CNI 网络插件需要更多配置，例如指定 Pod IP CIDR，而其他插件则不需要。参考
    [CNI 网络文档](/zh-cn/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/#pod-network)。
-   通过传递 `--pod-network-cidr` 标志添加 pod CIDR，或者你可以使用 kubeadm
+   通过传递 `--pod-network-cidr` 标志添加 Pod CIDR，或者你可以使用 kubeadm
    配置文件，在 `ClusterConfiguration` 的 `networking` 对象下设置 `podSubnet` 字段。
    {{< /note >}}
 
    <!--
-   - The output looks similar to:
+   The output looks similar to:
    -->
-   - 输出类似于：
+   输出类似于：
 
-     ```sh
-     ...
-     You can now join any number of control-plane node by running the following command on each as a root:
-     kubeadm join 192.168.0.200:6443 --token 9vr73a.a8uxyaju799qwdjv --discovery-token-ca-cert-hash sha256:7c2e69131a36ae2a042a339b33381c6d0d43887e2de83720eff5359e26aec866 --control-plane --certificate-key f8902e114ef118304e561c3ecd4d0b543adc226b7a07f675f56564185ffe0c07
+   ```sh
+   ...
+   You can now join any number of control-plane node by running the following command on each as a root:
+       kubeadm join 192.168.0.200:6443 --token 9vr73a.a8uxyaju799qwdjv --discovery-token-ca-cert-hash sha256:7c2e69131a36ae2a042a339b33381c6d0d43887e2de83720eff5359e26aec866 --control-plane --certificate-key f8902e114ef118304e561c3ecd4d0b543adc226b7a07f675f56564185ffe0c07
 
-     Please note that the certificate-key gives access to cluster sensitive data, keep it secret!
-     As a safeguard, uploaded-certs will be deleted in two hours; If necessary, you can use kubeadm init phase upload-certs to reload certs afterward.
+   Please note that the certificate-key gives access to cluster sensitive data, keep it secret!
+   As a safeguard, uploaded-certs will be deleted in two hours; If necessary, you can use kubeadm init phase upload-certs to reload certs afterward.
 
-     Then you can join any number of worker nodes by running the following on each as root:
+   Then you can join any number of worker nodes by running the following on each as root:
        kubeadm join 192.168.0.200:6443 --token 9vr73a.a8uxyaju799qwdjv --discovery-token-ca-cert-hash sha256:7c2e69131a36ae2a042a339b33381c6d0d43887e2de83720eff5359e26aec866
-     ```
+   ```
 
    <!--
    - Copy this output to a text file. You will need it later to join control plane and worker nodes to the cluster.
@@ -375,10 +375,14 @@ option. Your cluster requirements may need a different configuration.
      ```shell
      kubeadm certs certificate-key
      ```
+   <!--
+   The certificate key is a hex encoded string that is an AES key of size 32 bytes.
+   -->
+   证书密钥是一个十六进制编码的字符串，它是一个 32 字节大小的 AES 密钥。
 
    {{< note >}}
    <!--
-   The `kubeadm-certs` Secret and decryption key expire after two hours.
+   The `kubeadm-certs` Secret and the decryption key expire after two hours.
    -->
    `kubeadm-certs` Secret 和解密密钥会在两个小时后失效。
    {{< /note >}}
@@ -392,7 +396,9 @@ option. Your cluster requirements may need a different configuration.
 
 <!--
 1. Apply the CNI plugin of your choice:
-   [Follow these instructions](/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/#pod-network) to install the CNI provider. Make sure the configuration corresponds to the Pod CIDR specified in the kubeadm configuration file (if applicable).
+   [Follow these instructions](/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/#pod-network)
+   to install the CNI provider. Make sure the configuration corresponds to the Pod CIDR specified in the
+   kubeadm configuration file (if applicable).
 -->
 2. 应用你所选择的 CNI 插件：
    [请遵循以下指示](/zh-cn/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/#pod-network)
@@ -436,6 +442,7 @@ For each additional control plane node you should:
    - The `--certificate-key ...` will cause the control plane certificates to be downloaded
      from the `kubeadm-certs` Secret in the cluster and be decrypted using the given key.
 
+You can join multiple control-plane nodes in parallel.
 -->
 对于每个其他控制平面节点，你应该：
 
@@ -450,6 +457,7 @@ For each additional control plane node you should:
    - `--certificate-key ...` 将导致从集群中的 `kubeadm-certs` Secret
      下载控制平面证书并使用给定的密钥进行解密。
 
+你可以并行地加入多个控制面节点。
 <!--
 ## External etcd nodes
 
@@ -467,7 +475,7 @@ in the kubeadm config file.
 
 1. Follow these [instructions](/docs/setup/production-environment/tools/kubeadm/setup-ha-etcd-with-kubeadm/) to set up the etcd cluster.
 
-1. Setup SSH as described [here](#manual-certs).
+1. Set up SSH as described [here](#manual-certs).
 
 1. Copy the following files from any etcd node in the cluster to the first control plane node:
 
@@ -480,14 +488,13 @@ in the kubeadm config file.
 
    - Replace the value of `CONTROL_PLANE` with the `user@host` of the first control-plane node.
 -->
-### 设置 ectd 集群
+### 设置 etcd 集群
 
-1. 按照这些[指示](/zh-cn/docs/setup/production-environment/tools/kubeadm/setup-ha-etcd-with-kubeadm/) 
-   去设置 etcd 集群。
+1. 按照[这里](/zh-cn/docs/setup/production-environment/tools/kubeadm/setup-ha-etcd-with-kubeadm/)的指示去设置。
 
 1. 根据[这里](#manual-certs) 的描述配置 SSH。
 
-1. 将以下文件从集群中的任何 etcd 节点复制到第一个控制平面节点：
+1. 将以下文件从集群中的任一 etcd 节点复制到第一个控制平面节点：
 
    ```shell
    export CONTROL_PLANE="ubuntu@10.0.0.7"
@@ -554,7 +561,7 @@ in the kubeadm config file.
    {{< /note >}}
 
    <!--
-   -  Replace the following variables in the config template with the appropriate values for your cluster:
+   - Replace the following variables in the config template with the appropriate values for your cluster:
    -->
    - 在你的集群中，将配置模板中的以下变量替换为适当值：
 

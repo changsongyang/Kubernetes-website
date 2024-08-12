@@ -4,8 +4,7 @@ title: Kubelet Checkpoint API
 weight: 10
 ---
 
-
-{{< feature-state for_k8s_version="v1.25" state="alpha" >}}
+{{< feature-state feature_gate_name="ContainerCheckpoint" >}}
 
 Checkpointing a container is the functionality to create a stateful copy of a
 running container. Once you have a stateful copy of a container, you could
@@ -68,7 +67,7 @@ POST /checkpoint/{namespace}/{pod}/{container}
 - **timeout** (*in query*): integer
 
   Timeout in seconds to wait until the checkpoint creation is finished.
-  If zero or no timeout is specfied the default {{<glossary_tooltip
+  If zero or no timeout is specified the default {{<glossary_tooltip
   term_id="cri" text="CRI">}} timeout value will be used. Checkpoint
   creation time depends directly on the used memory of the container.
   The more memory a container uses the more time is required to create
@@ -80,7 +79,7 @@ POST /checkpoint/{namespace}/{pod}/{container}
 
 401: Unauthorized
 
-404: Not Found (if the `CheckpointContainer` feature gate is disabled)
+404: Not Found (if the `ContainerCheckpoint` feature gate is disabled)
 
 404: Not Found (if the specified `namespace`, `pod` or `container` cannot be found)
 
@@ -91,6 +90,6 @@ POST /checkpoint/{namespace}/{pod}/{container}
 {{< comment >}}
 TODO: Add more information about return codes once CRI implementation have checkpoint/restore.
       This TODO cannot be fixed before the release, because the CRI implementation need
-      the Kubernetes changes to be merged to implement the new CheckpointContainer CRI API
+      the Kubernetes changes to be merged to implement the new ContainerCheckpoint CRI API
       call. We need to wait after the 1.25 release to fix this.
 {{< /comment >}}

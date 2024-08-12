@@ -1,29 +1,16 @@
 <!--
-The file is auto-generated from the Go source code of the component using a generic
-[generator](https://github.com/kubernetes-sigs/reference-docs/). To learn how
-to generate the reference documentation, please read
-[Contributing to the reference documentation](/docs/contribute/generate-ref-docs/).
-To update the reference conent, please follow the 
-[Contributing upstream](/docs/contribute/generate-ref-docs/contribute-upstream/)
-guide. You can file document formatting bugs against the
-[reference-docs](https://github.com/kubernetes-sigs/reference-docs/) project.
--->
-
-<!--
 Generate the self-signed CA to provision identities for etcd
 -->
-生成用于为 etcd 设置身份的自签名 CA
+生成用于为 etcd 设置身份的自签名 CA。
 
 <!--
 ### Synopsis
 -->
-
 ### 概要
 
 <!--
 Generate the self-signed CA to provision identities for etcd, and save them into etcd/ca.crt and etcd/ca.key files.
 -->
-
 生成用于为 etcd 设置身份的自签名 CA，并将其保存到 etcd/ca.crt 和 etcd/ca.key 文件中。
 
 <!--
@@ -32,12 +19,6 @@ If both files already exist, kubeadm skips the generation step and existing file
 
 如果两个文件都已存在，则 kubeadm 将跳过生成步骤，使用现有文件。
 
-<!--
-Alpha Disclaimer: this command is currently alpha.
--->
-
-Alpha 免责声明：此命令当前为 Alpha 功能。
-
 ```
 kubeadm init phase certs etcd-ca [flags]
 ```
@@ -45,7 +26,6 @@ kubeadm init phase certs etcd-ca [flags]
 <!--
 ### Options
 -->
-
 ### 选项
 
    <table style="width: 100%; table-layout: fixed;">
@@ -89,6 +69,20 @@ kubeadm 配置文件的路径。
 </tr>
 
 <tr>
+<td colspan="2">--dry-run</td>
+</tr>
+<tr>
+<td></td><td style="line-height: 130%; word-wrap: break-word;">
+<!--
+Don't apply any changes; just output what would be done.
+-->
+<p>
+不做任何更改；只输出将要执行的操作。
+</p>
+</td>
+</tr>
+
+<tr>
 <td colspan="2">-h, --help</td>
 </tr>
 <tr>
@@ -97,7 +91,7 @@ kubeadm 配置文件的路径。
 help for etcd-ca
 -->
 <p>
-etcd-ca 操作的帮助命令
+etcd-ca 操作的帮助命令。
 </p>
 </td>
 </tr>
@@ -127,7 +121,6 @@ Choose a specific Kubernetes version for the control plane.
 <!--
 ### Options inherited from parent commands
 -->
-
 ### 继承于父命令的选项
 
    <table style="width: 100%; table-layout: fixed;">

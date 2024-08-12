@@ -3,10 +3,11 @@ layout: blog
 title: "What's new in Security Profiles Operator v0.4.0"
 date: 2021-12-17
 slug: security-profiles-operator
----
-
-**Authors:** Jakub Hrozek, Juan Antonio Osorio, Paulo Gomes, Sascha Grunert
-
+author: >
+   Jakub Hrozek,
+   Juan Antonio Osorio,
+   Paulo Gomes,
+   Sascha Grunert
 ---
 
 The [Security Profiles Operator (SPO)](https://sigs.k8s.io/security-profiles-operator)
@@ -105,7 +106,7 @@ validations are done here.
 ### AppArmor support
 
 This version introduces the initial support for AppArmor, allowing users to load and 
-unload AppArmor profiles into cluster nodes by using the new [AppArmorProfile](https://github.com/kubernetes-sigs/security-profiles-operator/blob/main/deploy/base/crds/apparmorprofile.yaml) CRD.
+unload AppArmor profiles into cluster nodes by using the new [AppArmorProfile](https://github.com/kubernetes-sigs/security-profiles-operator/blob/main/deploy/base-crds/crds/apparmorprofile.yaml) CRD.
 
 To enable AppArmor support use the [enableAppArmor feature gate](https://github.com/kubernetes-sigs/security-profiles-operator/blob/main/examples/config.yaml#L10) switch of your SPO configuration.
 Then use our [apparmor example](https://github.com/kubernetes-sigs/security-profiles-operator/blob/main/examples/apparmorprofile.yaml) to deploy your first profile across your cluster.

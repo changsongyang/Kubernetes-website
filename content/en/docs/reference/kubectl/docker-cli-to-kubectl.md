@@ -4,6 +4,7 @@ content_type: concept
 reviewers:
 - brendandburns
 - thockin
+weight: 50
 ---
 
 <!-- overview -->
@@ -14,6 +15,7 @@ You can use the Kubernetes command line tool `kubectl` to interact with the API 
 ## docker run
 
 To run an nginx Deployment and expose the Deployment, see [kubectl create deployment](/docs/reference/generated/kubectl/kubectl-commands#-em-deployment-em-).
+
 docker:
 
 ```shell

@@ -5,6 +5,9 @@ reviewers:
 - thockin
 - msau42
 title: Volumes
+api_metadata:
+- apiVersion: ""
+  kind: "Volume"
 content_type: concept
 weight: 10
 ---
@@ -12,10 +15,13 @@ weight: 10
 <!-- overview -->
 
 On-disk files in a container are ephemeral, which presents some problems for
-non-trivial applications when running in containers. One problem
-is the loss of files when a container crashes. The kubelet restarts the container
-but with a clean state. A second problem occurs when sharing files
-between containers running together in a `Pod`.
+non-trivial applications when running in containers. One problem occurs when 
+a container crashes or is stopped. Container state is not saved so all of the 
+files that were created or modified during the lifetime of the container are lost. 
+During a crash, kubelet restarts the container with a clean state. 
+Another problem occurs when multiple containers are running in a `Pod` and 
+need to share files. It can be challenging to setup 
+and access a shared filesystem across all of the containers.
 The Kubernetes {{< glossary_tooltip text="volume" term_id="volume" >}} abstraction
 solves both of these problems.
 Familiarity with [Pods](/docs/concepts/workloads/pods/) is suggested.
@@ -24,15 +30,10 @@ Familiarity with [Pods](/docs/concepts/workloads/pods/) is suggested.
 
 ## Background
 
-Docker has a concept of
-[volumes](https://docs.docker.com/storage/), though it is
-somewhat looser and less managed. A Docker volume is a directory on
-disk or in another container. Docker provides volume
-drivers, but the functionality is somewhat limited.
-
 Kubernetes supports many types of volumes. A {{< glossary_tooltip term_id="pod" text="Pod" >}}
 can use any number of volume types simultaneously.
-Ephemeral volume types have a lifetime of a pod, but persistent volumes exist beyond
+[Ephemeral volume](/docs/concepts/storage/ephemeral-volumes/) types have a lifetime of a pod, 
+but [persistent volumes](/docs/concepts/storage/persistent-volumes/) exist beyond
 the lifetime of a pod. When a pod ceases to exist, Kubernetes destroys ephemeral volumes;
 however, Kubernetes does not destroy persistent volumes.
 For any kind of volume in a given pod, data is preserved across container restarts.
@@ -60,106 +61,38 @@ Volumes cannot mount within other volumes (but see [Using subPath](#using-subpat
 for a related mechanism). Also, a volume cannot contain a hard link to anything in
 a different volume.
 
-## Types of Volumes {#volume-types}
+## Types of volumes {#volume-types}
 
 Kubernetes supports several types of volumes.
 
 ### awsElasticBlockStore (deprecated) {#awselasticblockstore}
 
-{{< feature-state for_k8s_version="v1.17" state="deprecated" >}}
+<!-- maintenance note: OK to remove all mention of awsElasticBlockStore once the v1.27 release of
+Kubernetes has gone out of support -->
 
-An `awsElasticBlockStore` volume mounts an Amazon Web Services (AWS)
-[EBS volume](https://aws.amazon.com/ebs/) into your pod. Unlike
-`emptyDir`, which is erased when a pod is removed, the contents of an EBS
-volume are persisted and the volume is unmounted. This means that an
-EBS volume can be pre-populated with data, and that data can be shared between pods.
+In Kubernetes {{< skew currentVersion >}}, all operations for the in-tree `awsElasticBlockStore` type
+are redirected to the `ebs.csi.aws.com` {{< glossary_tooltip text="CSI" term_id="csi" >}} driver.
 
-{{< note >}}
-You must create an EBS volume by using `aws ec2 create-volume` or the AWS API before you can use it.
-{{< /note >}}
 
-There are some restrictions when using an `awsElasticBlockStore` volume:
+The AWSElasticBlockStore in-tree storage driver was deprecated in the Kubernetes v1.19 release
+and then removed entirely in the v1.27 release.
 
-* the nodes on which pods are running must be AWS EC2 instances
-* those instances need to be in the same region and availability zone as the EBS volume
-* EBS only supports a single EC2 instance mounting a volume
-
-#### Creating an AWS EBS volume
-
-Before you can use an EBS volume with a pod, you need to create it.
-
-```shell
-aws ec2 create-volume --availability-zone=eu-west-1a --size=10 --volume-type=gp2
-```
-
-Make sure the zone matches the zone you brought up your cluster in. Check that the size and EBS volume
-type are suitable for your use.
-
-#### AWS EBS configuration example
-
-```yaml
-apiVersion: v1
-kind: Pod
-metadata:
-  name: test-ebs
-spec:
-  containers:
-  - image: registry.k8s.io/test-webserver
-    name: test-container
-    volumeMounts:
-    - mountPath: /test-ebs
-      name: test-volume
-  volumes:
-  - name: test-volume
-    # This AWS EBS volume must already exist.
-    awsElasticBlockStore:
-      volumeID: "<volume id>"
-      fsType: ext4
-```
-
-If the EBS volume is partitioned, you can supply the optional field `partition: "<partition number>"` to specify which partition to mount on.
-
-#### AWS EBS CSI migration
-
-{{< feature-state for_k8s_version="v1.25" state="stable" >}}
-
-The `CSIMigration` feature for `awsElasticBlockStore`, when enabled, redirects
-all plugin operations from the existing in-tree plugin to the `ebs.csi.aws.com` Container
-Storage Interface (CSI) driver. In order to use this feature, the [AWS EBS CSI
-driver](https://github.com/kubernetes-sigs/aws-ebs-csi-driver)
-must be installed on the cluster.
-
-#### AWS EBS CSI migration complete
-
-{{< feature-state for_k8s_version="v1.17" state="alpha" >}}
-
-To disable the `awsElasticBlockStore` storage plugin from being loaded by the controller manager
-and the kubelet, set the `InTreePluginAWSUnregister` flag to `true`.
+The Kubernetes project suggests that you use the [AWS EBS](https://github.com/kubernetes-sigs/aws-ebs-csi-driver) third party
+storage driver instead.
 
 ### azureDisk (deprecated) {#azuredisk}
 
-{{< feature-state for_k8s_version="v1.19" state="deprecated" >}}
+<!-- maintenance note: OK to remove all mention of azureDisk once the v1.27 release of
+Kubernetes has gone out of support -->
 
-The `azureDisk` volume type mounts a Microsoft Azure [Data Disk](https://docs.microsoft.com/en-us/azure/aks/csi-storage-drivers) into a pod.
+In Kubernetes {{< skew currentVersion >}}, all operations for the in-tree `azureDisk` type
+are redirected to the `disk.csi.azure.com` {{< glossary_tooltip text="CSI" term_id="csi" >}} driver.
 
-For more details, see the [`azureDisk` volume plugin](https://github.com/kubernetes/examples/tree/master/staging/volumes/azure_disk/README.md).
+The AzureDisk in-tree storage driver was deprecated in the Kubernetes v1.19 release
+and then removed entirely in the v1.27 release.
 
-#### azureDisk CSI migration
-
-{{< feature-state for_k8s_version="v1.24" state="stable" >}}
-
-The `CSIMigration` feature for `azureDisk`, when enabled, redirects all plugin operations
-from the existing in-tree plugin to the `disk.csi.azure.com` Container
-Storage Interface (CSI) Driver. In order to use this feature, the
-[Azure Disk CSI Driver](https://github.com/kubernetes-sigs/azuredisk-csi-driver)
-must be installed on the cluster.
-
-#### azureDisk CSI migration complete
-
-{{< feature-state for_k8s_version="v1.21" state="alpha" >}}
-
-To disable the `azureDisk` storage plugin from being loaded by the controller manager
-and the kubelet, set the `InTreePluginAzureDiskUnregister` flag to `true`.
+The Kubernetes project suggests that you use the [Azure Disk](https://github.com/kubernetes-sigs/azuredisk-csi-driver) third party
+storage driver instead.
 
 ### azureFile (deprecated) {#azurefile}
 
@@ -172,7 +105,7 @@ For more details, see the [`azureFile` volume plugin](https://github.com/kuberne
 
 #### azureFile CSI migration
 
-{{< feature-state for_k8s_version="v1.21" state="beta" >}}
+{{< feature-state for_k8s_version="v1.26" state="stable" >}}
 
 The `CSIMigration` feature for `azureFile`, when enabled, redirects all plugin operations
 from the existing in-tree plugin to the `file.csi.azure.com` Container
@@ -191,7 +124,13 @@ Azure File CSI driver does not support using same volume with different fsgroups
 To disable the `azureFile` storage plugin from being loaded by the controller manager
 and the kubelet, set the `InTreePluginAzureFileUnregister` flag to `true`.
 
-### cephfs
+### cephfs (deprecated) {#cephfs}
+{{< feature-state for_k8s_version="v1.28" state="deprecated" >}}
+
+{{< note >}}
+The Kubernetes project suggests that you use the [CephFS CSI](https://github.com/ceph/ceph-csi) third party
+storage driver instead.
+{{< /note >}}
 
 A `cephfs` volume allows an existing CephFS volume to be
 mounted into your Pod. Unlike `emptyDir`, which is erased when a pod is
@@ -208,49 +147,18 @@ See the [CephFS example](https://github.com/kubernetes/examples/tree/master/volu
 
 ### cinder (deprecated) {#cinder}
 
-{{< feature-state for_k8s_version="v1.18" state="deprecated" >}}
+<!-- maintenance note: OK to remove all mention of cinder once the v1.26 release of
+Kubernetes has gone out of support -->
 
-{{< note >}}
-Kubernetes must be configured with the OpenStack cloud provider.
-{{< /note >}}
+In Kubernetes {{< skew currentVersion >}}, all operations for the in-tree `cinder` type
+are redirected to the `cinder.csi.openstack.org` {{< glossary_tooltip text="CSI" term_id="csi" >}} driver.
 
-The `cinder` volume type is used to mount the OpenStack Cinder volume into your pod.
+The OpenStack Cinder in-tree storage driver was deprecated in the Kubernetes v1.11 release
+and then removed entirely in the v1.26 release.
 
-#### Cinder volume configuration example
-
-```yaml
-apiVersion: v1
-kind: Pod
-metadata:
-  name: test-cinder
-spec:
-  containers:
-  - image: registry.k8s.io/test-webserver
-    name: test-cinder-container
-    volumeMounts:
-    - mountPath: /test-cinder
-      name: test-volume
-  volumes:
-  - name: test-volume
-    # This OpenStack volume must already exist.
-    cinder:
-      volumeID: "<volume id>"
-      fsType: ext4
-```
-
-#### OpenStack CSI migration
-
-{{< feature-state for_k8s_version="v1.24" state="stable" >}}
-
-The `CSIMigration` feature for Cinder is enabled by default since Kubernetes 1.21.
-It redirects all plugin operations from the existing in-tree plugin to the
-`cinder.csi.openstack.org` Container Storage Interface (CSI) Driver.
-[OpenStack Cinder CSI Driver](https://github.com/kubernetes/cloud-provider-openstack/blob/master/docs/cinder-csi-plugin/using-cinder-csi-plugin.md)
-must be installed on the cluster.
-
-To disable the in-tree Cinder plugin from being loaded by the controller manager
-and the kubelet, you can enable the `InTreePluginOpenStackUnregister`
-[feature gate](/docs/reference/command-line-tools-reference/feature-gates/).
+The Kubernetes project suggests that you use the 
+[OpenStack Cinder](https://github.com/kubernetes/cloud-provider-openstack/blob/master/docs/cinder-csi-plugin/using-cinder-csi-plugin.md)
+third party storage driver instead.
 
 ### configMap
 
@@ -273,6 +181,7 @@ spec:
   containers:
     - name: test
       image: busybox:1.28
+      command: ['sh', '-c', 'echo "The app is running!" && tail -f /dev/null']
       volumeMounts:
         - name: config-vol
           mountPath: /etc/config
@@ -291,13 +200,17 @@ Note that this path is derived from the volume's `mountPath` and the `path`
 keyed with `log_level`.
 
 {{< note >}}
-* You must create a [ConfigMap](/docs/tasks/configure-pod-container/configure-pod-configmap/)
+
+* You must [create a ConfigMap](/docs/tasks/configure-pod-container/configure-pod-configmap/#create-a-configmap)
   before you can use it.
+
+* A ConfigMap is always mounted as `readOnly`.
 
 * A container using a ConfigMap as a [`subPath`](#using-subpath) volume mount will not
   receive ConfigMap updates.
-
+  
 * Text data is exposed as files using the UTF-8 character encoding. For other character encodings, use `binaryData`.
+
 {{< /note >}}
 
 ### downwardAPI {#downwardapi}
@@ -316,9 +229,8 @@ to learn more.
 
 ### emptyDir {#emptydir}
 
-An `emptyDir` volume is first created when a Pod is assigned to a node, and
-exists as long as that Pod is running on that node. As the name says, the
-`emptyDir` volume is initially empty. All containers in the Pod can read and write the same
+For a Pod that defines an `emptyDir` volume, the volume is created when the Pod is assigned to a node.
+As the name says, the `emptyDir` volume is initially empty. All containers in the Pod can read and write the same
 files in the `emptyDir` volume, though that volume can be mounted at the same
 or different paths in each container. When a Pod is removed from a node for
 any reason, the data in the `emptyDir` is deleted permanently.
@@ -335,18 +247,31 @@ Some uses for an `emptyDir` are:
 * holding files that a content-manager container fetches while a webserver
   container serves the data
 
-Depending on your environment, `emptyDir` volumes are stored on whatever medium that backs the
-node such as disk or SSD, or network storage. However, if you set the `emptyDir.medium` field
-to `"Memory"`, Kubernetes mounts a tmpfs (RAM-backed filesystem) for you instead.
-While tmpfs is very fast, be aware that unlike disks, tmpfs is cleared on
-node reboot and any files you write count against your container's
-memory limit.
+The `emptyDir.medium` field controls where `emptyDir` volumes are stored. By
+default `emptyDir` volumes are stored on whatever medium that backs the node
+such as disk, SSD, or network storage, depending on your environment. If you set
+the `emptyDir.medium` field to `"Memory"`, Kubernetes mounts a tmpfs (RAM-backed
+filesystem) for you instead.  While tmpfs is very fast be aware that, unlike
+disks, files you write count against the memory limit of the container that wrote them.
+
+
+A size limit can be specified for the default medium, which limits the capacity
+of the `emptyDir` volume. The storage is allocated from [node ephemeral
+storage](/docs/concepts/configuration/manage-resources-containers/#setting-requests-and-limits-for-local-ephemeral-storage).
+If that is filled up from another source (for example, log files or image
+overlays), the `emptyDir` may run out of capacity before this limit.
 
 {{< note >}}
-If the `SizeMemoryBackedVolumes` [feature gate](/docs/reference/command-line-tools-reference/feature-gates/) is enabled,
-you can specify a size for memory backed volumes.  If no size is specified, memory
-backed volumes are sized to 50% of the memory on a Linux host.
+You can specify a size for memory backed volumes, provided that the `SizeMemoryBackedVolumes`
+[feature gate](/docs/reference/command-line-tools-reference/feature-gates/)
+is enabled in your cluster (this has been beta, and active by default, since the Kubernetes 1.22 release).
+If you don't specify a volume size, memory backed volumes are sized to node allocatable memory.
 {{< /note>}}
+
+{{< caution >}}
+Please check [here](/docs/concepts/configuration/manage-resources-containers/#memory-backed-emptydir)
+for points to note in terms of resource management when using memory-backed `emptyDir`.
+{{< /caution >}}
 
 #### emptyDir configuration example
 
@@ -364,7 +289,8 @@ spec:
       name: cache-volume
   volumes:
   - name: cache-volume
-    emptyDir: {}
+    emptyDir:
+      sizeLimit: 500Mi
 ```
 
 ### fc (fibre channel) {#fc}
@@ -379,134 +305,40 @@ You must configure FC SAN Zoning to allocate and mask those LUNs (volumes) to th
 beforehand so that Kubernetes hosts can access them.
 {{< /note >}}
 
-See the [fibre channel example](https://github.com/kubernetes/examples/tree/master/staging/volumes/fibre_channel) for more details.
+See the [fibre channel example](https://github.com/kubernetes/examples/tree/master/staging/volumes/fibre_channel)
+for more details.
 
 ### gcePersistentDisk (deprecated) {#gcepersistentdisk}
 
-{{< feature-state for_k8s_version="v1.17" state="deprecated" >}}
+In Kubernetes {{< skew currentVersion >}}, all operations for the in-tree `gcePersistentDisk` type
+are redirected to the `pd.csi.storage.gke.io` {{< glossary_tooltip text="CSI" term_id="csi" >}} driver.
 
-A `gcePersistentDisk` volume mounts a Google Compute Engine (GCE)
-[persistent disk](https://cloud.google.com/compute/docs/disks) (PD) into your Pod.
-Unlike `emptyDir`, which is erased when a pod is removed, the contents of a PD are
-preserved and the volume is merely unmounted. This means that a PD can be
-pre-populated with data, and that data can be shared between pods.
+The `gcePersistentDisk` in-tree storage driver was deprecated in the Kubernetes v1.17 release
+and then removed entirely in the v1.28 release.
 
-{{< note >}}
-You must create a PD using `gcloud` or the GCE API or UI before you can use it.
-{{< /note >}}
-
-There are some restrictions when using a `gcePersistentDisk`:
-
-* the nodes on which Pods are running must be GCE VMs
-* those VMs need to be in the same GCE project and zone as the persistent disk
-
-One feature of GCE persistent disk is concurrent read-only access to a persistent disk.
-A `gcePersistentDisk` volume permits multiple consumers to simultaneously
-mount a persistent disk as read-only. This means that you can pre-populate a PD with your dataset
-and then serve it in parallel from as many Pods as you need. Unfortunately,
-PDs can only be mounted by a single consumer in read-write mode. Simultaneous
-writers are not allowed.
-
-Using a GCE persistent disk with a Pod controlled by a ReplicaSet will fail unless
-the PD is read-only or the replica count is 0 or 1.
-
-#### Creating a GCE persistent disk {#gce-create-persistent-disk}
-
-Before you can use a GCE persistent disk with a Pod, you need to create it.
-
-```shell
-gcloud compute disks create --size=500GB --zone=us-central1-a my-data-disk
-```
-
-#### GCE persistent disk configuration example
-
-```yaml
-apiVersion: v1
-kind: Pod
-metadata:
-  name: test-pd
-spec:
-  containers:
-  - image: registry.k8s.io/test-webserver
-    name: test-container
-    volumeMounts:
-    - mountPath: /test-pd
-      name: test-volume
-  volumes:
-  - name: test-volume
-    # This GCE PD must already exist.
-    gcePersistentDisk:
-      pdName: my-data-disk
-      fsType: ext4
-```
-
-#### Regional persistent disks
-
-The [Regional persistent disks](https://cloud.google.com/compute/docs/disks/#repds)
-feature allows the creation of persistent disks that are available in two zones
-within the same region. In order to use this feature, the volume must be provisioned
-as a PersistentVolume; referencing the volume directly from a pod is not supported.
-
-#### Manually provisioning a Regional PD PersistentVolume
-
-Dynamic provisioning is possible using a
-[StorageClass for GCE PD](/docs/concepts/storage/storage-classes/#gce-pd).
-Before creating a PersistentVolume, you must create the persistent disk:
-
-```shell
-gcloud compute disks create --size=500GB my-data-disk
-  --region us-central1
-  --replica-zones us-central1-a,us-central1-b
-```
-
-#### Regional persistent disk configuration example
-
-```yaml
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: test-volume
-spec:
-  capacity:
-    storage: 400Gi
-  accessModes:
-  - ReadWriteOnce
-  gcePersistentDisk:
-    pdName: my-data-disk
-    fsType: ext4
-  nodeAffinity:
-    required:
-      nodeSelectorTerms:
-      - matchExpressions:
-        # failure-domain.beta.kubernetes.io/zone should be used prior to 1.21
-        - key: topology.kubernetes.io/zone
-          operator: In
-          values:
-          - us-central1-a
-          - us-central1-b
-```
-
-#### GCE CSI migration
-
-{{< feature-state for_k8s_version="v1.25" state="stable" >}}
-
-The `CSIMigration` feature for GCE PD, when enabled, redirects all plugin operations
-from the existing in-tree plugin to the `pd.csi.storage.gke.io` Container
-Storage Interface (CSI) Driver. In order to use this feature, the [GCE PD CSI
-Driver](https://github.com/kubernetes-sigs/gcp-compute-persistent-disk-csi-driver)
-must be installed on the cluster.
-
-#### GCE CSI migration complete
-
-{{< feature-state for_k8s_version="v1.21" state="alpha" >}}
-
-To disable the `gcePersistentDisk` storage plugin from being loaded by the controller manager
-and the kubelet, set the `InTreePluginGCEUnregister` flag to `true`.
+The Kubernetes project suggests that you use the [Google Compute Engine Persistent Disk CSI](https://github.com/kubernetes-sigs/gcp-compute-persistent-disk-csi-driver) 
+third party storage driver instead.
 
 ### gitRepo (deprecated) {#gitrepo}
 
 {{< warning >}}
-The `gitRepo` volume type is deprecated. To provision a container with a git repo, mount an [EmptyDir](#emptydir) into an InitContainer that clones the repo using git, then mount the [EmptyDir](#emptydir) into the Pod's container.
+The `gitRepo` volume type is deprecated.
+
+To provision a Pod that has a Git repository mounted, you can
+mount an
+[`emptyDir`](#emptydir) volume into an [init container](/docs/concepts/workloads/pods/init-containers/) that
+clones the repo using Git, then mount the
+[EmptyDir](#emptydir) into the Pod's container.
+
+---
+
+You can restrict the use of `gitRepo` volumes in your cluster using
+[policies](/docs/concepts/policy/) such as
+[ValidatingAdmissionPolicy](/docs/reference/access-authn-authz/validating-admission-policy/).
+You can use the following Common Expression Language (CEL) expression as
+part of a policy to reject use of `gitRepo` volumes:
+`has(object.spec.volumes) || !object.spec.volumes.exists(v, has(v.gitRepo))`.
+
 {{< /warning >}}
 
 A `gitRepo` volume is an example of a volume plugin. This plugin
@@ -533,106 +365,166 @@ spec:
       repository: "git@somewhere:me/my-git-repository.git"
       revision: "22f1d8406d464b0c0874075539c1f2e96c253775"
 ```
+### glusterfs (removed) {#glusterfs}
 
-### glusterfs (deprecated)
+<!-- maintenance note: OK to remove all mention of glusterfs once the v1.25 release of
+Kubernetes has gone out of support -->
 
-{{< feature-state for_k8s_version="v1.25" state="deprecated" >}}
+Kubernetes {{< skew currentVersion >}} does not include a `glusterfs` volume type.
 
-A `glusterfs` volume allows a [Glusterfs](https://www.gluster.org) (an open
-source networked filesystem) volume to be mounted into your Pod. Unlike
-`emptyDir`, which is erased when a Pod is removed, the contents of a
-`glusterfs` volume are preserved and the volume is merely unmounted. This
-means that a glusterfs volume can be pre-populated with data, and that data can
-be shared between pods. GlusterFS can be mounted by multiple writers
-simultaneously.
-
-{{< note >}}
-You must have your own GlusterFS installation running before you can use it.
-{{< /note >}}
-
-See the [GlusterFS example](https://github.com/kubernetes/examples/tree/master/volumes/glusterfs) for more details.
+The GlusterFS in-tree storage driver was deprecated in the Kubernetes v1.25 release
+and then removed entirely in the v1.26 release.
 
 ### hostPath {#hostpath}
-
-{{< warning >}}
-HostPath volumes present many security risks, and it is a best practice to avoid the use of
-HostPaths when possible. When a HostPath volume must be used, it should be scoped to only the
-required file or directory, and mounted as ReadOnly.
-
-If restricting HostPath access to specific directories through AdmissionPolicy, `volumeMounts` MUST
-be required to use `readOnly` mounts for the policy to be effective.
-{{< /warning >}}
 
 A `hostPath` volume mounts a file or directory from the host node's filesystem
 into your Pod. This is not something that most Pods will need, but it offers a
 powerful escape hatch for some applications.
 
-For example, some uses for a `hostPath` are:
+{{< warning >}}
+Using the `hostPath` volume type presents many security risks.
+If you can avoid using a `hostPath` volume, you should. For example,
+define a [`local` PersistentVolume](#local), and use that instead.
 
-* running a container that needs access to Docker internals; use a `hostPath`
-  of `/var/lib/docker`
-* running cAdvisor in a container; use a `hostPath` of `/sys`
-* allowing a Pod to specify whether a given `hostPath` should exist prior to the
-  Pod running, whether it should be created, and what it should exist as
+If you are restricting access to specific directories on the node using
+admission-time validation, that restriction is only effective when you
+additionally require that any mounts of that `hostPath` volume are
+**read only**. If you allow a read-write mount of any host path by an
+untrusted Pod, the containers in that Pod may be able to subvert the
+read-write host mount.
 
-In addition to the required `path` property, you can optionally specify a `type` for a `hostPath` volume.
+---
 
-The supported values for field `type` are:
+Take care when using `hostPath` volumes, whether these are mounted as read-only
+or as read-write, because:
+
+* Access to the host filesystem can expose privileged system credentials (such as for the kubelet) or privileged APIs
+  (such as the container runtime socket), that can be used for container escape or to attack other
+  parts of the cluster.
+* Pods with identical configuration (such as created from a PodTemplate) may
+  behave differently on different nodes due to different files on the nodes.
+* `hostPath` volume usage is not treated as ephemeral storage usage.
+  You need to monitor the disk usage by yourself because excessive `hostPath` disk
+  usage will lead to disk pressure on the node.
+{{< /warning >}}
+
+Some uses for a `hostPath` are:
+
+* running a container that needs access to node-level system components
+  (such as a container that transfers system logs to a central location,
+  accessing those logs using a read-only mount of `/var/log`)
+* making a configuration file stored on the host system available read-only
+  to a {{< glossary_tooltip text="static pod" term_id="static-pod" >}};
+  unlike normal Pods, static Pods cannot access ConfigMaps
+
+#### `hostPath` volume types
+
+In addition to the required `path` property, you can optionally specify a
+`type` for a `hostPath` volume.
+
+The available values for `type` are:
+
+<!-- empty string represented using U+200C ZERO WIDTH NON-JOINER -->
 
 | Value | Behavior |
 |:------|:---------|
-| | Empty string (default) is for backward compatibility, which means that no checks will be performed before mounting the hostPath volume. |
+| `‌""` | Empty string (default) is for backward compatibility, which means that no checks will be performed before mounting the `hostPath` volume. |
 | `DirectoryOrCreate` | If nothing exists at the given path, an empty directory will be created there as needed with permission set to 0755, having the same group and ownership with Kubelet. |
 | `Directory` | A directory must exist at the given path |
 | `FileOrCreate` | If nothing exists at the given path, an empty file will be created there as needed with permission set to 0644, having the same group and ownership with Kubelet. |
 | `File` | A file must exist at the given path |
 | `Socket` | A UNIX socket must exist at the given path |
-| `CharDevice` | A character device must exist at the given path |
-| `BlockDevice` | A block device must exist at the given path |
+| `CharDevice` | _(Linux nodes only)_ A character device must exist at the given path |
+| `BlockDevice` | _(Linux nodes only)_ A block device must exist at the given path |
 
-Watch out when using this type of volume, because:
+{{< caution >}}
+The `FileOrCreate` mode does **not** create the parent directory of the file. If the parent directory
+of the mounted file does not exist, the pod fails to start. To ensure that this mode works,
+you can try to mount directories and files separately, as shown in the
+[`FileOrCreate` example](#hostpath-fileorcreate-example) for `hostPath`.
+{{< /caution >}}
 
-* HostPaths can expose privileged system credentials (such as for the Kubelet) or privileged APIs
-  (such as container runtime socket), which can be used for container escape or to attack other
-  parts of the cluster.
-* Pods with identical configuration (such as created from a PodTemplate) may
-  behave differently on different nodes due to different files on the nodes
-* The files or directories created on the underlying hosts are only writable by root. You
-  either need to run your process as root in a
-  [privileged Container](/docs/tasks/configure-pod-container/security-context/) or modify the file
-  permissions on the host to be able to write to a `hostPath` volume
+Some files or directories created on the underlying hosts might only be
+accessible by root. You then either need to run your process as root in a
+[privileged container](/docs/tasks/configure-pod-container/security-context/)
+or modify the file permissions on the host to be able to read from
+(or write to) a `hostPath` volume.
 
 #### hostPath configuration example
 
-```yaml
+{{< tabs name="hostpath_examples" >}}
+{{< tab name="Linux node" codelang="yaml" >}}
+---
+# This manifest mounts /data/foo on the host as /foo inside the
+# single container that runs within the hostpath-example-linux Pod.
+#
+# The mount into the container is read-only.
 apiVersion: v1
 kind: Pod
 metadata:
-  name: test-pd
+  name: hostpath-example-linux
 spec:
+  os: { name: linux }
+  nodeSelector:
+    kubernetes.io/os: linux
   containers:
-  - image: registry.k8s.io/test-webserver
-    name: test-container
+  - name: example-container
+    image: registry.k8s.io/test-webserver
     volumeMounts:
-    - mountPath: /test-pd
-      name: test-volume
+    - mountPath: /foo
+      name: example-volume
+      readOnly: true
   volumes:
-  - name: test-volume
+  - name: example-volume
+    # mount /data/foo, but only if that directory already exists
     hostPath:
-      # directory location on host
-      path: /data
-      # this field is optional
-      type: Directory
-```
-
-{{< caution >}}
-The `FileOrCreate` mode does not create the parent directory of the file. If the parent directory
-of the mounted file does not exist, the pod fails to start. To ensure that this mode works,
-you can try to mount directories and files separately, as shown in the
-[`FileOrCreate`configuration](#hostpath-fileorcreate-example).
-{{< /caution >}}
+      path: /data/foo # directory location on host
+      type: Directory # this field is optional
+{{< /tab >}}
+{{< tab name="Windows node" codelang="yaml" >}}
+---
+# This manifest mounts C:\Data\foo on the host as C:\foo, inside the
+# single container that runs within the hostpath-example-windows Pod.
+#
+# The mount into the container is read-only.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hostpath-example-windows
+spec:
+  os: { name: windows }
+  nodeSelector:
+    kubernetes.io/os: windows
+  containers:
+  - name: example-container
+    image: microsoft/windowsservercore:1709
+    volumeMounts:
+    - name: example-volume
+      mountPath: "C:\\foo"
+      readOnly: true
+  volumes:
+    # mount C:\Data\foo from the host, but only if that directory already exists
+  - name: example-volume
+    hostPath:
+      path: "C:\\Data\\foo" # directory location on host
+      type: Directory       # this field is optional
+{{< /tab >}}
+{{< /tabs >}}
 
 #### hostPath FileOrCreate configuration example {#hostpath-fileorcreate-example}
+
+The following manifest defines a Pod that mounts `/var/local/aaa`
+inside the single container in the Pod. If the node does not
+already have a path `/var/local/aaa`, the kubelet creates
+it as a directory and then mounts it into the Pod.
+
+If `/var/local/aaa` already exists but is not a directory,
+the Pod fails. Additionally, the kubelet attempts to make
+a file named `/var/local/aaa/1.txt` inside that directory
+(as seen from the host); if something already exists at
+that path and isn't a regular file, the Pod fails.
+
+Here's the example manifest:
 
 ```yaml
 apiVersion: v1
@@ -640,6 +532,9 @@ kind: Pod
 metadata:
   name: test-webserver
 spec:
+  os: { name: linux }
+  nodeSelector:
+    kubernetes.io/os: linux
   containers:
   - name: test-webserver
     image: registry.k8s.io/test-webserver:latest
@@ -762,18 +657,43 @@ unmounted. This means that an NFS volume can be pre-populated with data, and
 that data can be shared between pods. NFS can be mounted by multiple
 writers simultaneously.
 
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-pd
+spec:
+  containers:
+  - image: registry.k8s.io/test-webserver
+    name: test-container
+    volumeMounts:
+    - mountPath: /my-nfs-data
+      name: test-volume
+  volumes:
+  - name: test-volume
+    nfs:
+      server: my-nfs-server.example.com
+      path: /my-nfs-volume
+      readOnly: true
+```
+
 {{< note >}}
 You must have your own NFS server running with the share exported before you can use it.
+
+Also note that you can't specify NFS mount options in a Pod spec. You can either set mount options server-side or
+use [/etc/nfsmount.conf](https://man7.org/linux/man-pages/man5/nfsmount.conf.5.html).
+You can also mount NFS volumes via PersistentVolumes which do allow you to set mount options.
 {{< /note >}}
 
-See the [NFS example](https://github.com/kubernetes/examples/tree/master/staging/volumes/nfs) for more details.
+See the [NFS example](https://github.com/kubernetes/examples/tree/master/staging/volumes/nfs)
+for an example of mounting NFS volumes with PersistentVolumes.
 
 ### persistentVolumeClaim {#persistentvolumeclaim}
 
 A `persistentVolumeClaim` volume is used to mount a
 [PersistentVolume](/docs/concepts/storage/persistent-volumes/) into a Pod. PersistentVolumeClaims
-are a way for users to "claim" durable storage (such as a GCE PersistentDisk or an
-iSCSI volume) without knowing the details of the particular cloud environment.
+are a way for users to "claim" durable storage (such as an iSCSI volume)
+without knowing the details of the particular cloud environment.
 
 See the information about [PersistentVolumes](/docs/concepts/storage/persistent-volumes/) for more
 details.
@@ -825,7 +745,7 @@ The `CSIMigration` feature for Portworx has been added but disabled by default i
 It has been beta now since v1.25 but it is still turned off by default.
 It redirects all plugin operations from the existing in-tree plugin to the
 `pxd.portworx.com` Container Storage Interface (CSI) Driver.
-[Portworx CSI Driver](https://docs.portworx.com/portworx-install-with-kubernetes/storage-operations/csi/)
+[Portworx CSI Driver](https://docs.portworx.com/portworx-enterprise/operations/operate-kubernetes/storage-operations/csi)
 must be installed on the cluster.
 To enable the feature, set `CSIMigrationPortworx=true` in kube-controller-manager and kubelet.
 
@@ -835,6 +755,12 @@ A projected volume maps several existing volume sources into the same
 directory. For more details, see [projected volumes](/docs/concepts/storage/projected-volumes/).
 
 ### rbd
+{{< feature-state for_k8s_version="v1.28" state="deprecated" >}}
+
+{{< note >}}
+The Kubernetes project suggests that you use the [Ceph CSI](https://github.com/ceph/ceph-csi)
+third party storage driver instead, in RBD mode.
+{{< /note >}}
 
 An `rbd` volume allows a
 [Rados Block Device](https://docs.ceph.com/en/latest/rbd/) (RBD) volume to mount
@@ -858,7 +784,7 @@ for more details.
 
 #### RBD CSI migration {#rbd-csi-migration}
 
-{{< feature-state for_k8s_version="v1.23" state="alpha" >}}
+{{< feature-state for_k8s_version="v1.28" state="deprecated" >}}
 
 The `CSIMigration` feature for `RBD`, when enabled, redirects all plugin
 operations from the existing in-tree plugin to the `rbd.csi.ceph.com` {{<
@@ -898,12 +824,14 @@ backed by tmpfs (a RAM-backed filesystem) so they are never written to
 non-volatile storage.
 
 {{< note >}}
-You must create a Secret in the Kubernetes API before you can use it.
-{{< /note >}}
 
-{{< note >}}
-A container using a Secret as a [`subPath`](#using-subpath) volume mount will not
+* You must create a Secret in the Kubernetes API before you can use it.
+
+* A Secret is always mounted as `readOnly`.
+
+* A container using a Secret as a [`subPath`](#using-subpath) volume mount will not
 receive Secret updates.
+
 {{< /note >}}
 
 For more details, see [Configuring Secrets](/docs/concepts/configuration/secret/).
@@ -911,7 +839,8 @@ For more details, see [Configuring Secrets](/docs/concepts/configuration/secret/
 ### vsphereVolume (deprecated) {#vspherevolume}
 
 {{< note >}}
-We recommend to use vSphere CSI out-of-tree driver instead.
+The Kubernetes project recommends using the [vSphere CSI](https://github.com/kubernetes-sigs/vsphere-csi-driver)
+out-of-tree storage driver instead.
 {{< /note >}}
 
 A `vsphereVolume` is used to mount a vSphere VMDK volume into your Pod.  The contents
@@ -921,20 +850,17 @@ For more information, see the [vSphere volume](https://github.com/kubernetes/exa
 
 #### vSphere CSI migration {#vsphere-csi-migration}
 
-{{< feature-state for_k8s_version="v1.19" state="beta" >}}
+{{< feature-state for_k8s_version="v1.26" state="stable" >}}
 
-The `CSIMigrationvSphere` feature for `vsphereVolume` is enabled by default as of Kubernetes v1.25.
-All plugin operations from the in-tree `vspherevolume` will be redirected to the `csi.vsphere.vmware.com` {{< glossary_tooltip text="CSI" term_id="csi" >}} driver unless `CSIMigrationvSphere` feature gate is disabled.
-
+In Kubernetes {{< skew currentVersion >}}, all operations for the in-tree `vsphereVolume` type
+are redirected to the `csi.vsphere.vmware.com` {{< glossary_tooltip text="CSI" term_id="csi" >}} driver.
 
 [vSphere CSI driver](https://github.com/kubernetes-sigs/vsphere-csi-driver)
-must be installed on the cluster. You can find additional advice on how to migrate in-tree `vsphereVolume` in VMware's documentation page 
-[Migrating In-Tree vSphere Volumes to vSphere Container Storage Plug-in](https://docs.vmware.com/en/VMware-vSphere-Container-Storage-Plug-in/2.0/vmware-vsphere-csp-getting-started/GUID-968D421F-D464-4E22-8127-6CB9FF54423F.html).
+must be installed on the cluster. You can find additional advice on how to migrate in-tree `vsphereVolume` in VMware's documentation page
+[Migrating In-Tree vSphere Volumes to vSphere Container Storage lug-in](https://docs.vmware.com/en/VMware-vSphere-Container-Storage-Plug-in/2.0/vmware-vsphere-csp-getting-started/GUID-968D421F-D464-4E22-8127-6CB9FF54423F.html).
+If vSphere CSI Driver is not installed volume operations can not be performed on the PV created with the in-tree `vsphereVolume` type.
 
-As of Kubernetes v1.25, vSphere releases less than 7.0u2 are not supported for the
-(deprecated) in-tree vSphere storage driver. You must run vSphere 7.0u2 or later
-in order to either continue using the deprecated driver, or to migrate to
-the replacement CSI driver.
+You must run vSphere 7.0u2 or later in order to migrate to the vSphere CSI driver.
 
 If you are running a version of Kubernetes other than v{{< skew currentVersion >}}, consult
 the documentation for that version of Kubernetes.
@@ -964,7 +890,7 @@ To turn off the `vsphereVolume` plugin from being loaded by the controller manag
 ## Using subPath {#using-subpath}
 
 Sometimes, it is useful to share one volume for multiple uses in a single pod.
-The `volumeMounts.subPath` property specifies a sub-path inside the referenced volume
+The `volumeMounts[*].subPath` property specifies a sub-path inside the referenced volume
 instead of its root.
 
 The following example shows how to configure a Pod with a LAMP stack (Linux Apache MySQL PHP)
@@ -1114,9 +1040,8 @@ persistent volume:
   The value is passed as `volume_id` on all calls to the CSI volume driver when
   referencing the volume.
 * `readOnly`: An optional boolean value indicating whether the volume is to be
-  "ControllerPublished" (attached) as read only. Default is false. This value is
-  passed to the CSI driver via the `readonly` field in the
-  `ControllerPublishVolumeRequest`.
+  "ControllerPublished" (attached) as read only. Default is false. This value is passed
+  to the CSI driver via the `readonly` field in the `ControllerPublishVolumeRequest`.
 * `fsType`: If the PV's `VolumeMode` is `Filesystem` then this field may be used
   to specify the filesystem that should be used to mount the volume. If the
   volume has not been formatted and formatting is supported, this value will be
@@ -1136,17 +1061,20 @@ persistent volume:
   `ControllerPublishVolume` and `ControllerUnpublishVolume` calls. This field is
   optional, and may be empty if no secret is required. If the Secret
   contains more than one secret, all secrets are passed.
-`nodeExpandSecretRef`: A reference to the secret containing sensitive
+* `nodeExpandSecretRef`: A reference to the secret containing sensitive
   information to pass to the CSI driver to complete the CSI
   `NodeExpandVolume` call. This field is optional, and may be empty if no
   secret is required. If the object contains more than one secret, all
   secrets are passed.  When you have configured secret data for node-initiated
   volume expansion, the kubelet passes that data via the `NodeExpandVolume()`
   call to the CSI driver. In order to use the `nodeExpandSecretRef` field, your
-  cluster should be running Kubernetes version 1.25 or later and you must enable
-  the [feature gate](https://kubernetes.io/docs/reference/command-line-tools-reference/feature-gates/)
+  cluster should be running Kubernetes version 1.25 or later.
+* If you are running Kubernetes Version 1.25 or 1.26, you must enable
+  the [feature gate](/docs/reference/command-line-tools-reference/feature-gates/)
   named `CSINodeExpandSecret` for each kube-apiserver and for the kubelet on every
-  node. You must also be using a CSI driver that supports or requires secret data during
+  node. In Kubernetes version 1.27 this feature has been enabled by default
+  and no explicit enablement of the feature gate is required.
+  You must also be using a CSI driver that supports or requires secret data during
   node-initiated storage resize operations.
 * `nodePublishSecretRef`: A reference to the secret object containing
   sensitive information to pass to the CSI driver to complete the CSI
@@ -1188,8 +1116,8 @@ For more information on how to develop a CSI driver, refer to the
 
 CSI node plugins need to perform various privileged
 operations like scanning of disk devices and mounting of file systems. These operations
-differ for each host operating system. For Linux worker nodes, containerized CSI node
-node plugins are typically deployed as privileged containers. For Windows worker nodes,
+differ for each host operating system. For Linux worker nodes, containerized CSI node 
+plugins are typically deployed as privileged containers. For Windows worker nodes,
 privileged operations for containerized CSI node plugins is supported using
 [csi-proxy](https://github.com/kubernetes-csi/csi-proxy), a community-managed,
 stand-alone binary that needs to be pre-installed on each Windows node.
@@ -1206,6 +1134,23 @@ As a result, operators do not have to make any
 configuration changes to existing Storage Classes, PersistentVolumes or PersistentVolumeClaims
 (referring to in-tree plugins) when transitioning to a CSI driver that supersedes an in-tree plugin.
 
+{{< note >}}
+Existing PVs created by a in-tree volume plugin can still be used in the future without any configuration
+changes, even after the migration to CSI is completed for that volume type, and even after you upgrade to a
+version of Kubernetes that doesn't have compiled-in support for that kind of storage.
+
+As part of that migration, you - or another cluster administrator - **must** have installed and configured
+the appropriate CSI driver for that storage. The core of Kubernetes does not install that software for you.
+
+---
+
+After that migration, you can also define new PVCs and PVs that refer to the legacy, built-in
+storage integrations.
+Provided you have the appropriate CSI driver installed and configured, the PV creation continues
+to work, even for brand new volumes. The actual storage management now happens through
+the CSI driver.
+{{< /note >}}
+
 The operations and features that are supported include:
 provisioning/delete, attach/detach, mount/unmount and resizing of volumes.
 
@@ -1214,13 +1159,11 @@ are listed in [Types of Volumes](#volume-types).
 
 The following in-tree plugins support persistent storage on Windows nodes:
 
-* [`awsElasticBlockStore`](#awselasticblockstore)
-* [`azureDisk`](#azuredisk)
 * [`azureFile`](#azurefile)
 * [`gcePersistentDisk`](#gcepersistentdisk)
 * [`vsphereVolume`](#vspherevolume)
 
-### flexVolume (deprecated)
+### flexVolume (deprecated)   {#flexvolume}
 
 {{< feature-state for_k8s_version="v1.23" state="deprecated" >}}
 
@@ -1250,15 +1193,20 @@ Mount propagation allows for sharing volumes mounted by a container to
 other containers in the same pod, or even to other pods on the same node.
 
 Mount propagation of a volume is controlled by the `mountPropagation` field
-in `Container.volumeMounts`. Its values are:
+in `containers[*].volumeMounts`. Its values are:
 
 * `None` - This volume mount will not receive any subsequent mounts
   that are mounted to this volume or any of its subdirectories by the host.
   In similar fashion, no mounts created by the container will be visible on
   the host. This is the default mode.
 
-  This mode is equal to `private` mount propagation as described in the
-  [Linux kernel documentation](https://www.kernel.org/doc/Documentation/filesystems/sharedsubtree.txt)
+  This mode is equal to `rprivate` mount propagation as described in
+  [`mount(8)`](https://man7.org/linux/man-pages/man8/mount.8.html)
+
+  However, the CRI runtime may choose `rslave` mount propagation (i.e.,
+  `HostToContainer`) instead, when `rprivate` propagation is not applicable.
+  cri-dockerd (Docker) is known to choose `rslave` mount propagation when the
+  mount source contains the Docker daemon's root directory (`/var/lib/docker`).
 
 * `HostToContainer` - This volume mount will receive all subsequent mounts
   that are mounted to this volume or any of its subdirectories.
@@ -1271,7 +1219,7 @@ in `Container.volumeMounts`. Its values are:
   propagation will see it.
 
   This mode is equal to `rslave` mount propagation as described in the
-  [Linux kernel documentation](https://www.kernel.org/doc/Documentation/filesystems/sharedsubtree.txt)
+  [`mount(8)`](https://man7.org/linux/man-pages/man8/mount.8.html)
 
 * `Bidirectional` - This volume mount behaves the same the `HostToContainer` mount.
   In addition, all volume mounts created by the container will be propagated
@@ -1281,7 +1229,7 @@ in `Container.volumeMounts`. Its values are:
   a Pod that needs to mount something on the host using a `hostPath` volume.
 
   This mode is equal to `rshared` mount propagation as described in the
-  [Linux kernel documentation](https://www.kernel.org/doc/Documentation/filesystems/sharedsubtree.txt)
+  [`mount(8)`](https://man7.org/linux/man-pages/man8/mount.8.html)
 
   {{< warning >}}
   `Bidirectional` mount propagation can be dangerous. It can damage
@@ -1291,24 +1239,65 @@ in `Container.volumeMounts`. Its values are:
   (unmounted) by the containers on termination.
   {{< /warning >}}
 
-### Configuration
+## Read-only mounts
 
-Before mount propagation can work properly on some deployments (CoreOS,
-RedHat/Centos, Ubuntu) mount share must be configured correctly in
-Docker as shown below.
+A mount can be made read-only by setting the `.spec.containers[].volumeMounts[].readOnly`
+field to `true`.
+This does not make the volume itself read-only, but that specific container will
+not be able to write to it.
+Other containers in the Pod may mount the same volume as read-write.
 
-Edit your Docker's `systemd` service file. Set `MountFlags` as follows:
+On Linux, read-only mounts are not recursively read-only by default.
+For example, consider a Pod which mounts the hosts `/mnt` as a `hostPath` volume.  If
+there is another filesystem mounted read-write on `/mnt/<SUBMOUNT>` (such as tmpfs,
+NFS, or USB storage), the volume mounted into the container(s) will also have a writeable
+`/mnt/<SUBMOUNT>`, even if the mount itself was specified as read-only.
 
-```shell
-MountFlags=shared
-```
+### Recursive read-only mounts
 
-Or, remove `MountFlags=slave` if present. Then restart the Docker daemon:
+{{< feature-state feature_gate_name="RecursiveReadOnlyMounts" >}}
 
-```shell
-sudo systemctl daemon-reload
-sudo systemctl restart docker
-```
+Recursive read-only mounts can be enabled by setting the
+`RecursiveReadOnlyMounts` [feature gate](/docs/reference/command-line-tools-reference/feature-gates/)
+for kubelet and kube-apiserver, and setting the `.spec.containers[].volumeMounts[].recursiveReadOnly`
+field for a pod.
+
+The allowed values are:
+
+* `Disabled` (default): no effect.
+
+* `Enabled`: makes the mount recursively read-only.
+  Needs all the following requirements to be satisfied:
+  * `readOnly` is set to `true`
+  * `mountPropagation` is unset, or, set to `None`
+  * The host is running with Linux kernel v5.12 or later
+  * The [CRI-level](/docs/concepts/architecture/cri) container runtime supports recursive read-only mounts
+  * The OCI-level container runtime supports recursive read-only mounts.
+  It will fail if any of these is not true.
+
+* `IfPossible`: attempts to apply `Enabled`, and falls back to `Disabled`
+  if the feature is not supported by the kernel or the runtime class.
+
+Example:
+{{% code_sample file="storage/rro.yaml" %}}
+
+When this property is recognized by kubelet and kube-apiserver,
+the `.status.containerStatuses[].volumeMounts[].recursiveReadOnly` field is set to either
+`Enabled` or `Disabled`.
+
+
+#### Implementations {#implementations-rro}
+
+{{% thirdparty-content %}}
+
+The following container runtimes are known to support recursive read-only mounts.
+
+CRI-level:
+- [containerd](https://containerd.io/), since v2.0
+
+OCI-level:
+- [runc](https://runc.io/), since v1.1
+- [crun](https://github.com/containers/crun), since v1.8.6
 
 ## {{% heading "whatsnext" %}}
 

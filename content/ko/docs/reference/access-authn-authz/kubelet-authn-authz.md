@@ -1,5 +1,8 @@
 ---
+# reviewers:
+# - liggitt
 title: Kubelet 인증/인가
+weight: 110
 ---
 
 

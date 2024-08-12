@@ -162,16 +162,21 @@ Kubeadm deletes the `/etc/kubernetes/bootstrap-kubelet.conf` file after completi
 Note that the kubeadm CLI command never touches this drop-in file.
 
 This configuration file installed by the `kubeadm`
-[DEB](https://github.com/kubernetes/release/blob/master/cmd/kubepkg/templates/latest/deb/kubeadm/10-kubeadm.conf) or
-[RPM package](https://github.com/kubernetes/release/blob/master/cmd/kubepkg/templates/latest/rpm/kubeadm/10-kubeadm.conf) is written to
-`/etc/systemd/system/kubelet.service.d/10-kubeadm.conf` and is used by systemd.
+[package](https://github.com/kubernetes/release/blob/cd53840/cmd/krel/templates/latest/kubeadm/10-kubeadm.conf) is written to
+`/usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf` and is used by systemd.
 It augments the basic
-[`kubelet.service` for RPM](https://github.com/kubernetes/release/blob/master/cmd/kubepkg/templates/latest/rpm/kubelet/kubelet.service) or
-[`kubelet.service` for DEB](https://github.com/kubernetes/release/blob/master/cmd/kubepkg/templates/latest/deb/kubelet/lib/systemd/system/kubelet.service):
+[`kubelet.service`](https://github.com/kubernetes/release/blob/cd53840/cmd/krel/templates/latest/kubelet/kubelet.service).
+
+If you want to override that further, you can make a directory `/etc/systemd/system/kubelet.service.d/`
+(not `/usr/lib/systemd/system/kubelet.service.d/`) and put your own customizations into a file there.
+For example, you might add a new local file `/etc/systemd/system/kubelet.service.d/local-overrides.conf`
+to override the unit settings configured by `kubeadm`.
+
+Here is what you are likely to find in `/usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf`:
 
 {{< note >}}
 The contents below are just an example. If you don't want to use a package manager
-follow the guide outlined in the [Without a package manager](/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#k8s-install-2))
+follow the guide outlined in the ([Without a package manager](/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#k8s-install-2))
 section.
 {{< /note >}}
 
@@ -180,7 +185,7 @@ section.
 Environment="KUBELET_KUBECONFIG_ARGS=--bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf --kubeconfig=/etc/kubernetes/kubelet.conf"
 Environment="KUBELET_CONFIG_ARGS=--config=/var/lib/kubelet/config.yaml"
 # This is a file that "kubeadm init" and "kubeadm join" generate at runtime, populating
-the KUBELET_KUBEADM_ARGS variable dynamically
+# the KUBELET_KUBEADM_ARGS variable dynamically
 EnvironmentFile=-/var/lib/kubelet/kubeadm-flags.env
 # This is a file that the user can use for overrides of the kubelet args as a last resort. Preferably,
 # the user should use the .NodeRegistration.KubeletExtraArgs object in the configuration files instead.

@@ -3,7 +3,6 @@ title: 投射卷
 content_type: concept
 weight: 21 # 跟在持久卷之后
 ---
-
 <!--
 reviewers:
 - marosset
@@ -35,6 +34,7 @@ Currently, the following types of volume sources can be projected:
 * [`downwardAPI`](/docs/concepts/storage/volumes/#downwardapi)
 * [`configMap`](/docs/concepts/storage/volumes/#configmap)
 * [`serviceAccountToken`](#serviceaccounttoken)
+* [`clusterTrustBundle`](#clustertrustbundle)
 -->
 ## 介绍    {#introduction}
 
@@ -46,27 +46,28 @@ Currently, the following types of volume sources can be projected:
 * [`downwardAPI`](/zh-cn/docs/concepts/storage/volumes/#downwardapi)
 * [`configMap`](/zh-cn/docs/concepts/storage/volumes/#configmap)
 * [`serviceAccountToken`](#serviceaccounttoken)
+* [`clusterTrustBundle`](#clustertrustbundle)
 
 <!--
 All sources are required to be in the same namespace as the Pod. For more details,
 see the [all-in-one volume](https://git.k8s.io/design-proposals-archive/node/all-in-one-volume.md) design document.
 -->
-所有的卷源都要求处于 Pod 所在的同一个名字空间内。进一步的详细信息，可参考
-[一体化卷](https://git.k8s.io/design-proposals-archive/node/all-in-one-volume.md)设计文档。
+所有的卷源都要求处于 Pod 所在的同一个名字空间内。更多详细信息，
+可参考[一体化卷](https://git.k8s.io/design-proposals-archive/node/all-in-one-volume.md)设计文档。
 
 <!--
 ### Example configuration with a secret, a downwardAPI, and a configMap {#example-configuration-secret-downwardapi-configmap}
 -->
 ### 带有 Secret、DownwardAPI 和 ConfigMap 的配置示例 {#example-configuration-secret-downwardapi-configmap}
 
-{{< codenew file="pods/storage/projected-secret-downwardapi-configmap.yaml" >}}
+{{% code_sample file="pods/storage/projected-secret-downwardapi-configmap.yaml" %}}
 
 <!--
 ### Example configuration: secrets with a non-default permission mode set {#example-configuration-secrets-nondefault-permission-mode}
 -->
 ### 带有非默认权限模式设置的 Secret 的配置示例 {#example-configuration-secrets-nondefault-permission-mode}
 
-{{< codenew file="pods/storage/projected-secrets-nondefault-permission-mode.yaml" >}}
+{{% code_sample file="pods/storage/projected-secrets-nondefault-permission-mode.yaml" %}}
 
 <!--
 Each projected volume source is listed in the spec under `sources`. The
@@ -86,17 +87,15 @@ parameters are nearly the same with two exceptions:
 
 <!--
 ## serviceAccountToken projected volumes {#serviceaccounttoken}
-When the `TokenRequestProjection` feature is enabled, you can inject the token
-for the current [service account](/docs/reference/access-authn-authz/authentication/#service-account-tokens)
+You can inject the token for the current [service account](/docs/reference/access-authn-authz/authentication/#service-account-tokens)
 into a Pod at a specified path. For example:
 -->
 ## serviceAccountToken 投射卷 {#serviceaccounttoken}
 
-当 `TokenRequestProjection` 特性被启用时，你可以将当前
-[服务账号](/zh-cn/docs/reference/access-authn-authz/authentication/#service-account-tokens)
-的令牌注入到 Pod 中特定路径下。例如：
+你可以将当前[服务账号](/zh-cn/docs/reference/access-authn-authz/authentication/#service-account-tokens)的令牌注入到
+Pod 中特定路径下。例如：
 
-{{< codenew file="pods/storage/projected-service-account-token.yaml" >}}
+{{% code_sample file="pods/storage/projected-service-account-token.yaml" %}}
 
 <!--
 The example Pod has a projected volume containing the injected service account
@@ -136,6 +135,66 @@ volume mount will not receive updates for those volume sources.
 {{< /note >}}
 
 <!--
+## clusterTrustBundle projected volumes {#clustertrustbundle}
+-->
+## clusterTrustBundle 投射卷    {#clustertrustbundle}
+
+{{<feature-state for_k8s_version="v1.29" state="alpha" >}}
+
+{{< note >}}
+<!--
+To use this feature in Kubernetes {{< skew currentVersion >}}, you must enable support for ClusterTrustBundle objects with the `ClusterTrustBundle` [feature gate](/docs/reference/command-line-tools-reference/feature-gates/) and `--runtime-config=certificates.k8s.io/v1alpha1/clustertrustbundles=true` kube-apiserver flag, then enable the `ClusterTrustBundleProjection` feature gate.
+-->
+要在 Kubernetes {{< skew currentVersion >}} 中使用此特性，你必须通过 `ClusterTrustBundle`
+[特性门控](/zh-cn/docs/reference/command-line-tools-reference/feature-gates/)和
+`--runtime-config=certificates.k8s.io/v1alpha1/clustertrustbundles=true` kube-apiserver
+标志启用对 ClusterTrustBundle 对象的支持，然后才能启用 `ClusterTrustBundleProjection` 特性门控。
+{{< /note >}}
+
+<!--
+The `clusterTrustBundle` projected volume source injects the contents of one or more [ClusterTrustBundle](/docs/reference/access-authn-authz/certificate-signing-requests#cluster-trust-bundles) objects as an automatically-updating file in the container filesystem.
+-->
+`clusterTrustBundle` 投射卷源将一个或多个
+[ClusterTrustBundle](/zh-cn/docs/reference/access-authn-authz/certificate-signing-requests#cluster-trust-bundles)
+对象的内容作为一个自动更新的文件注入到容器文件系统中。
+
+<!--
+ClusterTrustBundles can be selected either by [name](/docs/reference/access-authn-authz/certificate-signing-requests#ctb-signer-unlinked) or by [signer name](/docs/reference/access-authn-authz/certificate-signing-requests#ctb-signer-linked).
+-->
+ClusterTrustBundle 可以通过[名称](/zh-cn/docs/reference/access-authn-authz/certificate-signing-requests#ctb-signer-unlinked)
+或[签名者名称](/zh-cn/docs/reference/access-authn-authz/certificate-signing-requests#ctb-signer-linked)被选中。
+
+<!--
+To select by name, use the `name` field to designate a single ClusterTrustBundle object.
+
+To select by signer name, use the `signerName` field (and optionally the
+`labelSelector` field) to designate a set of ClusterTrustBundle objects that use
+the given signer name. If `labelSelector` is not present, then all
+ClusterTrustBundles for that signer are selected.
+-->
+要按名称选择，可以使用 `name` 字段指定单个 ClusterTrustBundle 对象。
+
+要按签名者名称选择，可以使用 `signerName` 字段（也可选用 `labelSelector` 字段）
+指定一组使用给定签名者名称的 ClusterTrustBundle 对象。
+如果 `labelSelector` 不存在，则针对该签名者的所有 ClusterTrustBundles 将被选中。
+
+<!--
+The kubelet deduplicates the certificates in the selected ClusterTrustBundle objects, normalizes the PEM representations (discarding comments and headers), reorders the certificates, and writes them into the file named by `path`. As the set of selected ClusterTrustBundles or their content changes, kubelet keeps the file up-to-date.
+-->
+kubelet 会对所选 ClusterTrustBundle 对象中的证书进行去重，规范化 PEM 表示（丢弃注释和头部），
+重新排序证书，并将这些证书写入由 `path` 指定的文件中。
+随着所选 ClusterTrustBundles 的集合或其内容发生变化，kubelet 会保持更新此文件。
+
+<!--
+By default, the kubelet will prevent the pod from starting if the named ClusterTrustBundle is not found, or if `signerName` / `labelSelector` do not match any ClusterTrustBundles.  If this behavior is not what you want, then set the `optional` field to `true`, and the pod will start up with an empty file at `path`.
+-->
+默认情况下，如果找不到指定的 ClusterTrustBundle，或者 `signerName` / `labelSelector`
+与所有 ClusterTrustBundle 都不匹配，kubelet 将阻止 Pod 启动。如果这不是你想要的行为，
+可以将 `optional` 字段设置为 `true`，Pod 将使用 `path` 处的空白文件启动。
+
+{{% code_sample file="pods/storage/projected-clustertrustbundle.yaml" %}}
+
+<!--
 ## SecurityContext interactions
 -->
 ## 与 SecurityContext 间的关系    {#securitycontext-interactions}
@@ -158,6 +217,39 @@ ownership.
 [`SecurityContext`](/zh-cn/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context)
 中设置了 `RunAsUser` 属性的 Linux Pod 中，投射文件具有正确的属主属性设置，
 其中包含了容器用户属主。
+
+<!--
+When all containers in a pod have the same `runAsUser` set in their
+[`PodSecurityContext`](/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context)
+or container
+[`SecurityContext`](/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1),
+then the kubelet ensures that the contents of the `serviceAccountToken` volume are owned by that user,
+and the token file has its permission mode set to `0600`.
+-->
+当 Pod 中的所有容器在其
+[`PodSecurityContext`](/zh-cn/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context)
+或容器
+[`SecurityContext`](/zh-cn/docs/reference/kubernetes-api/workload-resources/pod-v1/#security-context-1)
+中设置了相同的 `runAsUser` 时，kubelet 将确保 `serviceAccountToken`
+卷的内容归该用户所有，并且令牌文件的权限模式会被设置为 `0600`。
+
+{{< note >}}
+<!--
+{{< glossary_tooltip text="Ephemeral containers" term_id="ephemeral-container" >}}
+added to a Pod after it is created do *not* change volume permissions that were
+set when the pod was created.
+
+If a Pod's `serviceAccountToken` volume permissions were set to `0600` because
+all other containers in the Pod have the same `runAsUser`, ephemeral
+containers must use the same `runAsUser` to be able to read the token.
+-->
+在某 Pod 被创建后为其添加的{{< glossary_tooltip text="临时容器" term_id="ephemeral-container" >}}**不会**更改创建该
+Pod 时设置的卷权限。
+
+如果 Pod 的 `serviceAccountToken` 卷权限被设为 `0600`
+是因为 Pod 中的其他所有容器都具有相同的 `runAsUser`，
+则临时容器必须使用相同的 `runAsUser` 才能读取令牌。
+{{< /note >}}
 
 ### Windows
 
@@ -226,4 +318,3 @@ the Linux only `RunAsUser` option with Windows Pods.
 Pod 会一直阻塞在 `ContainerCreating` 状态。因此，建议不要在 Windows
 节点上使用仅针对 Linux 的 `RunAsUser` 选项。
 {{< /note >}}
-

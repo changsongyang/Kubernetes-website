@@ -3,7 +3,7 @@ reviewers:
 - cdrage
 title: Translate a Docker Compose File to Kubernetes Resources
 content_type: task
-weight: 200
+weight: 230
 ---
 
 <!-- overview -->
@@ -29,13 +29,13 @@ Kompose is released via GitHub on a three-week cycle, you can see all current re
 
 ```sh
 # Linux
-curl -L https://github.com/kubernetes/kompose/releases/download/v1.26.0/kompose-linux-amd64 -o kompose
+curl -L https://github.com/kubernetes/kompose/releases/download/v1.34.0/kompose-linux-amd64 -o kompose
 
 # macOS
-curl -L https://github.com/kubernetes/kompose/releases/download/v1.26.0/kompose-darwin-amd64 -o kompose
+curl -L https://github.com/kubernetes/kompose/releases/download/v1.34.0/kompose-darwin-amd64 -o kompose
 
 # Windows
-curl -L https://github.com/kubernetes/kompose/releases/download/v1.26.0/kompose-windows-amd64.exe -o kompose.exe
+curl -L https://github.com/kubernetes/kompose/releases/download/v1.34.0/kompose-windows-amd64.exe -o kompose.exe
 
 chmod +x kompose
 sudo mv ./kompose /usr/local/bin/kompose
@@ -56,7 +56,7 @@ go get -u github.com/kubernetes/kompose
 {{% tab name="CentOS package" %}}
 
 Kompose is in [EPEL](https://fedoraproject.org/wiki/EPEL) CentOS repository.
-If you don't have [EPEL](https://fedoraproject.org/wiki/EPEL) repository already installed and enabled you can do it by running  `sudo yum install epel-release`
+If you don't have [EPEL](https://fedoraproject.org/wiki/EPEL) repository already installed and enabled you can do it by running `sudo yum install epel-release`.
 
 If you have [EPEL](https://fedoraproject.org/wiki/EPEL) enabled in your system, you can install Kompose like any other package.
 
@@ -76,7 +76,7 @@ sudo dnf -y install kompose
 {{% /tab %}}
 {{% tab name="Homebrew (macOS)" %}}
 
-On macOS you can install latest release via [Homebrew](https://brew.sh):
+On macOS you can install the latest release via [Homebrew](https://brew.sh):
 
 ```bash
 brew install kompose
@@ -93,26 +93,27 @@ you need is an existing `docker-compose.yml` file.
 1. Go to the directory containing your `docker-compose.yml` file. If you don't have one, test using this one.
 
    ```yaml
-   version: "2"
 
    services:
 
-     redis-master:
-       image: registry.k8s.io/redis:e2e
+     redis-leader:
+       container_name: redis-leader
+       image: redis
        ports:
          - "6379"
 
-     redis-slave:
-       image: gcr.io/google_samples/gb-redisslave:v3
+     redis-replica:
+       container_name: redis-replica
+       image: redis
        ports:
          - "6379"
-       environment:
-         - GET_HOSTS_FROM=dns
+       command: redis-server --replicaof redis-leader 6379 --dir /tmp
 
-     frontend:
-       image: gcr.io/google-samples/gb-frontend:v4
+     web:
+       container_name: web
+       image: quay.io/kompose/web
        ports:
-         - "80:80"
+         - "8080:8080"
        environment:
          - GET_HOSTS_FROM=dns
        labels:
@@ -129,39 +130,27 @@ you need is an existing `docker-compose.yml` file.
    The output is similar to:
 
    ```none
-   INFO Kubernetes file "frontend-service.yaml" created
-      INFO Kubernetes file "frontend-service.yaml" created
-   INFO Kubernetes file "frontend-service.yaml" created
-   INFO Kubernetes file "redis-master-service.yaml" created
-      INFO Kubernetes file "redis-master-service.yaml" created
-   INFO Kubernetes file "redis-master-service.yaml" created
-   INFO Kubernetes file "redis-slave-service.yaml" created
-      INFO Kubernetes file "redis-slave-service.yaml" created
-   INFO Kubernetes file "redis-slave-service.yaml" created
-   INFO Kubernetes file "frontend-deployment.yaml" created
-      INFO Kubernetes file "frontend-deployment.yaml" created
-   INFO Kubernetes file "frontend-deployment.yaml" created
-   INFO Kubernetes file "redis-master-deployment.yaml" created
-      INFO Kubernetes file "redis-master-deployment.yaml" created
-   INFO Kubernetes file "redis-master-deployment.yaml" created
-   INFO Kubernetes file "redis-slave-deployment.yaml" created
-      INFO Kubernetes file "redis-slave-deployment.yaml" created
-   INFO Kubernetes file "redis-slave-deployment.yaml" created
+   INFO Kubernetes file "redis-leader-service.yaml" created
+   INFO Kubernetes file "redis-replica-service.yaml" created
+   INFO Kubernetes file "web-tcp-service.yaml" created
+   INFO Kubernetes file "redis-leader-deployment.yaml" created
+   INFO Kubernetes file "redis-replica-deployment.yaml" created
+   INFO Kubernetes file "web-deployment.yaml" created
    ```
 
    ```bash
-    kubectl apply -f frontend-service.yaml,redis-master-service.yaml,redis-slave-service.yaml,frontend-deployment.yaml,redis-master-deployment.yaml,redis-slave-deployment.yaml
+    kubectl apply -f web-tcp-service.yaml,redis-leader-service.yaml,redis-replica-service.yaml,web-deployment.yaml,redis-leader-deployment.yaml,redis-replica-deployment.yaml
    ```
 
    The output is similar to:
 
    ```none
-   service/frontend created
-   service/redis-master created
-   service/redis-slave created
-   deployment.apps/frontend created
-   deployment.apps/redis-master created
-   deployment.apps/redis-slave created
+   deployment.apps/redis-leader created
+   deployment.apps/redis-replica created
+   deployment.apps/web created
+   service/redis-leader created
+   service/redis-replica created
+   service/web-tcp created
    ```
 
     Your deployments are running in Kubernetes.
@@ -171,34 +160,50 @@ you need is an existing `docker-compose.yml` file.
    If you're already using `minikube` for your development process:
 
    ```bash
-   minikube service frontend
+   minikube service web-tcp
    ```
 
    Otherwise, let's look up what IP your service is using!
 
    ```sh
-   kubectl describe svc frontend
+   kubectl describe svc web-tcp
    ```
 
    ```none
-   Name:                   frontend
-   Namespace:              default
-   Labels:                 service=frontend
-   Selector:               service=frontend
-   Type:                   LoadBalancer
-   IP:                     10.0.0.183
-   LoadBalancer Ingress:   192.0.2.89
-   Port:                   80      80/TCP
-   NodePort:               80      31144/TCP
-   Endpoints:              172.17.0.4:80
-   Session Affinity:       None
-   No events.
+    Name:                     web-tcp
+    Namespace:                default
+    Labels:                   io.kompose.service=web-tcp
+    Annotations:              kompose.cmd: kompose convert
+                              kompose.service.type: LoadBalancer
+                              kompose.version: 1.33.0 (3ce457399)
+    Selector:                 io.kompose.service=web
+    Type:                     LoadBalancer
+    IP Family Policy:         SingleStack
+    IP Families:              IPv4
+    IP:                       10.102.30.3
+    IPs:                      10.102.30.3
+    Port:                     8080  8080/TCP
+    TargetPort:               8080/TCP
+    NodePort:                 8080  31624/TCP
+    Endpoints:                10.244.0.5:8080
+    Session Affinity:         None
+    External Traffic Policy:  Cluster
+    Events:                   <none>
    ```
 
    If you're using a cloud provider, your IP will be listed next to `LoadBalancer Ingress`.
 
    ```sh
    curl http://192.0.2.89
+   ```
+   
+4. Clean-up.
+
+   After you are finished testing out the example application deployment, simply run the following command in your shell to delete the
+   resources used.
+   
+   ```sh
+   kubectl delete -f web-tcp-service.yaml,redis-leader-service.yaml,redis-replica-service.yaml,web-deployment.yaml,redis-leader-deployment.yaml,redis-replica-deployment.yaml
    ```
 
 <!-- discussion -->
@@ -281,7 +286,7 @@ frontend-service.yaml     mongodb-deployment.yaml                    redis-slave
 redis-master-deployment.yaml
 ```
 
-When multiple docker-compose files are provided the configuration is merged. Any configuration that is common will be over ridden by subsequent file.
+When multiple docker-compose files are provided the configuration is merged. Any configuration that is common will be overridden by subsequent file.
 
 ### OpenShift `kompose convert` example
 
@@ -347,7 +352,7 @@ INFO Kubernetes file "redis-replicationcontroller.yaml" created
 INFO Kubernetes file "web-replicationcontroller.yaml" created
 ```
 
-The `*-replicationcontroller.yaml` files contain the Replication Controller objects. If you want to specify replicas (default is 1), use `--replicas` flag: `kompose convert --replication-controller --replicas 3`
+The `*-replicationcontroller.yaml` files contain the Replication Controller objects. If you want to specify replicas (default is 1), use `--replicas` flag: `kompose convert --replication-controller --replicas 3`.
 
 ```shell
 kompose convert --daemon-set
@@ -357,7 +362,7 @@ INFO Kubernetes file "redis-daemonset.yaml" created
 INFO Kubernetes file "web-daemonset.yaml" created
 ```
 
-The `*-daemonset.yaml` files contain the DaemonSet objects
+The `*-daemonset.yaml` files contain the DaemonSet objects.
 
 If you want to generate a Chart to be used with [Helm](https://github.com/kubernetes/helm) run:
 
@@ -396,44 +401,44 @@ The chart structure is aimed at providing a skeleton for building your Helm char
 
 - `kompose.service.type` defines the type of service to be created.
 
-For example:
+  For example:
 
-```yaml
-version: "2"
-services:
-  nginx:
-    image: nginx
-    dockerfile: foobar
-    build: ./foobar
-    cap_add:
-      - ALL
-    container_name: foobar
-    labels:
-      kompose.service.type: nodeport
-```
+  ```yaml
+  version: "2"
+  services:
+    nginx:
+      image: nginx
+      dockerfile: foobar
+      build: ./foobar
+      cap_add:
+        - ALL
+      container_name: foobar
+      labels:
+        kompose.service.type: nodeport
+  ```
 
 - `kompose.service.expose` defines if the service needs to be made accessible from outside the cluster or not. If the value is set to "true", the provider sets the endpoint automatically, and for any other value, the value is set as the hostname. If multiple ports are defined in a service, the first one is chosen to be the exposed.
   - For the Kubernetes provider, an ingress resource is created and it is assumed that an ingress controller has already been configured.
   - For the OpenShift provider, a route is created.
 
-For example:
+  For example:
 
-```yaml
-version: "2"
-services:
-  web:
-    image: tuna/docker-counter23
-    ports:
-     - "5000:5000"
-    links:
-     - redis
-    labels:
-      kompose.service.expose: "counter.example.com"
-  redis:
-    image: redis:3.0
-    ports:
-     - "6379"
-```
+  ```yaml
+  version: "2"
+  services:
+    web:
+      image: tuna/docker-counter23
+      ports:
+      - "5000:5000"
+      links:
+      - redis
+      labels:
+        kompose.service.expose: "counter.example.com"
+    redis:
+      image: redis:3.0
+      ports:
+      - "6379"
+  ```
 
 The currently supported options are:
 
@@ -477,7 +482,7 @@ services:
 
 If the Docker Compose file has a volume specified for a service, the Deployment (Kubernetes) or DeploymentConfig (OpenShift) strategy is changed to "Recreate" instead of "RollingUpdate" (default). This is done to avoid multiple instances of a service from accessing a volume at the same time.
 
-If the Docker Compose file has service name with `_` in it (eg.`web_service`), then it will be replaced by `-` and the service name will be renamed accordingly (eg.`web-service`). Kompose does this because "Kubernetes" doesn't allow `_` in object name.
+If the Docker Compose file has service name with `_` in it (for example, `web_service`), then it will be replaced by `-` and the service name will be renamed accordingly (for example, `web-service`). Kompose does this because "Kubernetes" doesn't allow `_` in object name.
 
 Please note that changing service name might break some `docker-compose` files.
 

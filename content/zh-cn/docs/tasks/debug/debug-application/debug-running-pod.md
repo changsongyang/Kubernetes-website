@@ -2,7 +2,6 @@
 title: 调试运行中的 Pod
 content_type: task
 ---
-
 <!-- 
 reviewers:
 - verb
@@ -43,7 +42,7 @@ For this example we'll use a Deployment to create two pods, similar to the earli
 -->
 与之前的例子类似，我们使用一个 Deployment 来创建两个 Pod。
 
-{{< codenew file="application/nginx-with-request.yaml" >}}
+{{% code_sample file="application/nginx-with-request.yaml" %}}
 
 <!--
 Create deployment by running following command:
@@ -176,12 +175,10 @@ Currently the only Condition associated with a Pod is the binary Ready condition
 并且应该添加到相应服务的负载均衡池中。
 
 <!--
-Lastly, you see a log of recent events related to your Pod. The system compresses multiple identical events by indicating the first and last time it was seen and the number of times it was seen. "From" indicates the component that is logging the event, "SubobjectPath" tells you which object (e.g. container within the pod) is being referred to, and "Reason" and "Message" tell you what happened.
+Lastly, you see a log of recent events related to your Pod. "From" indicates the component that is logging the event. "Reason" and "Message" tell you what happened.
 -->
 最后，你还可以看到与 Pod 相关的近期事件。
-系统通过指示第一次和最后一次看到事件以及看到该事件的次数来压缩多个相同的事件。
 “From” 标明记录事件的组件，
-“SubobjectPath” 告诉你引用了哪个对象（例如 Pod 中的容器），
 “Reason” 和 “Message” 告诉你发生了什么。
 
 <!--
@@ -431,16 +428,6 @@ status:
 ## Examining pod logs {#examine-pod-logs}
 
 First, look at the logs of the affected container:
-
-```shell
-kubectl logs ${POD_NAME} ${CONTAINER_NAME}
-```
-
-If your container has previously crashed, you can access the previous container's crash log with:
-
-```shell
-kubectl logs --previous ${POD_NAME} ${CONTAINER_NAME}
-```
 -->
 ## 检查 Pod 的日志 {#examine-pod-logs}
 
@@ -450,6 +437,9 @@ kubectl logs --previous ${POD_NAME} ${CONTAINER_NAME}
 kubectl logs ${POD_NAME} ${CONTAINER_NAME}
 ```
 
+<!--
+If your container has previously crashed, you can access the previous container's crash log with:
+-->
 如果你的容器之前崩溃过，你可以通过下面命令访问之前容器的崩溃日志：
 
 ```shell
@@ -463,28 +453,6 @@ If the {{< glossary_tooltip text="container image" term_id="image" >}} includes
 debugging utilities, as is the case with images built from Linux and Windows OS
 base images, you can run commands inside a specific container with
 `kubectl exec`:
-
-```shell
-kubectl exec ${POD_NAME} -c ${CONTAINER_NAME} -- ${CMD} ${ARG1} ${ARG2} ... ${ARGN}
-```
-
-`-c ${CONTAINER_NAME}` is optional. You can omit it for Pods that only contain a single container.
-
-As an example, to look at the logs from a running Cassandra pod, you might run
-
-```shell
-kubectl exec cassandra -- cat /var/log/cassandra/system.log
-```
-
-You can run a shell that's connected to your terminal using the `-i` and `-t`
-arguments to `kubectl exec`, for example:
-
-```shell
-kubectl exec -it cassandra -- sh
-```
-
-For more details, see [Get a Shell to a Running Container](
-/docs/tasks/debug/debug-application/get-shell-running-container/).
 -->
 ## 使用容器 exec 进行调试 {#container-exec}
 
@@ -497,21 +465,35 @@ kubectl exec ${POD_NAME} -c ${CONTAINER_NAME} -- ${CMD} ${ARG1} ${ARG2} ... ${AR
 ```
 
 {{< note >}}
+<!--
+`-c ${CONTAINER_NAME}` is optional. You can omit it for Pods that only contain a single container.
+-->
 `-c ${CONTAINER_NAME}` 是可选择的。如果 Pod 中仅包含一个容器，就可以忽略它。
 {{< /note >}}
 
+<!--
+As an example, to look at the logs from a running Cassandra pod, you might run
+-->
 例如，要查看正在运行的 Cassandra Pod 中的日志，可以运行：
 
 ```shell
 kubectl exec cassandra -- cat /var/log/cassandra/system.log
 ```
 
+<!--
+You can run a shell that's connected to your terminal using the `-i` and `-t`
+arguments to `kubectl exec`, for example:
+-->
 你可以在 `kubectl exec` 命令后面加上 `-i` 和 `-t` 来运行一个连接到你的终端的 Shell，比如：
 
 ```shell
 kubectl exec -it cassandra -- sh
 ```
 
+<!--
+For more details, see [Get a Shell to a Running Container](
+/docs/tasks/debug/debug-application/get-shell-running-container/).
+-->
 若要了解更多内容，可查看[获取正在运行容器的 Shell](/zh-cn/docs/tasks/debug/debug-application/get-shell-running-container/)。
 
 <!--
@@ -525,7 +507,7 @@ https://github.com/GoogleContainerTools/distroless).
 -->
 ## 使用临时调试容器来进行调试 {#ephemeral-container}
 
-{{< feature-state state="beta" for_k8s_version="v1.23" >}}
+{{< feature-state state="stable" for_k8s_version="v1.25" >}}
 
 当由于容器崩溃或容器镜像不包含调试程序（例如[无发行版镜像](https://github.com/GoogleContainerTools/distroless)等）
 而导致 `kubectl exec` 无法运行时，{{< glossary_tooltip text="临时容器" term_id="ephemeral-container" >}}对于排除交互式故障很有用。
@@ -535,14 +517,6 @@ https://github.com/GoogleContainerTools/distroless).
 
 You can use the `kubectl debug` command to add ephemeral containers to a
 running Pod. First, create a pod for the example:
-
-```shell
-kubectl run ephemeral-demo --image=k8s.gcr.io/pause:3.1 --restart=Never
-```
-
-The examples in this section use the `pause` container image because it does not
-contain debugging utilities, but this method works with all container
-images.
 -->
 ## 使用临时容器来调试的例子 {#ephemeral-container-example}
 
@@ -550,12 +524,15 @@ images.
 首先，像示例一样创建一个 pod：
 
 ```shell
-kubectl run ephemeral-demo --image=k8s.gcr.io/pause:3.1 --restart=Never
+kubectl run ephemeral-demo --image=registry.k8s.io/pause:3.1 --restart=Never
 ```
 
-{{< note >}}
+<!--
+The examples in this section use the `pause` container image because it does not
+contain debugging utilities, but this method works with all container
+images.
+-->
 本节示例中使用 `pause` 容器镜像，因为它不包含调试程序，但是这个方法适用于所有容器镜像。
-{{< /note >}}
 
 <!--
 If you attempt to use `kubectl exec` to create a shell you will see an error
@@ -596,25 +573,27 @@ parameter targets the process namespace of another container. It's necessary
 here because `kubectl run` does not enable [process namespace sharing](
 /docs/tasks/configure-pod-container/share-process-namespace/) in the pod it
 creates.
-
-The `--target` parameter must be supported by the {{< glossary_tooltip
-text="Container Runtime" term_id="container-runtime" >}}. When not supported,
-the Ephemeral Container may not be started, or it may be started with an
-isolated process namespace so that `ps` does not reveal processes in other
-containers.
-
-You can view the state of the newly created ephemeral container using `kubectl describe`:
 -->
 此命令添加一个新的 busybox 容器并将其挂接到该容器。`--target` 参数指定另一个容器的进程命名空间。
 这个指定进程命名空间的操作是必需的，因为 `kubectl run` 不能在它创建的 Pod
 中启用[共享进程命名空间](/zh-cn/docs/tasks/configure-pod-container/share-process-namespace/)。
 
 {{< note >}}
+<!--
+The `--target` parameter must be supported by the {{< glossary_tooltip
+text="Container Runtime" term_id="container-runtime" >}}. When not supported,
+the Ephemeral Container may not be started, or it may be started with an
+isolated process namespace so that `ps` does not reveal processes in other
+containers.
+-->
 {{< glossary_tooltip text="容器运行时" term_id="container-runtime" >}}必须支持 `--target` 参数。
 如果不支持，则临时容器可能不会启动，或者可能使用隔离的进程命名空间启动，
-以便 `ps` 不显示其他容器内的进程。
+导致 `ps` 不显示其他容器内的进程。
 {{< /note >}}
 
+<!--
+You can view the state of the newly created ephemeral container using `kubectl describe`:
+-->
 你可以使用 `kubectl describe` 查看新创建的临时容器的状态：
 
 ```shell
@@ -690,6 +669,7 @@ this scenario using `kubectl run`:
 ```shell
 kubectl run myapp --image=busybox:1.28 --restart=Never -- sleep 1d
 ```
+
 <!--
 Run this command to create a copy of `myapp` named `myapp-debug` that adds a
 new Ubuntu container for debugging:
@@ -706,6 +686,8 @@ Defaulting debug container name to debugger-w7xmf.
 If you don't see a command prompt, try pressing enter.
 root@myapp-debug:/#
 ```
+
+{{< note >}}
 <!--
 * `kubectl debug` automatically generates a container name if you don't choose
   one using the `--container` flag.
@@ -717,7 +699,6 @@ root@myapp-debug:/#
   works, see [Share Process Namespace between Containers in a Pod](
   /docs/tasks/configure-pod-container/share-process-namespace/).
 -->
-{{< note >}}
 * 如果你没有使用 `--container` 指定新的容器名，`kubectl debug` 会自动生成的。
 * 默认情况下，`-i` 标志使 `kubectl debug` 附加到新容器上。
   你可以通过指定 `--attach=false` 来防止这种情况。
@@ -796,8 +777,9 @@ If you don't see a command prompt, try pressing enter.
 Now you have an interactive shell that you can use to perform tasks like
 checking filesystem paths or running the container command manually.
 -->
-现在你有了一个可以执行类似检查文件系统路径或者手动运行容器命令的交互式 shell。 
+现在你有了一个可以执行类似检查文件系统路径或者手动运行容器命令的交互式 shell。
 
+{{< note >}}
 <!--
 * To change the command of a specific container you must
   specify its name using `--container` or `kubectl debug` will instead
@@ -806,7 +788,6 @@ checking filesystem paths or running the container command manually.
   You can prevent this by specifying `--attach=false`. If your session becomes
   disconnected you can reattach using `kubectl attach`.
 -->
-{{< note >}}
 * 要更改指定容器的命令，你必须用 `--container` 命令指定容器的名字，
   否则 `kubectl debug` 将建立一个新的容器运行你指定的命令。
 * 默认情况下，标志 `-i` 使 `kubectl debug` 附加到容器。
@@ -822,6 +803,7 @@ Don't forget to clean up the debugging Pod when you're finished with it:
 ```shell
 kubectl delete pod myapp myapp-debug
 ```
+
 <!--
 ### Copying a Pod while changing container images
 
@@ -837,16 +819,17 @@ As an example, create a Pod using `kubectl run`:
 
 下面的例子，用 `kubectl run` 创建一个 Pod：
 
-```
+```shell
 kubectl run myapp --image=busybox:1.28 --restart=Never -- sleep 1d
 ```
+
 <!--
 Now use `kubectl debug` to make a copy and change its container image
 to `ubuntu`:
 -->
 现在可以使用 `kubectl debug` 创建一个拷贝并将其容器镜像更改为 `ubuntu`：
 
-```
+```shell
 kubectl debug myapp --copy-to=myapp-debug --set-image=*=ubuntu
 ```
 
@@ -894,8 +877,8 @@ When creating a debugging session on a node, keep in mind that:
 * The root filesystem of the Node will be mounted at `/host`.
 * The container runs in the host IPC, Network, and PID namespaces, although
   the pod isn't privileged, so reading some process information may fail,
-  and `chroot /host` will fail.
-* If you need a privileged pod, create it manually.
+  and `chroot /host` may fail.
+* If you need a privileged pod, create it manually or use the `--profile=sysadmin` flag.
 
 Don't forget to clean up the debugging Pod when you're finished with it:
 -->
@@ -903,11 +886,132 @@ Don't forget to clean up the debugging Pod when you're finished with it:
 * `kubectl debug` 基于节点的名字自动生成新的 Pod 的名字。
 * 节点的根文件系统会被挂载在 `/host`。
 * 新的调试容器运行在主机 IPC 名字空间、主机网络名字空间以及主机 PID 名字空间内，
-  Pod 没有特权，因此读取某些进程信息可能会失败，并且 `chroot /host` 也会失败。
-* 如果你需要一个特权 Pod，需要手动创建。
+  Pod 没有特权，因此读取某些进程信息可能会失败，并且 `chroot /host` 也可能会失败。
+* 如果你需要一个特权 Pod，需要手动创建或使用 `--profile=sysadmin` 标志。
 
 当你完成节点调试时，不要忘记清理调试 Pod：
 
 ```shell
 kubectl delete pod node-debugger-mynode-pdx84
+```
+
+<!--
+## Debugging Profiles {#debugging-profiles}
+
+When using `kubectl debug` to debug a node via a debugging Pod, a Pod via an ephemeral container, 
+or a copied Pod, you can apply a debugging profile to them using the `--profile` flag.
+By applying a profile, specific properties such as [securityContext](/docs/tasks/configure-pod-container/security-context/)
+are set, allowing for adaptation to various scenarios.
+
+The available profiles are as follows:
+-->
+## 调试配置   {#debugging-profiles}
+
+使用 `kubectl debug` 通过调试 Pod 来调试节点、通过临时容器来调试 Pod 或者调试复制的 Pod 时，
+你可以使用 `--profile` 标志为其应用调试配置（Debugging Profile）。通过应用配置，可以设置特定的属性（如
+[securityContext](/zh-cn/docs/tasks/configure-pod-container/security-context/)），
+以适应各种场景。
+
+可用的配置如下：
+
+<!--
+| Profile      | Description                                                     |
+| ------------ | --------------------------------------------------------------- |
+| legacy       | A set of properties backwards compatibility with 1.22 behavior |
+| general      | A reasonable set of generic properties for each debugging journey |
+| baseline     | A set of properties compatible with [PodSecurityStandard baseline policy](/docs/concepts/security/pod-security-standards/#baseline) |
+| restricted   | A set of properties compatible with [PodSecurityStandard restricted policy](/docs/concepts/security/pod-security-standards/#restricted) |
+| netadmin     | A set of properties including Network Administrator privileges |
+| sysadmin     | A set of properties including System Administrator (root) privileges |
+-->
+| 配置         | 描述                                                      |
+| ----------- | --------------------------------------------------------- |
+| legacy      | 一组与 1.22 行为向后兼容的属性                                |
+| general     | 一组对大多数调试过程而言均合理的通用属性                         |
+| baseline    | 一组与 [PodSecurityStandard Baseline 策略](/zh-cn/docs/concepts/security/pod-security-standards/#baseline)兼容的属性 |
+| restricted  | 一组与 [PodSecurityStandard Restricted 策略](/zh-cn/docs/concepts/security/pod-security-standards/#restricted)兼容的属性 |
+| netadmin    | 一组包含网络管理员特权的属性                                   |
+| sysadmin    | 一组包含系统管理员（root）特权的属性                            |
+
+
+{{< note >}}
+<!--
+If you don't specify `--profile`, the `legacy` profile is used by default, but it is planned to be deprecated in the near future.
+So it is recommended to use other profiles such as `general`.
+-->
+如果你不指定 `--profile`，`legacy` 配置被默认使用，但此配置计划在不久的将来弃用。
+因此建议使用 `general` 等其他配置。
+{{< /note >}}
+
+<!--
+Assume that you create a Pod and debug it.
+First, create a Pod named `myapp` as an example:
+-->
+假设你要创建一个 Pod 并进行调试。
+先创建一个名为 `myapp` 的 Pod 作为示例：
+
+```shell
+kubectl run myapp --image=busybox:1.28 --restart=Never -- sleep 1d
+```
+
+<!--
+Then, debug the Pod using an ephemeral container.
+If the ephemeral container needs to have privilege, you can use the `sysadmin` profile:
+-->
+然后，使用临时容器调试 Pod。
+如果临时容器需要具有特权，你可以使用 `sysadmin` 配置：
+
+```shell
+kubectl debug -it myapp --image=busybox:1.28 --target=myapp --profile=sysadmin
+```
+
+```
+Targeting container "myapp". If you don't see processes from this container it may be because the container runtime doesn't support this feature.
+Defaulting debug container name to debugger-6kg4x.
+If you don't see a command prompt, try pressing enter.
+/ #
+```
+
+<!--
+Check the capabilities of the ephemeral container process by running the following command inside the container:
+-->
+通过在容器内运行以下命令检查临时容器进程的权能：
+
+```shell
+/ # grep Cap /proc/$$/status
+```
+
+```
+...
+CapPrm:	000001ffffffffff
+CapEff:	000001ffffffffff
+...
+```
+
+<!--
+This means the container process is granted full capabilities as a privileged container by applying `sysadmin` profile.
+See more details about [capabilities](/docs/tasks/configure-pod-container/security-context/#set-capabilities-for-a-container).
+
+You can also check that the ephemeral container was created as a privileged container:
+-->
+这意味着通过应用 `sysadmin` 配置，容器进程被授予了作为特权容器的全部权能。
+更多细节参见[权能](/zh-cn/docs/tasks/configure-pod-container/security-context/#set-capabilities-for-a-container)。
+
+你还可以检查临时容器是否被创建为特权容器：
+
+```shell
+kubectl get pod myapp -o jsonpath='{.spec.ephemeralContainers[0].securityContext}'
+```
+
+```
+{"privileged":true}
+```
+
+<!--
+Clean up the Pod when you're finished with it:
+-->
+你在完成上述操作后，可运行以下命令清理 Pod：
+
+```shell
+kubectl delete pod myapp
 ```

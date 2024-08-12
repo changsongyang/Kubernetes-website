@@ -72,7 +72,7 @@ metadata:
   name: test-ebs
 spec:
   containers:
-    - image: k8s.gcr.io/test-webserver
+    - image: registry.k8s.io/test-webserver
       name: test-container
       volumeMounts:
         - mountPath: /test-ebs
@@ -160,7 +160,7 @@ metadata:
   name: test-cinder
 spec:
   containers:
-    - image: k8s.gcr.io/test-webserver
+    - image: registry.k8s.io/test-webserver
       name: test-cinder-container
       volumeMounts:
         - mountPath: /test-cinder
@@ -203,7 +203,8 @@ metadata:
 spec:
   containers:
     - name: test
-      image: busybox
+      image: busybox:1.28
+      command: ['sh', '-c', 'echo "The app is running!" && tail -f /dev/null']
       volumeMounts:
         - name: config-vol
           mountPath: /etc/config
@@ -271,7 +272,7 @@ metadata:
   name: test-pd
 spec:
   containers:
-    - image: k8s.gcr.io/test-webserver
+    - image: registry.k8s.io/test-webserver
       name: test-container
       volumeMounts:
         - mountPath: /cache
@@ -349,7 +350,7 @@ metadata:
   name: test-pd
 spec:
   containers:
-    - image: k8s.gcr.io/test-webserver
+    - image: registry.k8s.io/test-webserver
       name: test-container
       volumeMounts:
         - mountPath: /test-pd
@@ -370,7 +371,7 @@ Para usar esta función, el volumen debe ser provisto como un PersistentVolumen;
 
 #### Aprovisionamiento manual de un PD PersistentVolume Regional
 
-El aprovisionamiento dinámico es posible usando un [StorageClass para el DP GCE](/docs/concepts/storage/storage-classes/#gce).
+El aprovisionamiento dinámico es posible usando un [StorageClass para el DP GCE](/docs/concepts/storage/storage-classes/#gce-pd).
 Antes de crear un PersistentVolume, debes crear el disco persistente:
 
 ```shell
@@ -496,7 +497,7 @@ metadata:
   name: test-pd
 spec:
   containers:
-    - image: k8s.gcr.io/test-webserver
+    - image: registry.k8s.io/test-webserver
       name: test-container
       volumeMounts:
         - mountPath: /test-pd
@@ -526,7 +527,7 @@ metadata:
 spec:
   containers:
     - name: test-webserver
-      image: k8s.gcr.io/test-webserver:latest
+      image: registry.k8s.io/test-webserver:latest
       volumeMounts:
         - mountPath: /var/local/aaa
           name: mydir
@@ -657,7 +658,7 @@ metadata:
   name: test-portworx-volume-pod
 spec:
   containers:
-    - image: k8s.gcr.io/test-webserver
+    - image: registry.k8s.io/test-webserver
       name: test-container
       volumeMounts:
         - mountPath: /mnt
@@ -847,7 +848,7 @@ metadata:
   name: pod-0
 spec:
   containers:
-    - image: k8s.gcr.io/test-webserver
+    - image: registry.k8s.io/test-webserver
       name: pod-0
       volumeMounts:
         - mountPath: /test-pd
@@ -976,7 +977,7 @@ metadata:
   name: test-vmdk
 spec:
   containers:
-    - image: k8s.gcr.io/test-webserver
+    - image: registry.k8s.io/test-webserver
       name: test-container
       volumeMounts:
         - mountPath: /test-vmdk
@@ -1021,7 +1022,7 @@ Para apagar el complemento `vsphereVolume` y no cargarlo por el administrador de
 ## Uso de subPath {#using-subpath}
 
 Algunas veces es útil compartir un volumen para múltiples usos en un único Pod.
-La propiedad `volumeMounts.subPath` especifica una sub-ruta dentro del volumen referenciado en lugar de su raíz.
+La propiedad `volumeMounts[*].subPath` especifica una sub-ruta dentro del volumen referenciado en lugar de su raíz.
 
 El siguiente ejemplo muestra cómo configurar un Pod con la pila LAMP (Linux Apache MySQL PHP) usando un único volumen compartido. Esta configuración de ejemplo usando `subPath` no se recomienda para su uso en producción.
 
@@ -1197,7 +1198,7 @@ For more details, see the [FlexVolume](https://github.com/kubernetes/community/b
 
 La propagación del montaje permite compartir volúmenes montados por un contenedor para otros contenedores en el mismo Pod, o aun para otros pods en el mismo nodo.
 
-La propagación del montaje de un volumen es controlada por el campo `mountPropagation` en `Container.volumeMounts`. Sus valores son:
+La propagación del montaje de un volumen es controlada por el campo `mountPropagation` en `containers[*].volumeMounts`. Sus valores son:
 
 - `None` - Este montaje de volumen no recibirá ningún montaje posterior que el host haya montado en este volumen o en cualquiera de sus subdirectorios. De manera similar, los montajes creados por el contenedor no serán visibles en el host. Este es el modo por defecto.
 

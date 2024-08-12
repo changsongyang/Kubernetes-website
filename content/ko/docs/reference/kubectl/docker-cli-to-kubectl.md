@@ -1,9 +1,10 @@
 ---
 title: 도커 사용자를 위한 kubectl
 content_type: concept
-
-
-
+# reviewers:
+# - brendandburns
+# - thockin
+weight: 50
 ---
 
 <!-- overview -->

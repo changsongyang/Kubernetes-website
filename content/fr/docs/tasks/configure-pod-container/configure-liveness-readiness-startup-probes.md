@@ -27,9 +27,9 @@ Cela peut être utilisé dans le cas des liveness checks sur les conteneurs à d
 
 De nombreuses applications fonctionnant pour des longues périodes finissent par passer à des états de rupture et ne peuvent pas se rétablir, sauf en étant redémarrées. Kubernetes fournit des liveness probes pour détecter et remédier à ces situations.
 
-Dans cet exercice, vous allez créer un Pod qui exécute un conteneur basé sur l'image  `k8s.gcr.io/busybox`. Voici le fichier de configuration pour le Pod :
+Dans cet exercice, vous allez créer un Pod qui exécute un conteneur basé sur l'image  `registry.k8s.io/busybox`. Voici le fichier de configuration pour le Pod :
 
-{{< codenew file="pods/probe/exec-liveness.yaml" >}}
+{{% codenew file="pods/probe/exec-liveness.yaml" %}}
 
 Dans le fichier de configuration, vous constatez que le Pod a un seul conteneur.
 Le champ `periodSeconds` spécifie que le Kubelet doit effectuer un check de liveness toutes les 5 secondes. Le champ `initialDelaySeconds` indique au Kubelet qu'il devrait attendre 5 secondes avant d'effectuer la première probe. Pour effectuer une probe, le Kubelet exécute la commande `cat /tmp/healthy` dans le conteneur. Si la commande réussit, elle renvoie 0, et le Kubelet considère que le conteneur est vivant et en bonne santé. Si la commande renvoie une valeur non nulle, le Kubelet tue le conteneur et le redémarre.
@@ -61,8 +61,8 @@ La sortie indique qu'aucune liveness probe n'a encore échoué :
 FirstSeen    LastSeen    Count   From            SubobjectPath           Type        Reason      Message
 --------- --------    -----   ----            -------------           --------    ------      -------
 24s       24s     1   {default-scheduler }                    Normal      Scheduled   Successfully assigned liveness-exec to worker0
-23s       23s     1   {kubelet worker0}   spec.containers{liveness}   Normal      Pulling     pulling image "k8s.gcr.io/busybox"
-23s       23s     1   {kubelet worker0}   spec.containers{liveness}   Normal      Pulled      Successfully pulled image "k8s.gcr.io/busybox"
+23s       23s     1   {kubelet worker0}   spec.containers{liveness}   Normal      Pulling     pulling image "registry.k8s.io/busybox"
+23s       23s     1   {kubelet worker0}   spec.containers{liveness}   Normal      Pulled      Successfully pulled image "registry.k8s.io/busybox"
 23s       23s     1   {kubelet worker0}   spec.containers{liveness}   Normal      Created     Created container with docker id 86849c15382e; Security:[seccomp=unconfined]
 23s       23s     1   {kubelet worker0}   spec.containers{liveness}   Normal      Started     Started container with docker id 86849c15382e
 ```
@@ -79,8 +79,8 @@ Au bas de la sortie, il y a des messages indiquant que les liveness probes ont �
 FirstSeen LastSeen    Count   From            SubobjectPath           Type        Reason      Message
 --------- --------    -----   ----            -------------           --------    ------      -------
 37s       37s     1   {default-scheduler }                    Normal      Scheduled   Successfully assigned liveness-exec to worker0
-36s       36s     1   {kubelet worker0}   spec.containers{liveness}   Normal      Pulling     pulling image "k8s.gcr.io/busybox"
-36s       36s     1   {kubelet worker0}   spec.containers{liveness}   Normal      Pulled      Successfully pulled image "k8s.gcr.io/busybox"
+36s       36s     1   {kubelet worker0}   spec.containers{liveness}   Normal      Pulling     pulling image "registry.k8s.io/busybox"
+36s       36s     1   {kubelet worker0}   spec.containers{liveness}   Normal      Pulled      Successfully pulled image "registry.k8s.io/busybox"
 36s       36s     1   {kubelet worker0}   spec.containers{liveness}   Normal      Created     Created container with docker id 86849c15382e; Security:[seccomp=unconfined]
 36s       36s     1   {kubelet worker0}   spec.containers{liveness}   Normal      Started     Started container with docker id 86849c15382e
 2s        2s      1   {kubelet worker0}   spec.containers{liveness}   Warning     Unhealthy   Liveness probe failed: cat: can't open '/tmp/healthy': No such file or directory
@@ -102,9 +102,9 @@ liveness-exec   1/1       Running   1          1m
 ## Définir une requête HTTP de liveness
 
 Un autre type de liveness probe utilise une requête GET HTTP. Voici la configuration
-d'un Pod qui fait fonctionner un conteneur basé sur l'image `k8s.gcr.io/liveness`.
+d'un Pod qui fait fonctionner un conteneur basé sur l'image `registry.k8s.io/e2e-test-images/agnhost`.
 
-{{< codenew file="pods/probe/http-liveness.yaml" >}}
+{{% codenew file="pods/probe/http-liveness.yaml" %}}
 
 Dans le fichier de configuration, vous pouvez voir que le Pod a un seul conteneur.
 Le champ `periodSeconds` spécifie que le Kubelet doit effectuer une liveness probe toutes les 3 secondes. Le champ `initialDelaySeconds` indique au Kubelet qu'il devrait attendre 3 secondes avant d'effectuer la première probe. Pour effectuer une probe, le Kubelet envoie une requête HTTP GET au serveur qui s'exécute dans le conteneur et écoute sur le port 8080. Si le handler du chemin `/healthz` du serveur renvoie un code de succès, le Kubelet considère que le conteneur est vivant et en bonne santé. Si le handler renvoie un code d'erreur, le Kubelet tue le conteneur et le redémarre.
@@ -152,7 +152,7 @@ Dans les versions postérieures à la v1.13, les paramètres de la variable d'en
 Un troisième type de liveness probe utilise un TCP Socket. Avec cette configuration, le Kubelet tentera d'ouvrir un socket vers votre conteneur sur le port spécifié.
 S'il arrive à établir une connexion, le conteneur est considéré comme étant en bonne santé, s'il n'y arrive pas, c'est un échec.
 
-{{< codenew file="pods/probe/tcp-liveness-readiness.yaml" >}}
+{{% codenew file="pods/probe/tcp-liveness-readiness.yaml" %}}
 
 Comme vous le voyez, la configuration pour un check TCP est assez similaire à un check HTTP.
 Cet exemple utilise à la fois des readiness et liveness probes. Le Kubelet transmettra la première readiness probe 5 secondes après le démarrage du conteneur. Il tentera de se connecter au conteneur `goproxy` sur le port 8080. Si la probe réussit, le conteneur sera marqué comme prêt. Kubelet continuera à effectuer ce check tous les 10 secondes.
@@ -180,7 +180,6 @@ Vous pouvez utiliser un [ContainerPort](/docs/reference/generated/kubernetes-api
 ports:
 - name: liveness-port
   containerPort: 8080
-  hostPort: 8080
 
 livenessProbe:
   httpGet:
@@ -200,7 +199,6 @@ Ainsi, l'exemple précédent deviendrait :
 ports:
 - name: liveness-port
   containerPort: 8080
-  hostPort: 8080
 
 livenessProbe:
   httpGet:
