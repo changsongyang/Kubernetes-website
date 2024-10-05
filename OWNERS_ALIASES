@@ -108,6 +108,7 @@ aliases:
     - bishal7679
     - dipesh-rawat
     - divya-mohan0209
+    - niranjandarshann
   sig-docs-id-owners: # Admins for Indonesian content
     - ariscahyadi
     - danninov
@@ -227,12 +228,12 @@ aliases:
     - MaxymVlasov
   # authoritative source: git.k8s.io/community/OWNERS_ALIASES
   committee-steering: # provide PR approvals for announcements
-    - bentheelder
+    - aojea
+    - BenTheElder
     - justaugustus
-    - mrbobbytables
     - pacoxu
-    - palnabarun
     - pohly
+    - saschagrunert
     - soltysh
   # authoritative source: https://git.k8s.io/sig-release/OWNERS_ALIASES
   sig-release-leads:

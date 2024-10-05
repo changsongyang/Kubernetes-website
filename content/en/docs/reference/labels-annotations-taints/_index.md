@@ -289,6 +289,19 @@ in the StatefulSet topic for more details.
 Note the [PodIndexLabel](/docs/reference/command-line-tools-reference/feature-gates/)
 feature gate must be enabled for this label to be added to pods.
 
+### resource.kubernetes.io/pod-claim-name
+
+Type: Annotation
+
+Example: `resource.kubernetes.io/pod-claim-name: "my-pod-claim"`
+
+Used on: ResourceClaim
+
+This annotation is assigned to generated ResourceClaims. 
+Its value corresponds to the name of the resource claim in the `.spec` of any Pod(s) for which the ResourceClaim was created.
+This annotation is an internal implementation detail of [dynamic resource allocation](/docs/concepts/scheduling-eviction/dynamic-resource-allocation/).
+You should not need to read or modify the value of this annotation.
+
 ### cluster-autoscaler.kubernetes.io/safe-to-evict
 
 Type: Annotation
@@ -1217,13 +1230,12 @@ Example: `nginx.ingress.kubernetes.io/configuration-snippet: "  more_set_headers
 
 Used on: Ingress
 
-You can use this annotation to set extra configuration on an Ingress that 
-uses the [NGINX Ingress Controller] (https://github.com/kubernetes/ingress-nginx/)
+You can use this annotation to set extra configuration on an Ingress that
+uses the [NGINX Ingress Controller](https://github.com/kubernetes/ingress-nginx/).
 The `configuration-snippet` annotation is ignored
 by default since version 1.9.0 of the ingress controller.
-The NGINX ingress controller setting `allow-snippet-annotations.` 
-has to be explicitly enabled to
-use this annotation.
+The NGINX ingress controller setting `allow-snippet-annotations.`
+has to be explicitly enabled to use this annotation.
 Enabling the annotation can be dangerous in a multi-tenant cluster, as it can lead people with otherwise
 limited permissions being able to retrieve all Secrets in the cluster.
 

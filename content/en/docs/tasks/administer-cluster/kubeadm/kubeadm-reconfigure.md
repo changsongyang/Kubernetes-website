@@ -3,7 +3,7 @@ reviewers:
 - sig-cluster-lifecycle
 title: Reconfiguring a kubeadm cluster
 content_type: task
-weight: 30
+weight: 90
 ---
 
 <!-- overview -->
@@ -60,7 +60,7 @@ component configuration and avoid introducing typos and YAML indentation mistake
 #### Updating the `ClusterConfiguration`
 
 During cluster creation and upgrade, kubeadm writes its
-[`ClusterConfiguration`](/docs/reference/config-api/kubeadm-config.v1beta3/)
+[`ClusterConfiguration`](/docs/reference/config-api/kubeadm-config.v1beta4/)
 in a ConfigMap called `kubeadm-config` in the `kube-system` namespace.
 
 To change a particular option in the `ClusterConfiguration` you can edit the ConfigMap with this command:
